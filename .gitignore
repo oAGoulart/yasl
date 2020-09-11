@@ -1,0 +1,8 @@
+# Binaries
+out/
+build/
+bin/
+
+# Editors
+.vs
+.vscode
