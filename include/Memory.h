@@ -18,7 +18,6 @@ namespace scriptwrapper
 namespace memory
 {
 
-/* TODO: Document this class */
 template<typename T, typename... Args>
 class Patch
 {
@@ -57,7 +56,6 @@ private:
   T (*_trampoline)(Args...);
 };
 
-/* TODO: Document this class */
 class Protection
 {
 public:
@@ -82,21 +80,18 @@ private:
   BOOLEAN _validSize;
 };
 
-/* TODO: Document this function */
 template<typename T, UINT_PTR address, typename... Args>
 inline T Call(Args&&... args)
 {
   return reinterpret_cast<T (*)(Args...)>(address)(std::forward<Args>(args)...);
 };
 
-/* TODO: Document this function */
 template<typename T, typename... Args>
 inline T CallDynamic(UINT_PTR address, Args&&... args)
 {
   return reinterpret_cast<T (*)(Args...)>(GetDynamicAddress(address))(std::forward<Args>(args)...);
 };
 
-/* TODO: Document this function */
 inline VOID Fill(UINT_PTR address, BYTE value, SIZE_T size, BOOLEAN vp = FALSE)
 {
   PVOID ptr = reinterpret_cast<PVOID>(address);
@@ -104,13 +99,11 @@ inline VOID Fill(UINT_PTR address, BYTE value, SIZE_T size, BOOLEAN vp = FALSE)
   memset(ptr, value, size);
 };
 
-/* TODO: Document this function */
 inline PTR_DIFF GetDynamicAddress(CONST UINT_PTR address)
 {
   return GetModuleHandle(nullptr) - BASE_ADDRESS + address;
 };
 
-/* TODO: Document this function */
 inline PVOID* GetVmt(PVOID self)
 {
   return *reinterpret_cast<PVOID**>(self);
@@ -121,13 +114,11 @@ inline PVOID GetVmt(PVOID self, CONST SIZE_T index)
   return GetVmt(self)[index];
 };
 
-/* TODO: Document this function */
 inline VOID Nop(UINT_PTR address, CONST SIZE_T size, BOOLEAN vp = FALSE)
 {
   Fill(address, data::Opcode::NOP, size, vp);
 };
 
-/* TODO: Document this function */
 template<class T>
 inline T& Read(UINT_PTR address, CONST T& value, BOOLEAN vp = FALSE)
 {
@@ -136,7 +127,6 @@ inline T& Read(UINT_PTR address, CONST T& value, BOOLEAN vp = FALSE)
   return *static_cast<T*>ptr;
 };
 
-/* TODO: Document this function */
 inline VOID ReadRaw(UINT_PTR address, PVOID buffer, SIZE_T size, BOOLEAN vp = FALSE)
 {
   PVOID ptr = reinterpret_cast<PVOID>(address);
@@ -144,7 +134,6 @@ inline VOID ReadRaw(UINT_PTR address, PVOID buffer, SIZE_T size, BOOLEAN vp = FA
   memcpy(buffer, ptr, size);
 };
 
-/* TODO: Document this function */
 template<class T>
 inline VOID Write(UINT_PTR address, CONST T& value, BOOLEAN vp = FALSE)
 {
@@ -153,7 +142,6 @@ inline VOID Write(UINT_PTR address, CONST T& value, BOOLEAN vp = FALSE)
   *static_cast<T*>ptr = value;
 };
 
-/* TODO: Document this function */
 inline VOID WriteRaw(UINT_PTR address, PVOID buffer, SIZE_T size, BOOLEAN vp = FALSE)
 {
   PVOID ptr = reinterpret_cast<PVOID>(address);

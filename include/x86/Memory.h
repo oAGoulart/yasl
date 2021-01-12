@@ -10,7 +10,6 @@ namespace scriptwrapper
 namespace memory
 {
 
-/* TODO: Document this class */
 template<typename T, typename C, typename... Args>
 class PatchMethod
 {
@@ -49,21 +48,18 @@ private:
   T (__thiscall *_trampoline)(C, Args...);
 };
 
-/* TODO: Document this function */
 template<typename T, typename C, typename... Args>
 inline T CallMethod(UINT_PTR address, C _this, Args&&... args)
 {
   return reinterpret_cast<T (__thiscall *)(C, Args...)>(address)(_this, std::forward<Args>(args)...);
 };
 
-/* TODO: Document this function */
 template<typename T, typename C, typename... Args>
 inline T CallMethodDynamic(UINT_PTR address, C _this, Args&&... args)
 {
   return reinterpret_cast<T (__thiscall *)(C, Args...)>(GetDynamicAddress(address))(_this, std::forward<Args>(args)...);
 };
 
-/* TODO: Document this function */
 template<typename T, size_t index, typename C, typename... Args>
 inline T CallMethodVirtual(C _this, Args&&... args)
 {

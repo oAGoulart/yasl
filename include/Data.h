@@ -8,7 +8,6 @@ namespace scriptwrapper
 namespace data
 {
 
-/* TODO: Document this enum */
 enum class Opcode : BYTE
 {
   JO = 0x70,
@@ -30,7 +29,6 @@ enum class Opcode : BYTE
   NOP = 0x90
 };
 
-/* TODO: Document this class */
 template<typename T>
 class List : private std::list<T>
 {
