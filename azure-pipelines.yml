@@ -2,38 +2,6 @@ trigger:
 - master
 
 jobs:
-- job: Linux
-  pool:
-    vmImage: 'ubuntu-latest'
-
-  steps:
-  - checkout: self
-    clean: true
-    submodules: true
-  - script: sudo apt-get install ninja-build
-
-  - task: CMake@1
-    inputs:
-      cmakeArgs: '-G Ninja $(Build.SourcesDirectory)'
-
-  - script: cd build && ninja
-
-- job: macOS
-  pool:
-    vmImage: 'macOS-latest'
-
-  steps:
-  - checkout: self
-    clean: true
-    submodules: true
-  - script: brew install ninja
-
-  - task: CMake@1
-    inputs:
-      cmakeArgs: '-G Ninja $(Build.SourcesDirectory)'
-
-  - script: cd build && ninja
-
 - job: Windows_x64
   pool:
     vmImage: 'windows-latest'
