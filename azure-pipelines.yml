@@ -7,6 +7,9 @@ jobs:
     vmImage: 'ubuntu-latest'
 
   steps:
+  - checkout: self
+    clean: true
+    submodules: true
   - script: sudo apt-get install ninja-build
 
   - task: CMake@1
@@ -20,6 +23,9 @@ jobs:
     vmImage: 'macOS-latest'
 
   steps:
+  - checkout: self
+    clean: true
+    submodules: true
   - script: brew install ninja
 
   - task: CMake@1
@@ -33,6 +39,9 @@ jobs:
     vmImage: 'windows-latest'
 
   steps:
+  - checkout: self
+    clean: true
+    submodules: true
   - task: CMake@1
     inputs:
       cmakeArgs: '-A x64 $(Build.SourcesDirectory)'
@@ -48,6 +57,9 @@ jobs:
     vmImage: 'windows-2019'
 
   steps:
+  - checkout: self
+    clean: true
+    submodules: true
   - task: CMake@1
     inputs:
       cmakeArgs: '-A Win32 $(Build.SourcesDirectory)'
