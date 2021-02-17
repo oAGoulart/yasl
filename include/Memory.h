@@ -59,7 +59,7 @@ private:
 class Protection
 {
 public:
-  Protection(PVOID address, CONST SIZE_T size, CONST WORD mode)
+  Protection(PVOID address, CONST SIZE_T size, CONST WORD mode = PAGE_EXECUTE_READWRITE)
   {
     _address = address;
     _size = size;
@@ -116,7 +116,7 @@ inline PVOID GetVmt(PVOID self, CONST SIZE_T index)
 
 inline VOID Nop(UINT_PTR address, CONST SIZE_T size, BOOLEAN vp = FALSE)
 {
-  Fill(address, data::Opcode::NOP, size, vp);
+  Fill(address, static_cast<BYTE>(data::Opcode::NOP), size, vp);
 };
 
 template<class T>
