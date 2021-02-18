@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.0.4] - 2021-02-18
+
+### Fixed
+
+- Function `Read` unused argument
+
 ## [0.0.3] - 2021-02-17
 
 ### Fixed
@@ -18,7 +24,8 @@ All notable changes to this project will be documented in this file.
 - Initial files
 
 
-[unreleased]: https://github.com/oAGoulart/scriptwrapper/compare/v0.0.3...HEAD
+[unreleased]: https://github.com/oAGoulart/scriptwrapper/compare/v0.0.4...HEAD
+[0.0.3]: https://github.com/oAGoulart/scriptwrapper/releases/tag/v0.0.4
 [0.0.3]: https://github.com/oAGoulart/scriptwrapper/releases/tag/v0.0.3
 [0.0.1]: https://github.com/oAGoulart/scriptwrapper/releases/tag/v0.0.1
 
