@@ -4,7 +4,35 @@
 ![Platform](https://img.shields.io/badge/platform-win--32%20%7C%20win--64-lightgrey)
 [![License](https://img.shields.io/badge/license-MIT-informational.svg)](https://opensource.org/licenses/MIT)
 
-A module to improve the development of plugins for video games. Currently not production ready.
+A module to improve the development of modding scripts.  Currently not production ready.
+
+A quick example of a detour before and after calling the function:
+```cpp
+memory::Patch<int, int> getPotato(0x6050607);
+
+getPotato.before += [](int potato) {
+  cout << "this will show before calling the original function" << endl;
+};
+getPotato.after += [](int potato) {
+  cout << "original function already returned" << endl;
+};
+```
+
+You can also replace the original function:
+```cpp
+memory::Patch<int, int> getPotato(0x6050607);
+
+getPotato.replace += [](int potato) {
+  return 60;
+};
+```
+
+Some other functions that will help you read/write/execute from an address in memory:
+```cpp
+memory::Call<int, 0x6050607, int>(40);
+memory::Read<int>(0x6050607);
+memory::Write<int>(0x6050607, 60);
+```
 
 # Contributions
 
