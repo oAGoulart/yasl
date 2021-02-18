@@ -120,10 +120,10 @@ inline VOID Nop(UINT_PTR address, CONST SIZE_T size, BOOLEAN vp = FALSE)
 };
 
 template<class T>
-inline T& Read(UINT_PTR address, CONST T& value, BOOLEAN vp = FALSE)
+inline T& Read(UINT_PTR address, BOOLEAN vp = FALSE)
 {
   PVOID ptr = reinterpret_cast<PVOID>(address);
-  Protection protect(ptr, vp ? sizeof(value) : 0);
+  Protection protect(ptr, vp ? sizeof(T) : 0);
   return *static_cast<T*>ptr;
 };
 
