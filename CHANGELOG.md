@@ -25,7 +25,7 @@ All notable changes to this project will be documented in this file.
 
 
 [unreleased]: https://github.com/oAGoulart/scriptwrapper/compare/v0.0.4...HEAD
-[0.0.3]: https://github.com/oAGoulart/scriptwrapper/releases/tag/v0.0.4
+[0.0.4]: https://github.com/oAGoulart/scriptwrapper/releases/tag/v0.0.4
 [0.0.3]: https://github.com/oAGoulart/scriptwrapper/releases/tag/v0.0.3
 [0.0.1]: https://github.com/oAGoulart/scriptwrapper/releases/tag/v0.0.1
 
