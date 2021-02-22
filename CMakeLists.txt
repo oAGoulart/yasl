@@ -1,7 +1,7 @@
 # ScriptWrapper CMake building file
 cmake_minimum_required(VERSION 3.10)
 
-project(scriptwrapper VERSION 0.0.1 LANGUAGES C CXX)
+project(scriptwrapper VERSION 0.0.5 LANGUAGES C CXX)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 

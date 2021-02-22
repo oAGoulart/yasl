@@ -6,13 +6,13 @@
 
 A module to improve the development of modding scripts.  Currently not production ready.
 
-A quick example of a detour before and after calling the function:
+A quick example of a detour before and after the function call:
 ```cpp
 // function |int getPotato(int arg0)| at address 0x6050607 
 memory::Patch<int, int> getPotato(0x6050607);
 
 getPotato.before += [](int potato) {
-  cout << "this will show before calling the original function" << endl;
+  cout << "this will show before the original function is called" << endl;
 };
 getPotato.after += [](int potato) {
   cout << "original function already returned" << endl;
@@ -25,17 +25,18 @@ You can also replace the original function:
 memory::Patch<int, int> getPotato(0x6050607);
 
 getPotato.replace += [](int potato) {
+  cout << "this will 'replace' all calls to the original function" << endl;
   return 60;
 };
 ```
 
 Some other functions that will help you read/write/execute from an address in memory:
 ```cpp
-// function |int getPotato(int arg0)| at address 0x6050607 
+// calling function |int getPotato(int arg0)| at address 0x6050607 
 memory::Call<int, 0x6050607, int>(40);
-// int value at address 0x6050607
+// reading int value at address 0x6050607
 memory::Read<int>(0x6050607);
-// int value at address 0x6050607
+// writing int value at address 0x6050607
 memory::Write<int>(0x6050607, 60);
 ```
 
