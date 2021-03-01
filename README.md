@@ -4,7 +4,7 @@
 ![Platform](https://img.shields.io/badge/platform-win--32%20%7C%20win--64-lightgrey)
 [![License](https://img.shields.io/badge/license-MIT-informational.svg)](https://opensource.org/licenses/MIT)
 
-A module to improve the development of modding scripts.  Currently not production ready.
+A module to improve the development of modding scripts.
 
 A quick example of a detour before and after the function call:
 ```cpp
