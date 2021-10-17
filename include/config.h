@@ -28,10 +28,14 @@ public:
     wifstream file;
     file.open(_filename);
 
-    const auto bufferSize = static_cast<size_t>(file_size(filename));
+    auto configFileSize = file_size(filename);
+    if (configFileSize >= _CONFIG_SIZE_MAX)
+      throw runtime_error(_STRCAT(__FUNCSIG__, "\tConfig file size is bigger than allowed"));
+
+    const auto bufferSize = static_cast<size_t>(configFileSize);
     auto buffer = make_unique<wchar_t[]>(bufferSize + 1);
     _ReadLua(&file, &buffer[0], bufferSize);
-    buffer[bufferSize] = L'\0';
+    buffer[bufferSize] = L'\0'; // make sure buffer is null terminated
     file.close();
 
     _ParseLuaEntries(&buffer[0]);
@@ -116,19 +120,23 @@ private:
 
   void _ReadLua(wifstream* file, wchar_t* buffer, const size_t size)
   {
+    const wchar_t _LUA_COMMENT_START = L'[';
+    const wchar_t _LUA_COMMENT_END = L']';
+    const wchar_t _LUA_COMMENT_LINE = L'-';
+
     wchar_t wch;
     size_t n = 0;
     while (file->get(wch)) {
       // ignore Lua comments
-      if (wch == '-' && file->peek() == '-') {
-        file->get();
-        if (file->get() == '[' && file->peek() == '[') {
+      if (wch == _LUA_COMMENT_LINE && file->peek() == _LUA_COMMENT_LINE) {
+        file->seekg(3, ios_base::cur); // skip comment start
+        if (file->get() == _LUA_COMMENT_START && file->peek() == _LUA_COMMENT_START) {
           for (auto c = file->get(); c != EOF; c = file->get()) {
-            if (c == ']' && file->peek() == ']') {
+            if (c == _LUA_COMMENT_END && file->peek() == _LUA_COMMENT_END) {
               file->seekg(3, ios_base::cur); // skip comment end
               break;
             }
-            if (c == '[' && file->peek() == '[')
+            if (c == _LUA_COMMENT_START && file->peek() == _LUA_COMMENT_START)
               throw runtime_error(_STRCAT(__FUNCSIG__, "\tFound wrapped multi-line comments"));
           }
         }
@@ -146,7 +154,6 @@ private:
 
   void _ParseLuaEntries(wchar_t* buffer)
   {
-    // default values for parsing Lua
     const wchar_t* _ENTRY_ASSIGN = L"=";
     const wchar_t* _LUA_TABLE_START = L"{";
     const wchar_t* _LUA_TABLE_END = L"}";

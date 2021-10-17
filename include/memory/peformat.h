@@ -20,32 +20,46 @@
 
 #include "base.h"
 
-class Script {
+namespace Memory
+{
+
+class PEFormat {
 public:
-  Script(const hmodule_t& hmodule, pfunc_t func, const path& name) :
-    _module(hmodule), _name(name)
+  PEFormat(const hmodule_t& hmodule) : _module(hmodule)
   {
-    _main = reinterpret_cast<uintptr_t>(func);
-  };
+    _filename = make_unique<char[]>(MAX_PATH); // MapAndLoad doesn't support wchar_t
+    if (!GetModuleFileNameA(hmodule, &_filename[0], MAX_PATH))
+      throw runtime_error(_STRCAT(__FUNCSIG__, "\tUnable to find process filename"));
 
-  ~Script()
-  {
-    if (_module != nullptr)
-      FreeLibrary(_module);
-  };
+    _image = make_unique<peimage_t>();
+    if (!MapAndLoad(&_filename[0], NULL, &*_image, FALSE, TRUE))
+      throw runtime_error(_STRCAT(__FUNCSIG__, "\tCould not map process binary file"));
+  }
 
-  path& GetName() noexcept
+  ~PEFormat()
   {
-    return _name;
-  };
+    UnMapAndLoad(&*_image);
+  }
 
-  void operator()()
+  constexpr uintptr_t GetEntry() noexcept
   {
-    reinterpret_cast<void (*)()>(_main)();
-  };
+    return GetAbsolute(_image->FileHeader->OptionalHeader.AddressOfEntryPoint);
+  }
 
 private:
-  path      _name;
-  hmodule_t _module;
-  uintptr_t _main;
+  hmodule_t             _module;
+  unique_ptr<char[]>    _filename;
+  unique_ptr<peimage_t> _image;
 };
+
+inline int32_t GetRelativeOffset(uintptr_t dest, uintptr_t from) noexcept
+{
+  return static_cast<int32_t>(dest - from);
+};
+
+inline uintptr_t GetAbsolute(uintptr_t address) noexcept
+{
+  return address + _BASE_ADDRESS;
+};
+
+}

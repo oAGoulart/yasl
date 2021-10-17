@@ -18,34 +18,12 @@
 */
 #pragma once
 
-#include "base.h"
-
-class Script {
-public:
-  Script(const hmodule_t& hmodule, pfunc_t func, const path& name) :
-    _module(hmodule), _name(name)
-  {
-    _main = reinterpret_cast<uintptr_t>(func);
-  };
-
-  ~Script()
-  {
-    if (_module != nullptr)
-      FreeLibrary(_module);
-  };
-
-  path& GetName() noexcept
-  {
-    return _name;
-  };
-
-  void operator()()
-  {
-    reinterpret_cast<void (*)()>(_main)();
-  };
-
-private:
-  path      _name;
-  hmodule_t _module;
-  uintptr_t _main;
-};
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#include <imagehlp.h>
+#include <string>
+#include <iostream>
+#include <filesystem>
+#include <fstream>
+#include <list>
+#include <cwchar>

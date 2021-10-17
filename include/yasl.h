@@ -47,7 +47,7 @@ private:
   void _LoadScripts();
 };
 
-void Start();
-void End();
-void Dummy();
-void Hook();
+static void Start();
+static void End();
+static void Dummy();
+static void Hook();

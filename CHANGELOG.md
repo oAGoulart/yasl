@@ -10,6 +10,8 @@ All notable changes to this project will be documented in this file.
 - Updated visual identity
 - Added Trampoline, Patch, and Memory modules
 - Added Config and Status modules
+- Added pre-compiled headers
+- Split Memory module into separeted files on include\memory\
 
 ## 0.0.5 - 2021-02-22
 

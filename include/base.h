@@ -18,45 +18,56 @@
 */
 #pragma once
 
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-#include <imagehlp.h>
-#include <string>
-#include <iostream>
-#include <filesystem>
-#include <fstream>
-#include <list>
-#include <cwchar>
+#include "pch.h"
 
 #pragma comment(lib, "Imagehlp.lib")
 
-#if defined(__ILP32__) || defined(_ILP32) || defined(__i386__) || defined(_M_IX86) || defined(_X86_)
+#if defined(_M_IX86) || defined(_X86_) || defined(_WIN32)
 #undef __X86_ARCH__
 #define __X86_ARCH__ 1
+#elif !defined(_M_AMD64) && !defined(_M_X64) && !defined(_WIN64)
+#error "Unknown processor architecture"
+#endif
+
+#ifdef __cplusplus
+  #if !(_MSVC_LANG >= 202002L)
+  #error "Must compile with C++20 or higher"
+  #endif
+#else
+#error "Must compile using C++"
+#endif
+
+#ifdef _DEBUG
+#pragma warning("Do not use Debug version with a Release binary")
+#endif
+
+#ifndef _DLL
+#error "Must compile this code targeting a shared library"
+#endif
+
+#ifdef __X86_ARCH__
+#define _BASE_ADDRESS 0x400000
+#else
+#define _BASE_ADDRESS 0x140000000
 #endif
 
 #define _STRCATA(A, B) A ## B
-#define _STRCAT(A, B) _STRCATA(A, B)
+#define _STRCAT(A, B) _STRCATA(A, B) // TODO: implement variadic func
 #define _UB(A) static_cast<uint8_t>(A)
 
 #define _STATIC_BUFF_SIZE MAX_PATH * 4
+#define _CONFIG_SIZE_MAX INT32_MAX
 
 using namespace std;
 using namespace std::filesystem;
 
-typedef DWORD ulong_t;
-typedef LPVOID pvoid_t;
-typedef FARPROC pfunc_t;
-typedef HMODULE hmodule_t;
-typedef BOOL lbool_t;
-typedef FILE hfile_t;
-
-uint8_t operator""_u(char c)
-{
-  return static_cast<uint8_t>(c);
-};
-
-uint16_t operator""_u(wchar_t wc)
-{
-  return static_cast<uint16_t>(wc);
-};
+using long_t = LONG;
+using ulong_t = DWORD;
+using pvoid_t = LPVOID;
+using pfunc_t = FARPROC;
+using hmodule_t = HMODULE;
+using lbool_t = BOOL;
+using hfile_t = FILE;
+using peimage_t = LOADED_IMAGE;
+using exception_t = EXCEPTION_POINTERS;
+using minidump_t = MINIDUMP_EXCEPTION_INFORMATION;

@@ -20,32 +20,48 @@
 
 #include "base.h"
 
-class Script {
+namespace Memory
+{
+  
+class Protection {
 public:
-  Script(const hmodule_t& hmodule, pfunc_t func, const path& name) :
-    _module(hmodule), _name(name)
+  Protection(const uintptr_t& address, const size_t& size, const ulong_t& mode = PAGE_EXECUTE_READWRITE)
   {
-    _main = reinterpret_cast<uintptr_t>(func);
+    _address = address;
+    _size = size;
+    _mode = mode;
+    if (_size)
+      _isEnabled = VirtualProtect(reinterpret_cast<pvoid_t>(_address), _size, _mode, &_oldMode);
+    _isEnabled = FALSE;
   };
 
-  ~Script()
+  ~Protection()
   {
-    if (_module != nullptr)
-      FreeLibrary(_module);
+    if (_isEnabled)
+      _isEnabled = !VirtualProtect(reinterpret_cast<pvoid_t>(_address), _size, _oldMode, &_oldMode);
   };
 
-  path& GetName() noexcept
+  bool IsEnabled() const noexcept
   {
-    return _name;
-  };
+    return (_isEnabled);
+  }
 
-  void operator()()
+  ulong_t GetOldMode() const noexcept
   {
-    reinterpret_cast<void (*)()>(_main)();
-  };
+    return _oldMode;
+  }
+
+  ulong_t& GetMode() noexcept
+  {
+    return _mode;
+  }
 
 private:
-  path      _name;
-  hmodule_t _module;
-  uintptr_t _main;
+  uintptr_t _address;
+  ulong_t   _mode;
+  ulong_t   _oldMode;
+  size_t    _size;
+  lbool_t   _isEnabled;
 };
+
+}

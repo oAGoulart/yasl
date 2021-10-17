@@ -38,6 +38,24 @@
     <ClInclude Include="include\status.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\pch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\memory\protection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\memory\patch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\memory\trampoline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\memory\data.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\memory\peformat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="yasl.def" />

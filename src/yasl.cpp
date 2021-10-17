@@ -18,43 +18,34 @@
 */
 #include "yasl.h"
 
-lbool_t WINAPI DllMain(hmodule_t mod, ulong_t reason, pvoid_t)
+lbool_t WINAPI DllMain(hmodule_t, ulong_t reason, pvoid_t)
 {
   try {
     if (reason == DLL_PROCESS_ATTACH)
       Start();
     else if (reason == DLL_PROCESS_DETACH)
-      End(); // not always reached on parent termination
+      End(); // not always reached on process termination
   }
   catch (const exception& e) {
     hfile_t* tmp;
     freopen_s(&tmp, "./yaslFatal.md", "w", stderr);
     fprintf_s(tmp, "Fatal:\n\t%s\n", e.what());
     fclose(tmp);
-    return FALSE;
+    return false;
   }
-  return TRUE;
+  return true;
 }
 
-void Start()
+static void Start()
 {
   SetUnhandledExceptionFilter(Status::CustomSEHFilter); // TODO: nop setter
 
-  auto buffer = make_unique<char[]>(MAX_PATH); // MapAndLoad doesn't support wchar_t
-  if (!GetModuleFileNameA(NULL, &buffer[0], MAX_PATH))
-    throw runtime_error(_STRCAT(__FUNCSIG__, "\tUnable to find process filename"));
-
-  LOADED_IMAGE image;
-  if (!MapAndLoad(&buffer[0], NULL, &image, FALSE, TRUE))
-    throw runtime_error(_STRCAT(__FUNCSIG__, "\tCould not map process binary file"));
-
-  uint32_t entry = image.FileHeader->OptionalHeader.AddressOfEntryPoint + BASE_ADDRESS;
-  UnMapAndLoad(&image);
+  auto pe = make_unique<Memory::PEFormat>(nullptr);
 
   // hook entry point with single use trampoline
 }
 
-void End()
+static void End()
 {
 }
 
@@ -140,11 +131,11 @@ void YASL::_LoadScripts()
   }
 }
 
-void Dummy()
+static void Dummy()
 {
 }
 
-void Hook()
+static void Hook()
 {
   auto yasl = make_unique<YASL>();
   yasl->Run();

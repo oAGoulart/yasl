@@ -29,13 +29,10 @@ using namespace chrono;
 
 class Status {
 public:
-  Status(const path& filename, const wstring& name, const wstring& version)
+  Status(const path& filename, const wstring& name, const wstring& version) :
+    _filename(filename), _name(name), _version(version)
   {
-    _filename = filename;
     _file.open(_filename);
-    _name = name;
-    _version = version;
-
 #ifdef __MARKDOWN_EXTEND__
     _file << L"\t**" << _name << L"** " << _version << L" status output..." << L"\n\n" << flush;
 #else
@@ -66,11 +63,11 @@ public:
 #endif
   };
 
-  static LONG WINAPI CustomSEHFilter(LPEXCEPTION_POINTERS exceptionInfo)
+  static long_t WINAPI CustomSEHFilter(exception_t* exceptionInfo)
   {
     wchar_t name[MAX_PATH];
     wchar_t* item;
-    if (GetModuleFileNameW(GetModuleHandle(NULL), name, MAX_PATH)) {
+    if (GetModuleFileNameW(GetModuleHandle(nullptr), name, MAX_PATH)) {
       item = wcsrchr(name, L'\\');
       *item = L'\0';
       ++item;
@@ -79,19 +76,19 @@ public:
       wcscpy_s(name, L"err.unknown");
 
     auto file = CreateFileW(L"miniDump.md", GENERIC_WRITE, FILE_SHARE_WRITE,
-                            NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+                            nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
     if (file != INVALID_HANDLE_VALUE) {
-      MINIDUMP_EXCEPTION_INFORMATION miniDump;
+      minidump_t miniDump;
       memset(&miniDump, 0, sizeof(miniDump));
       miniDump.ThreadId = GetCurrentThreadId();
       miniDump.ExceptionPointers = exceptionInfo;
-      miniDump.ClientPointers = TRUE;
+      miniDump.ClientPointers = true;
       MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(),
-                        file, MiniDumpWithDataSegs, &miniDump, NULL, NULL);
+                        file, MiniDumpWithDataSegs, &miniDump, nullptr, nullptr);
       CloseHandle(file);
     }
 
-    ShowCursor(TRUE);
+    ShowCursor(true);
     auto wnd = FindWindowW(0, L"");
     SetForegroundWindow(wnd);
 
