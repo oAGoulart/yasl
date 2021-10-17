@@ -76,7 +76,7 @@ public:
     if (_trampoline == nullptr)
       throw runtime_error(_STRCAT(__FUNCSIG__, "\tCan't allocate heap memory"));
 
-    auto l_this = reinterpret_cast<uint32_t>(this);
+    auto l_this = reinterpret_cast<uintptr_t>(this);
     auto m_func = reinterpret_cast<void(*)()>(this->*Proxy);
     Patch t(_trampoline, _TRAMPOLINE_HEAP_SIZE);
 
