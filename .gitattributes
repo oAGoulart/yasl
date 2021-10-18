@@ -1,3 +1,5 @@
+*.h linguist-language=C++
+
 # Configuration files
 *.ini text
 *.cfg text
