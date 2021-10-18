@@ -1,30 +1,40 @@
-/*
-  Copyright (c) 2021 Augusto Goulart
-  Permission is hereby granted, free of charge, to any person obtaining a copy
-  of this software and associated documentation files (the "Software"), to deal
-  in the Software without restriction, including without limitation the rights
-  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-  copies of the Software, and to permit persons to whom the Software is
-  furnished to do so, subject to the following conditions:
-  The above copyright notice and this permission notice shall be included in all
-  copies or substantial portions of the Software.
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-  SOFTWARE.
-*/
+/**
+  @brief     Config module
+  @author    Augusto Goulart
+  @date      17.10.2021
+  @copyright   Copyright (c) 2021 Augusto Goulart
+               Permission is hereby granted, free of charge, to any person obtaining a copy
+               of this software and associated documentation files (the "Software"), to deal
+               in the Software without restriction, including without limitation the rights
+               to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+               copies of the Software, and to permit persons to whom the Software is
+               furnished to do so, subject to the following conditions:
+               The above copyright notice and this permission notice shall be included in all
+               copies or substantial portions of the Software.
+               THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+               IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+               FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+               AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+               LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+               OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+               SOFTWARE.
+**/
 #pragma once
 
 #include "base.h"
 
+/**
+  @class ConfigFile
+  @brief Object used to store configure file information
+**/
 class ConfigFile {
 public:
-  ConfigFile(const path& filename)
+  /**
+    @brief ConfigFile object constructor
+    @param filename Path to configure file
+  **/
+  ConfigFile(const path& filename) : _filename(filename)
   {
-    _filename = filename;
     wifstream file;
     file.open(_filename);
 
@@ -41,6 +51,11 @@ public:
     _ParseLuaEntries(&buffer[0]);
   };
 
+  /**
+    @brief  Search for entry on configuration
+    @param  name Entry name
+    @retval      Key value or empty string if not found
+  **/
   wstring FindEntry(const wstring name) noexcept
   {
     for (auto entry = _entries.begin(); entry != _entries.end(); ++entry) {
@@ -50,6 +65,12 @@ public:
     return L"";
   };
 
+  /**
+    @brief  Search for entry on maps configuration
+    @param  map  Map name
+    @param  name Entry name
+    @retval      Key value or empty string if not found
+  **/
   wstring FindEntry(const wstring map, const wstring name) noexcept
   {
     for (auto item = _maps.begin(); item != _maps.end(); ++item) {
@@ -60,41 +81,74 @@ public:
   };
 
 private:
+  /**
+    @class Entry
+    @brief Object to store entry data
+  **/
   class Entry {
   public:
-    Entry(const wstring& name, const wstring& key)
+    /**
+      @brief Entry object constructor
+      @param name Entry name
+      @param key  Key value
+    **/
+    Entry(const wstring& name, const wstring& key) :
+      _name(name), _key(key)
     {
-      _name = name;
-      _key = key;
     };
 
+    /**
+      @brief  Gets entry name
+      @retval Entry name
+    **/
     wstring& GetName() noexcept
     {
       return _name;
     };
 
+    /**
+      @brief  Gets key value
+      @retval Key value
+    **/
     wstring& GetKey() noexcept
     {
       return _key;
     };
 
   private:
-    wstring _name;
-    wstring _key;
+    wstring _name; //!< Entry name
+    wstring _key;  //!< Key value
   };
 
+  /**
+    @class Map
+    @brief Object used to store maps from configuration
+  **/
   class Map {
   public:
-    Map(const wstring& name)
+    /**
+      @brief Map object constructor
+      @param name Map name
+    **/
+    Map(const wstring& name) : _name(name)
     {
-      _name = name;
     };
 
+    /**
+      @brief Emplace entry into map
+      @param name Entry name
+      @param key  Key value
+    **/
     void Emplace(const wstring& name, const wstring& key)
     {
       _entries.emplace_back(name, key);
     };
 
+    /**
+      @brief  Search for entry inside map
+      @param  name Entry name
+      @retval      Entry key or empty string if not found
+    **/
     wstring FindEntry(const wstring name) noexcept
     {
       for (auto entry = _entries.begin(); entry != _entries.end(); ++entry) {
@@ -104,20 +158,30 @@ private:
       return L"";
     };
 
+    /**
+      @brief  Gets map name
+      @retval Map name
+    **/
     wstring& GetName() noexcept
     {
       return _name;
     };
 
   private:
-    wstring     _name;
-    list<Entry> _entries;
+    wstring     _name;    //!< Map name
+    list<Entry> _entries; //!< List of entries inside map
   };
 
-  path        _filename;
-  list<Entry> _entries;
-  list<Map>   _maps;
+  path        _filename; //!< Path to configuration file
+  list<Entry> _entries;  //!< List of entries on configuration
+  list<Map>   _maps;     //!< List of maps on configuration
 
+  /**
+    @brief Read Lua file for config entries and maps
+    @param file   Pointer to input file stream
+    @param buffer Pointer to input buffer
+    @param size   Length of buffer
+  **/
   void _ReadLua(wifstream* file, wchar_t* buffer, const size_t size)
   {
     const wchar_t _LUA_COMMENT_START = L'[';
@@ -152,6 +216,10 @@ private:
     }
   };
 
+  /**
+    @brief Parse Lua entries and maps found on file
+    @param buffer Pointer to buffer used with @c _ReadLua
+  **/
   void _ParseLuaEntries(wchar_t* buffer)
   {
     const wchar_t* _ENTRY_ASSIGN = L"=";
