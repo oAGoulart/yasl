@@ -1,9 +1,13 @@
 [![YASL](banner.png)]()
 
-![Platform](https://img.shields.io/badge/platform-win--32%20%7C%20win--64-lightgrey)
+[![MSBuild](https://github.com/oAGoulart/yasl/actions/workflows/msbuild.yml/badge.svg)](https://github.com/oAGoulart/yasl/actions/workflows/msbuild.yml)
+[![CodeQL](https://github.com/oAGoulart/yasl/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/oAGoulart/yasl/actions/workflows/codeql-analysis.yml)
+![Platform](https://img.shields.io/badge/platform-win--32%20%7C%20win--64-blue)
 [![License](https://img.shields.io/badge/license-MIT-informational.svg)](https://opensource.org/licenses/MIT)
 
 **WIP** codebase is being pushed to repo as it is coded so you might not be able to compile while I write/test the code.
+
+You'll need to use the tool [WrappEm](https://github.com/oAGoulart/wrappem) that I created to inject some payload DLL into a process.
 
 Former *Script Wrapper* project. Now switching into a proper hooking module.
 
@@ -24,4 +28,4 @@ Some useful resources I've been using while I researched how to implement this m
 # Contributions
 
 Feel free to leave your contribution here, I would really appreciate it!
-Also, if you have any doubts or troubles using this tool just contact me or leave an issue.
+Also, if you have any doubts or troubles using this library just contact me or leave an issue.
