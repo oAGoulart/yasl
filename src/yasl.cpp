@@ -170,7 +170,7 @@ void YASL::_LoadScripts()
 /**
   @brief Dummy empty function
 **/
-static void Dummy()
+void Dummy()
 {
 }
 

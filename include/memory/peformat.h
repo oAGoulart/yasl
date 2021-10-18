@@ -31,6 +31,27 @@ namespace Memory
 {
 
 /**
+  @brief  Calculate relative offset
+  @param  dest Destination address
+  @param  from Source address
+  @retval      Relative address
+**/
+inline int32_t GetRelativeOffset(uintptr_t dest, uintptr_t from) noexcept
+{
+  return static_cast<int32_t>(dest - from);
+};
+
+/**
+  @brief  Calculate absolute address
+  @param  address Virtual address
+  @retval         Absolute address
+**/
+inline uintptr_t GetAbsolute(uintptr_t address) noexcept
+{
+  return address + _BASE_ADDRESS;
+};
+
+/**
   @class PEFormat
   @brief Object used to store PE image values
 **/
@@ -63,7 +84,7 @@ public:
     @brief  Get entry point address
     @retval Entry address
   **/
-  constexpr uintptr_t GetEntry() noexcept
+  uintptr_t GetEntry() noexcept
   {
     return GetAbsolute(_image->FileHeader->OptionalHeader.AddressOfEntryPoint);
   }
@@ -72,27 +93,6 @@ private:
   hmodule_t             _module;   //!< Module handle
   unique_ptr<char[]>    _filename; //!< Module filename
   unique_ptr<peimage_t> _image;    //!< Module PE image
-};
-
-/**
-  @brief  Calculate relative offset
-  @param  dest Destination address
-  @param  from Source address
-  @retval      Relative address
-**/
-inline int32_t GetRelativeOffset(uintptr_t dest, uintptr_t from) noexcept
-{
-  return static_cast<int32_t>(dest - from);
-};
-
-/**
-  @brief  Calculate absolute address
-  @param  address Virtual address
-  @retval         Absolute address
-**/
-inline uintptr_t GetAbsolute(uintptr_t address) noexcept
-{
-  return address + _BASE_ADDRESS;
 };
 
 }

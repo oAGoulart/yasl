@@ -52,6 +52,6 @@ private:
 
 static void Start();
 static void End();
-static void Dummy();
+void Dummy();
 static void Hook();
 static void Fatal(const exception& e);

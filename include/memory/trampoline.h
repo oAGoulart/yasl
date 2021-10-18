@@ -85,7 +85,7 @@ public:
       @param  iterator Iteration function
       @retval          Return value
     **/
-    T& operator()(T& (*iterator)(const dummy_t& f))
+    T operator()(T& (*iterator)(const dummy_t& f))
     {
       T result;
       for (auto it = _pool.begin(); it != _pool.end(); ++it)
@@ -122,18 +122,18 @@ public:
     Patch t(_trampoline, _TRAMPOLINE_HEAP_SIZE);
 
 #ifdef __X86_ARCH__
-    t.pop(ecx);
-    t.mov(epi, l_this);
-    t.push(epi);
-    t.push(ecx);
+    t.pop(t.ecx);
+    t.mov(t.epi, l_this);
+    t.push(t.epi);
+    t.push(t.ecx);
     t.jmp(m_func);
 #else
-    t.pop(rcx);
-    t.mov(rpi, l_this);
-    t.push(rpi);
-    t.push(rcx);
-    t.movabs(rcx, m_func);
-    t.jmp(rcx);
+    t.pop(t.rcx);
+    t.mov(t.rpi, l_this);
+    t.push(t.rpi);
+    t.push(t.rcx);
+    t.movabs(t.rcx, m_func);
+    t.jmp(t.rcx);
 #endif
 
     _p = make_unique<Patch>(_address, _TRAMPOLINE_HEAP_SIZE);
@@ -141,7 +141,7 @@ public:
     _p->jmp(_trampoline);
 #else
     _p->movabs(rcx, _trampoline);
-    _p->jmp(rcx);
+    _p->jmp(_p->rcx);
 #endif
   }
 
@@ -195,13 +195,12 @@ public:
       return Call<T, Args...>(_address, forward<Args>(arg)...);
     }
 
-    auto it = [arg](dummy_func& f) -> T&
+    auto it = [arg](T& (*f)(Args&&...)) -> T&
     {
       f(forward<Args>(arg)...);
-    }
+    };
 
-    T result;
-    result = before(it);
+    T result = before(it);
     if (!replace.empty())
       result = replace(it);
     else {
@@ -224,7 +223,7 @@ private:
 
   void (*_trampoline)();
 
-  const size_t _TRAMPOLINE_HEAP_SIZE 48;
+  const size_t _TRAMPOLINE_HEAP_SIZE = 48;
 };
 
 /**

@@ -775,7 +775,7 @@ public:
   {
     *this << '\x0F' << '\x84' << GetRelativeOffset(address, _offset + 4);
   }
-  void (Patch::*jz)(const uintptr_t) = je;  //!< Jump if zero
+  void (Patch::*jz)(const uintptr_t) = &Patch::je;  //!< Jump if zero
 
   /**
     @brief Jump if not equal
@@ -785,7 +785,7 @@ public:
   {
     *this << '\x0F' << '\x85' << GetRelativeOffset(address, _offset + 4);
   }
-  void (Patch::*jnz)(const uintptr_t) = jne;  //!< Jump if not zero
+  void (Patch::*jnz)(const uintptr_t) = &Patch::jne;  //!< Jump if not zero
 
   /**
     @brief Jump if greater
@@ -795,7 +795,7 @@ public:
   {
     *this << '\x0F' << '\x8F' << GetRelativeOffset(address, _offset + 4);
   }
-  void (Patch::*jnle)(const uintptr_t) = jg;  //!< Jump if not less or equal
+  void (Patch::*jnle)(const uintptr_t) = &Patch::jg;  //!< Jump if not less or equal
 
   /**
     @brief Jump if greater or equal
@@ -805,7 +805,7 @@ public:
   {
     *this << '\x0F' << '\x8D' << GetRelativeOffset(address, _offset + 4);
   }
-  void (Patch::*jnl)(const uintptr_t) = jge;  //!< Jump if not less
+  void (Patch::*jnl)(const uintptr_t) = &Patch::jge;  //!< Jump if not less
 
   /**
     @brief Jump if less
@@ -815,7 +815,7 @@ public:
   {
     *this << '\x0F' << '\x8C' << GetRelativeOffset(address, _offset + 4);
   }
-  void (Patch::*jnge)(const uintptr_t) = jl;  //!< Jump if not greater or equal
+  void (Patch::*jnge)(const uintptr_t) = &Patch::jl;  //!< Jump if not greater or equal
 
   /**
     @brief Jump less or equal
@@ -825,7 +825,7 @@ public:
   {
     *this << '\x0F' << '\x8E' << GetRelativeOffset(address, _offset + 4);
   }
-  void (Patch::*jng)(const uintptr_t) = jle;  //!< Jump not greater
+  void (Patch::*jng)(const uintptr_t) = &Patch::jle;  //!< Jump not greater
 
   /**
     @brief Increase register value by one
