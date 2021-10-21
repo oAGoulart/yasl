@@ -31,8 +31,8 @@ class Script {
 public:
   /**
     @brief Script object constructor
-    @param hmodule Handle to module
-    @param func    Pointer to main function
+    @param hmodule Handle to module where script is
+    @param func    Pointer to script main function
     @param name    Script name string
   **/
   Script(const hmodule_t& hmodule, pfunc_t func, const path& name) :

@@ -33,15 +33,39 @@ namespace Memory
 {
 
 /**
+  @brief  Force cast type
+
+  This is one of the ways to cast a non-virtual member function pointer
+  into a non-member pointer.
+
+  @tparam To   Type to be cast into
+  @tparam From Current type
+  @param  in   Current value
+  @retval      Cast type
+  @warning Using this function may cause undefined behavior
+**/
+template<typename To, typename From>
+inline To force_cast(From in)
+{
+  union {
+    From in;  //!< Current type
+    To out;   //!< Type to be cast into
+  } u = { in };
+  return u.out;
+};
+
+/**
   @class  Trampoline
   @brief  Object used to create a trampoline into procedure memory
   @tparam T    Return type
   @tparam Args Parameter pack type
+  @warning This object must not be destroyed before disabling the trampoline,
+           doing it otherwise will cause undefined behavior
 **/
 template<typename T, typename... Args>
 class Trampoline {
 public:
-  using dummy_t = T& (*)(Args&&...);
+  using dummy_t = T(*)(Args&&...);
 
   /**
     @class Detour
@@ -53,7 +77,7 @@ public:
       @brief  Check if pool is empty
       @retval Is pool empty?
     **/
-    constexpr bool empty() const noexcept
+    constexpr bool IsEmpty() const noexcept
     {
       return _pool.empty();
     }
@@ -65,8 +89,8 @@ public:
     **/
     Detour& operator+=(const dummy_t& f)
     {
-      _pool.emplace_back(f);
-      return this;
+      _pool.push_back(f);
+      return *this;
     }
 
     /**
@@ -77,24 +101,24 @@ public:
     Detour& operator-=(const dummy_t& f)
     {
       _pool.remove(f);
-      return this;
+      return *this;
     }
 
     /**
       @brief  Operator used to iterate through pool
-      @param  iterator Iteration function
-      @retval          Return value
+      @param  arg Forwarded args
+      @retval     Return value
     **/
-    T operator()(T& (*iterator)(const dummy_t& f))
+    T operator()(Args&&... arg)
     {
       T result;
       for (auto it = _pool.begin(); it != _pool.end(); ++it)
-        result = iterator(*it);
+        result = (*it)(forward<Args>(arg)...);
       return result;
     }
 
   private:
-    list<dummy_t> _pool;  //!< Pool storing functions
+    list<dummy_t> _pool;  //!< Pool of functions
   };
 
   Detour before;  //!< Before original call
@@ -108,40 +132,40 @@ public:
                     which would be @c MAX_UINT - 1
   **/
   Trampoline(const uintptr_t& address, const size_t maxCalls = -1) :
-    _address(address), _maxCalls(maxCalls), _callCount(0), _enabled(true)
+    _TRAMPOLINE_HEAP_SIZE(48), _address(address), _maxCalls(maxCalls), _callCount(0),
+    _p(address, _TRAMPOLINE_HEAP_SIZE), _enabled(true), _trampoline(nullptr)
   {
     if (!_maxCalls)
       throw runtime_error(_STRCAT(__FUNCSIG__, "\tInvalid arguments"));
 
-    _trampoline = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, _TRAMPOLINE_HEAP_SIZE);
+    _trampoline = reinterpret_cast<dummy_t>(
+      HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, _TRAMPOLINE_HEAP_SIZE));
     if (_trampoline == nullptr)
       throw runtime_error(_STRCAT(__FUNCSIG__, "\tCan't allocate heap memory"));
 
+    auto p_tram = reinterpret_cast<uintptr_t>(_trampoline);
     auto l_this = reinterpret_cast<uintptr_t>(this);
-    auto m_func = reinterpret_cast<void(*)()>(this->*Proxy);
-    Patch t(_trampoline, _TRAMPOLINE_HEAP_SIZE);
+    auto p_func = force_cast<void*>(&Trampoline::Proxy);
+    auto m_func = reinterpret_cast<uintptr_t>(p_func);
+    Patch t(p_tram, _TRAMPOLINE_HEAP_SIZE);
 
 #ifdef __X86_ARCH__
-    t.pop(t.ecx);
-    t.mov(t.epi, l_this);
-    t.push(t.epi);
-    t.push(t.ecx);
+    t.mov(t.ecx, l_this);
     t.jmp(m_func);
 #else
     t.pop(t.rcx);
-    t.mov(t.rpi, l_this);
-    t.push(t.rpi);
+    t.mov(t.rdx, l_this);
+    t.push(t.rdx);
     t.push(t.rcx);
     t.movabs(t.rcx, m_func);
     t.jmp(t.rcx);
 #endif
 
-    _p = make_unique<Patch>(_address, _TRAMPOLINE_HEAP_SIZE);
 #ifdef __X86_ARCH__
-    _p->jmp(_trampoline);
+    _p.jmp(p_tram);
 #else
-    _p->movabs(rcx, _trampoline);
-    _p->jmp(_p->rcx);
+    _p.movabs(rcx, p_tram);
+    _p.jmp(_p.rcx);
 #endif
   }
 
@@ -152,7 +176,8 @@ public:
   {
     if (_enabled)
       Finish();
-    HeapFree(GetProcessHeap(), 0, _trampoline);
+    if (_trampoline != nullptr)
+      HeapFree(GetProcessHeap(), 0, _trampoline);
   }
 
   /**
@@ -160,7 +185,7 @@ public:
   **/
   void Finish()
   {
-    _p->Restore();
+    _p.Restore();
     _maxCalls = 0;
   }
 
@@ -171,7 +196,7 @@ public:
   void Enable()
   {
     if (!_enabled)
-      Write(_address, _p->GetPayload(), _p->GetCount());
+      Write(_address, _p.GetPayload(), _p.GetCount());
   }
 
   /**
@@ -180,7 +205,7 @@ public:
   void Disable()
   {
     if (_enabled)
-      Write(_address, _p->GetOriginal(), _p->GetCount());
+      Write(_address, _p.GetOriginal(), _p.GetCount());
   }
 
   /**
@@ -188,42 +213,37 @@ public:
     @param  arg Fowarded arguments
     @retval     Original return type
   **/
-  T& Proxy(Args&&... arg)
+  T Proxy(Args&&... arg)
   {
     if (_maxCalls != -1 && _callCount >= _maxCalls) {
       Finish();
       return Call<T, Args...>(_address, forward<Args>(arg)...);
     }
 
-    auto it = [arg](T& (*f)(Args&&...)) -> T&
-    {
-      f(forward<Args>(arg)...);
-    };
-
-    T result = before(it);
-    if (!replace.empty())
-      result = replace(it);
+    auto result = before(forward<Args>(arg)...);
+    if (!replace.IsEmpty())
+      result = replace(forward<Args>(arg)...);
     else {
       Disable();
-      result = Call(_address, forward<Args>(arg)...);
+      result = Call<T, Args...>(_address, forward<Args>(arg)...);
       Enable();
     }
-    result = after(it);
+    result = after(forward<Args>(arg)...);
 
     ++_callCount;
     return result;
   }
 
 private:
-  uintptr_t         _address;    //!< Address of trampoline
-  size_t            _maxCalls;   //!< Maximum amount of calls
-  size_t            _callCount;  //!< Current call count
-  unique_ptr<Patch> _p;          //!< Pointer to patch object
-  bool              _enabled;    //!< Is trampoline enabled?
+  const size_t _TRAMPOLINE_HEAP_SIZE;  //!< Number of bytes to allocate on heap
 
-  void (*_trampoline)();
+  uintptr_t _address;    //!< Address of trampoline
+  size_t    _maxCalls;   //!< Maximum amount of calls
+  size_t    _callCount;  //!< Current call count
+  Patch     _p;          //!< Pointer to patch object
+  bool      _enabled;    //!< Is trampoline enabled?
 
-  const size_t _TRAMPOLINE_HEAP_SIZE = 48;
+  T (*_trampoline)(Args...);
 };
 
 /**
@@ -235,21 +255,9 @@ private:
   @retval         Function returned value
 **/
 template<typename T, typename... Args>
-inline T& Call(uintptr_t address, Args&&... args)
+inline T Call(uintptr_t address, Args&&... args)
 {
-  return reinterpret_cast<T&(*)(Args&&...)>(address)(forward<Args>(args)...);
-}
-
-/**
-  @brief  Call
-  @tparam Args    Parameter pack type
-  @param  address Function address
-  @param  args    Parameter pack
-**/
-template<typename... Args>
-inline void CallVoid(uintptr_t address, Args&&... args)
-{
-  reinterpret_cast<void(*)(Args&&...)>(address)(forward<Args>(args)...);
+  return reinterpret_cast<T(*)(Args&&...)>(address)(forward<Args>(args)...);
 }
 
 }

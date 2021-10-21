@@ -36,7 +36,7 @@ lbool_t WINAPI DllMain(hmodule_t, ulong_t reason, pvoid_t)
     if (reason == DLL_PROCESS_ATTACH)
       Start();
     else if (reason == DLL_PROCESS_DETACH)
-      End(); // not always reached on process termination
+      End();
   }
   catch (const exception& e) {
     Fatal(e);
@@ -55,13 +55,16 @@ static void Start()
   auto pe = make_unique<Memory::PEFormat>(nullptr);
 
   // hook entry point with single use trampoline
+  _trampoline = new Memory::Trampoline<int>(pe->GetEntry(), 1);
+  _trampoline->before += &Hook;
 }
 
 /**
-  @brief Terminate hooks and callbacks
+  @brief Terminate trampoline
 **/
 static void End()
 {
+  delete _trampoline;
 }
 
 /**
@@ -168,22 +171,6 @@ void YASL::_LoadScripts()
 }
 
 /**
-  @brief Dummy empty function
-**/
-void Dummy()
-{
-}
-
-/**
-  @brief Procedure hook function
-**/
-static void Hook()
-{
-  auto yasl = make_unique<YASL>();
-  yasl->Run();
-}
-
-/**
   @brief Generate fatal error file
   @param e Error
 **/
@@ -193,4 +180,21 @@ static void Fatal(const exception& e)
   freopen_s(&tmp, "./yaslFatal.md", "w", stderr);
   fprintf_s(tmp, "Fatal:\n\t%s\n", e.what());
   fclose(tmp);
+}
+
+/**
+  @brief Dummy empty function
+**/
+void Dummy()
+{
+}
+
+/**
+  @brief Procedure hook function
+**/
+int Hook()
+{
+  auto yasl = make_unique<YASL>();
+  yasl->Run();
+  return 0;
 }
