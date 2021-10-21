@@ -149,7 +149,7 @@ public:
       case ch:
       case dh:
       case bh:
-        *this << '\xB0' + ub - _UB(al);
+        *this << _UB('\xB0' + ub - _UB(al));
         break;
 
 #ifndef __X86_ARCH__
@@ -157,7 +157,7 @@ public:
       case bpl:
       case sil:
       case dil:
-        *this << '\x40' << '\xB4' + ub - _UB(spl);
+        *this << '\x40' << _UB('\xB4' + ub - _UB(spl));
         break;
 
       case r8b:
@@ -168,7 +168,7 @@ public:
       case r13b:
       case r14b:
       case r15b:
-        *this << '\x41' << '\xB0' + ub - _UB(r8b);
+        *this << '\x41' << _UB('\xB0' + ub - _UB(r8b));
         break;
 #endif
       default:
@@ -198,7 +198,7 @@ public:
       case bp:
       case si:
       case di:
-        *this << '\x66' << '\xB8' + ub - _UB(ax);
+        *this << '\x66' << _UB('\xB8' + ub - _UB(ax));
         break;
 
 #ifndef __X86_ARCH__
@@ -210,7 +210,7 @@ public:
       case r13w:
       case r14w:
       case r15w:
-        *this << '\x66' << '\x41' << '\xB8' + ub - _UB(r8w);
+        *this << '\x66' << '\x41' << _UB('\xB8' + ub - _UB(r8w));
         break;
 #endif
       default:
@@ -241,7 +241,7 @@ public:
       case ebp:
       case esi:
       case edi:
-        *this << '\xB8' + ub - _UB(eax);
+        *this << _UB('\xB8' + ub - _UB(eax));
         break;
 
 #ifndef __X86_ARCH__
@@ -253,7 +253,7 @@ public:
       case r13d:
       case r14d:
       case r15d:
-        *this << '\x41' << '\xB8' + ub - _UB(r8d);
+        *this << '\x41' << _UB('\xB8' + ub - _UB(r8d));
         break;
 
       case rax:
@@ -264,7 +264,7 @@ public:
       case rbp:
       case rsi:
       case rdi:
-        *this << '\x48' << '\xC7' << '\xC0' + ub - _UB(rax);
+        *this << '\x48' << '\xC7' << _UB('\xC0' + ub - _UB(rax));
         break;
 
       case r8:
@@ -275,7 +275,7 @@ public:
       case r13:
       case r14:
       case r15:
-        *this << '\x49' << '\xC7' << '\xC0' + ub - _UB(r8);
+        *this << '\x49' << '\xC7' << _UB('\xC0' + ub - _UB(r8));
         break;
 #endif
       default:
@@ -304,7 +304,7 @@ public:
       case ch:
       case dh:
       case bh:
-        *this << '\x88' << '\x0D' + (ub - _UB(cl)) * 8 << '\x12';
+        *this << '\x88' << '\x0D' + _UB((ub - _UB(cl)) * 8) << '\x12';
         break;
 
 #ifndef __X86_ARCH__
@@ -312,7 +312,7 @@ public:
       case bpl:
       case sil:
       case dil:
-        *this << '\x40' << '\x88' << '\x24' + (ub - _UB(spl)) * 8 << '\x25';
+        *this << '\x40' << '\x88' << '\x24' + _UB((ub - _UB(spl)) * 8) << '\x25';
         break;
 
       case r8b:
@@ -323,7 +323,7 @@ public:
       case r13b:
       case r14b:
       case r15b:
-        *this << '\x44' << '\x88' << '\x04' + (ub - _UB(r8b)) * 8 << '\x25';
+        *this << '\x44' << '\x88' << '\x04' + _UB((ub - _UB(r8b)) * 8) << '\x25';
         break;
 #endif
       case eax:
@@ -341,7 +341,7 @@ public:
       case ebp:
       case esi:
       case edi:
-        *this << '\x89' << '\x0D' + (ub - _UB(eax)) * 8;
+        *this << '\x89' << _UB('\x0D' + (ub - _UB(eax)) * 8);
         break;
 
 #ifndef __X86_ARCH__
@@ -353,7 +353,7 @@ public:
       case r13d:
       case r14d:
       case r15d:
-        *this << '\x41' << '\xB8' + ub - _UB(r8d);
+        *this << '\x41' << _UB('\xB8' + ub - _UB(r8d));
         break;
 
       case rax:
@@ -364,7 +364,7 @@ public:
       case rbp:
       case rsi:
       case rdi:
-        *this << '\x48' << '\xC7' << '\xC0' + ub - _UB(rax);
+        *this << '\x48' << '\xC7' << _UB('\xC0' + ub - _UB(rax));
         break;
 
       case r8:
@@ -375,7 +375,7 @@ public:
       case r13:
       case r14:
       case r15:
-        *this << '\x49' << '\xC7' << '\xC0' + ub - _UB(r8);
+        *this << '\x49' << '\xC7' << _UB('\xC0' + ub - _UB(r8));
         break;
 #endif
       default:
@@ -405,7 +405,7 @@ public:
       case rbp:
       case rsi:
       case rdi:
-        *this << '\x48' << '\xB8' + ub - _UB(rax);
+        *this << '\x48' << _UB('\xB8' + ub - _UB(rax));
         break;
 
       case r8:
@@ -416,7 +416,7 @@ public:
       case r13:
       case r14:
       case r15:
-        *this << '\x49' << '\xB8' + ub - _UB(r8);
+        *this << '\x49' << _UB('\xB8' + ub - _UB(r8));
         break;
 
       default:
@@ -442,7 +442,7 @@ public:
       case bp:
       case si:
       case di:
-        *this << '\x66' << '\x50' + ub - _UB(ax);
+        *this << '\x66' << _UB('\x50' + ub - _UB(ax));
         break;
 
 #ifdef __X86_ARCH__
@@ -454,7 +454,7 @@ public:
       case ebp:
       case esi:
       case edi:
-        *this << '\x50' + ub - _UB(eax);
+        *this << _UB('\x50' + ub - _UB(eax));
         break;
 #else
       case r8w:
@@ -465,7 +465,7 @@ public:
       case r13w:
       case r14w:
       case r15w:
-        *this << '\x66' << '\x41' << '\x50' + ub - _UB(r8w);
+        *this << '\x66' << '\x41' << _UB('\x50' + ub - _UB(r8w));
         break;
 
       case rax:
@@ -476,7 +476,7 @@ public:
       case rbp:
       case rsi:
       case rdi:
-        *this << '\x50' + ub - _UB(rax);
+        *this << _UB('\x50' + ub - _UB(rax));
         break;
 
       case r8:
@@ -487,7 +487,7 @@ public:
       case r13:
       case r14:
       case r15:
-        *this << '\x41' << '\x50' + ub - _UB(r8);
+        *this << '\x41' << _UB('\x50' + ub - _UB(r8));
         break;
 #endif
       default:
@@ -511,7 +511,7 @@ public:
       case bp:
       case si:
       case di:
-        *this << '\x66' << '\x58' + ub - _UB(ax);
+        *this << '\x66' << _UB('\x58' + ub - _UB(ax));
         break;
 
 #ifdef __X86_ARCH__
@@ -523,7 +523,7 @@ public:
       case ebp:
       case esi:
       case edi:
-        *this << '\x58' + ub - _UB(eax);
+        *this << _UB('\x58' + ub - _UB(eax));
         break;
 #else
       case r8w:
@@ -534,7 +534,7 @@ public:
       case r13w:
       case r14w:
       case r15w:
-        *this << '\x66' << '\x41' << '\x58' + ub - _UB(r8w);
+        *this << '\x66' << '\x41' << _UB('\x58' + ub - _UB(r8w));
         break;
 
       case rax:
@@ -545,7 +545,7 @@ public:
       case rbp:
       case rsi:
       case rdi:
-        *this << '\x58' + ub - _UB(rax);
+        *this << _UB('\x58' + ub - _UB(rax));
         break;
 
       case r8:
@@ -556,7 +556,7 @@ public:
       case r13:
       case r14:
       case r15:
-        *this << '\x41' << '\x58' + ub - _UB(r8);
+        *this << '\x41' << _UB('\x58' + ub - _UB(r8));
         break;
 #endif
       default:
@@ -566,14 +566,14 @@ public:
 
   /**
     @brief Relative jump into function
-    @param func Destination of jump
+    @param address Destination of jump
     @note  This function uses a 32bit relative address for the jump,
            if you need to make an absolute jump use a register instead
   **/
-  void jmp(void (*func)())
+  void jmp(const uintptr_t address)
   {
     *this << '\xE9';
-    auto addr = GetRelativeOffset(reinterpret_cast<uintptr_t>(func), _offset + 4);
+    auto addr = GetRelativeOffset(address, _offset + 4);
     *this << addr;
   }
 
@@ -593,7 +593,7 @@ public:
       case bp:
       case si:
       case di:
-        *this << '\x66' << '\xFF' << '\xE0' + ub - _UB(ax);
+        *this << '\x66' << '\xFF' << _UB('\xE0' + ub - _UB(ax));
         break;
 
 #ifdef __X86_ARCH__
@@ -605,7 +605,7 @@ public:
       case ebp:
       case esi:
       case edi:
-        *this << '\xFF' << '\xE0' + ub - _UB(eax);
+        *this << '\xFF' << _UB('\xE0' + ub - _UB(eax));
         break;
 #else
       case r8w:
@@ -616,7 +616,7 @@ public:
       case r13w:
       case r14w:
       case r15w:
-        *this << '\x66' << '\x41' << '\xFF' << '\xE0' + ub - _UB(r8w);
+        *this << '\x66' << '\x41' << '\xFF' << _UB('\xE0' + ub - _UB(r8w));
         break;
 
       case rax:
@@ -627,7 +627,7 @@ public:
       case rbp:
       case rsi:
       case rdi:
-        *this << '\xFF' << '\xE0' + ub - _UB(rax);
+        *this << '\xFF' << _UB('\xE0' + ub - _UB(rax));
         break;
 
       case r8:
@@ -638,7 +638,7 @@ public:
       case r13:
       case r14:
       case r15:
-        *this << '\x41' << '\xFF' << '\xE0' + ub - _UB(r8);
+        *this << '\x41' << '\xFF' << _UB('\xE0' + ub - _UB(r8));
         break;
 #endif
       default:
@@ -648,15 +648,15 @@ public:
 
   /**
     @brief Relative call function
-    @param func Function to be called
+    @param address Function to be called
     @note  This function casts the address and makes it
            relative to the patch location, if you need an absolute
            call use a register instead
   **/
-  void call(void (*func)())
+  void call(const uintptr_t address)
   {
     *this << '\xE8';
-    auto addr = GetRelativeOffset(reinterpret_cast<uintptr_t>(func), _offset + 4);
+    auto addr = GetRelativeOffset(address, _offset + 4);
     *this << addr;
   }
 
@@ -676,7 +676,7 @@ public:
       case bp:
       case si:
       case di:
-        *this << '\x66' << '\xFF' << '\xD0' + ub - _UB(ax);
+        *this << '\x66' << '\xFF' << _UB('\xD0' + ub - _UB(ax));
         break;
 
 #ifdef __X86_ARCH__
@@ -688,7 +688,7 @@ public:
       case ebp:
       case esi:
       case edi:
-        *this << '\xFF' << '\xD0' + ub - _UB(eax);
+        *this << '\xFF' << _UB('\xD0' + ub - _UB(eax));
         break;
 #else
       case r8w:
@@ -699,7 +699,7 @@ public:
       case r13w:
       case r14w:
       case r15w:
-        *this << '\x66' << '\x41' << '\xFF' << '\xD0' + ub - _UB(r8w);
+        *this << '\x66' << '\x41' << '\xFF' << _UB('\xD0' + ub - _UB(r8w));
         break;
 
       case rax:
@@ -710,7 +710,7 @@ public:
       case rbp:
       case rsi:
       case rdi:
-        *this '\xFF' << '\xD0' + ub - _UB(rax);
+        *this '\xFF' << _UB('\xD0' + ub - _UB(rax));
         break;
 
       case r8:
@@ -721,7 +721,7 @@ public:
       case r13:
       case r14:
       case r15:
-        *this << '\x41' << '\xFF' << '\xD0' + ub - _UB(r8);
+        *this << '\x41' << '\xFF' << _UB('\xD0' + ub - _UB(r8));
         break;
 #endif
       default:
@@ -843,7 +843,7 @@ public:
       case ch:
       case dh:
       case bh:
-        *this << '\xFE' << '\xC0' + ub - _UB(al);
+        *this << '\xFE' << _UB('\xC0' + ub - _UB(al));
         break;
 
       case ax:
@@ -855,9 +855,9 @@ public:
       case si:
       case di:
 #ifdef __X86_ARCH__
-        *this << '\x66' << '\x40' + ub - _UB(ax);
+        *this << '\x66' << _UB('\x40' + ub - _UB(ax));
 #else
-        *this << '\x66' << '\xFF' << '\xC0' + ub - _UB(ax);
+        *this << '\x66' << '\xFF' << _UB('\xC0' + ub - _UB(ax));
 #endif
         break;
 
@@ -870,9 +870,9 @@ public:
       case esi:
       case edi:
 #ifdef __X86_ARCH__
-        *this << '\x40' + ub - _UB(eax);
+        *this << _UB('\x40' + ub - _UB(eax));
 #else
-        *this << '\xFF' << '\xC0' + ub - _UB(ax);
+        *this << '\xFF' << _UB('\xC0' + ub - _UB(ax));
 #endif
         break;
 
@@ -885,7 +885,7 @@ public:
       case r13b:
       case r14b:
       case r15b:
-        *this << '\x41' << '\xFE' << '\xC0' + ub - _UB(r8b);
+        *this << '\x41' << '\xFE' << _UB('\xC0' + ub - _UB(r8b));
         break;
 
       case r8w:
@@ -896,7 +896,7 @@ public:
       case r13w:
       case r14w:
       case r15w:
-        *this << '\x66' << '\x41' << '\xFF' << '\xC0' + ub - _UB(r8w);
+        *this << '\x66' << '\x41' << '\xFF' << _UB('\xC0' + ub - _UB(r8w));
         break;
 
       case r8d:
@@ -907,7 +907,7 @@ public:
       case r13d:
       case r14d:
       case r15d:
-        *this << '\x41' << '\xFF' << '\xC0' + ub - _UB(r8d);
+        *this << '\x41' << '\xFF' << _UB('\xC0' + ub - _UB(r8d));
         break;
 
       case rax:
@@ -918,7 +918,7 @@ public:
       case rbp:
       case rsi:
       case rdi:
-        *this << '\x48' << '\xFF' << '\xC0' + ub - _UB(rax);
+        *this << '\x48' << '\xFF' << _UB('\xC0' + ub - _UB(rax));
         break;
 
       case r8:
@@ -929,7 +929,7 @@ public:
       case r13:
       case r14:
       case r15:
-        *this << '\x49' << '\xFF' << '\xC0' + ub - _UB(r8);
+        *this << '\x49' << '\xFF' << _UB('\xC0' + ub - _UB(r8));
         break;
 #endif
       default:
@@ -953,7 +953,7 @@ public:
       case ch:
       case dh:
       case bh:
-        *this << '\xFE' << '\xC8' + ub - _UB(al);
+        *this << '\xFE' << _UB('\xC8' + ub - _UB(al));
         break;
 
       case ax:
@@ -965,9 +965,9 @@ public:
       case si:
       case di:
 #ifdef __X86_ARCH__
-        * this << '\x66' << '\x48' + ub - _UB(ax);
+        *this << '\x66' << _UB('\x48' + ub - _UB(ax));
 #else
-        * this << '\x66' << '\xFF' << '\xC8' + ub - _UB(ax);
+        *this << '\x66' << '\xFF' << _UB('\xC8' + ub - _UB(ax));
 #endif
         break;
 
@@ -980,9 +980,9 @@ public:
       case esi:
       case edi:
 #ifdef __X86_ARCH__
-        * this << '\x48' + ub - _UB(eax);
+        *this << _UB('\x48' + ub - _UB(eax));
 #else
-        * this << '\xFF' << '\xC8' + ub - _UB(eax);
+        *this << '\xFF' << _UB('\xC8' + ub - _UB(eax));
 #endif
         break;
 
@@ -995,7 +995,7 @@ public:
       case r13b:
       case r14b:
       case r15b:
-        *this << '\x41' << '\xFE' << '\xC8' + ub - _UB(r8b);
+        *this << '\x41' << '\xFE' << _UB('\xC8' + ub - _UB(r8b));
         break;
 
       case r8w:
@@ -1006,7 +1006,7 @@ public:
       case r13w:
       case r14w:
       case r15w:
-        *this << '\x66' << '\x41' << '\xFF' << '\xC8' + ub - _UB(r8w);
+        *this << '\x66' << '\x41' << '\xFF' << _UB('\xC8' + ub - _UB(r8w));
         break;
 
       case r8d:
@@ -1017,7 +1017,7 @@ public:
       case r13d:
       case r14d:
       case r15d:
-        *this << '\x41' << '\xFF' << '\xC8' + ub - _UB(r8d);
+        *this << '\x41' << '\xFF' << _UB('\xC8' + ub - _UB(r8d));
         break;
 
       case rax:
@@ -1028,7 +1028,7 @@ public:
       case rbp:
       case rsi:
       case rdi:
-        *this << '\x48' << '\xFF' << '\xC8' + ub - _UB(rax);
+        *this << '\x48' << '\xFF' << _UB('\xC8' + ub - _UB(rax));
         break;
 
       case r8:
@@ -1039,7 +1039,7 @@ public:
       case r13:
       case r14:
       case r15:
-        *this << '\x49' << '\xFF' << '\xC8' + ub - _UB(r8);
+        *this << '\x49' << '\xFF' << _UB('\xC8' + ub - _UB(r8));
         break;
 #endif
       default:
@@ -1063,7 +1063,7 @@ public:
       case ch:
       case dh:
       case bh:
-        *this << '\xF6' << '\xD0' + ub - _UB(al);
+        *this << '\xF6' << _UB('\xD0' + ub - _UB(al));
         break;
 
       case ax:
@@ -1074,7 +1074,7 @@ public:
       case bp:
       case si:
       case di:
-        * this << '\x66' << '\xF7' << '\xD0' + ub - _UB(ax);
+        *this << '\x66' << '\xF7' << _UB('\xD0' + ub - _UB(ax));
         break;
 
       case eax:
@@ -1085,7 +1085,7 @@ public:
       case ebp:
       case esi:
       case edi:
-        * this << '\xF7' << '\xD0' + ub - _UB(eax);
+        *this << '\xF7' << _UB('\xD0' + ub - _UB(eax));
         break;
 
 #ifndef __X86_ARCH__
@@ -1097,7 +1097,7 @@ public:
       case r13b:
       case r14b:
       case r15b:
-        *this << '\x41' << '\xF6' << '\xD0' + ub - _UB(r8b);
+        *this << '\x41' << '\xF6' << _UB('\xD0' + ub - _UB(r8b));
         break;
 
       case r8w:
@@ -1108,7 +1108,7 @@ public:
       case r13w:
       case r14w:
       case r15w:
-        *this << '\x66' << '\x41' << '\xF7' << '\xD0' + ub - _UB(r8w);
+        *this << '\x66' << '\x41' << '\xF7' << _UB('\xD0' + ub - _UB(r8w));
         break;
 
       case r8d:
@@ -1119,7 +1119,7 @@ public:
       case r13d:
       case r14d:
       case r15d:
-        *this << '\x41' << '\xF7' << '\xD0' + ub - _UB(r8d);
+        *this << '\x41' << '\xF7' << _UB('\xD0' + ub - _UB(r8d));
         break;
 
       case rax:
@@ -1130,7 +1130,7 @@ public:
       case rbp:
       case rsi:
       case rdi:
-        *this << '\x48' << '\xF7' << '\xD0' + ub - _UB(rax);
+        *this << '\x48' << '\xF7' << _UB('\xD0' + ub - _UB(rax));
         break;
 
       case r8:
@@ -1141,7 +1141,7 @@ public:
       case r13:
       case r14:
       case r15:
-        *this << '\x49' << '\xF7' << '\xD0' + ub - _UB(r8);
+        *this << '\x49' << '\xF7' << _UB('\xD0' + ub - _UB(r8));
         break;
 #endif
       default:
@@ -1164,13 +1164,58 @@ private:
     @retval       Reference to modified patch object
   **/
   template<typename T>
-  inline friend Patch& operator<<(Patch& p, const T value)
+  inline friend Patch& _PutObject(Patch& p, const T& value)
   {
-    Read(p._offset, p._original, sizeof(T), p._maxRead);
+    Read(p._offset, p._original, sizeof(value), p._maxRead);
     p._payload.PushObject<T>(value);
     WriteObject<T>(p._offset, value);
-    p._offset += sizeof(T);
+    p._offset += sizeof(value);
     return p;
+  }
+
+  inline friend Patch& operator<<(Patch& p, const uint8_t& value)
+  {
+    return _PutObject(p, value);
+  }
+
+  inline friend Patch& operator<<(Patch& p, const int8_t& value)
+  {
+    return p << static_cast<uint8_t>(value);
+  }
+
+  inline friend Patch& operator<<(Patch& p, const char& value)
+  {
+    return p << static_cast<uint8_t>(value);
+  }
+
+  inline friend Patch& operator<<(Patch& p, const uint16_t& value)
+  {
+    return _PutObject(p, value);
+  }
+
+  inline friend Patch& operator<<(Patch& p, const int16_t& value)
+  {
+    return p << static_cast<uint16_t>(value);
+  }
+
+  inline friend Patch& operator<<(Patch& p, const uint32_t& value)
+  {
+    return _PutObject(p, value);
+  }
+
+  inline friend Patch& operator<<(Patch& p, const int32_t& value)
+  {
+    return p << static_cast<uint32_t>(value);
+  }
+
+  inline friend Patch& operator<<(Patch& p, const uint64_t& value)
+  {
+    return _PutObject(p, value);
+  }
+
+  inline friend Patch& operator<<(Patch& p, const int64_t& value)
+  {
+    return p << static_cast<uint64_t>(value);
   }
 };
 

@@ -44,14 +44,13 @@ public:
     @param size    Length of memory section
     @param mode    Mode to change into
   **/
-  Protection(const uintptr_t& address, const size_t& size, const ulong_t& mode = PAGE_EXECUTE_READWRITE)
+  Protection(const uintptr_t& address, const size_t& size,
+             const ulong_t& mode = PAGE_EXECUTE_READWRITE) :
+    _address(address), _size(size), _mode(mode)
   {
-    _address = address;
-    _size = size;
-    _mode = mode;
     if (_size)
       _isEnabled = VirtualProtect(reinterpret_cast<pvoid_t>(_address), _size, _mode, &_oldMode);
-    _isEnabled = FALSE;
+    _isEnabled = false;
   };
 
   /**

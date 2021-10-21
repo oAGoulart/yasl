@@ -35,7 +35,7 @@ namespace Memory
   @class Data
   @brief Object used to store data
 **/
-class Data : private vector<uint8_t> {
+class Data  {
 public:
   /**
     @brief Push byte into buffer
@@ -43,7 +43,7 @@ public:
   **/
   constexpr void Push(const uint8_t& value)
   {
-    push_back(value);
+    _buffer.push_back(value);
   }
 
   /**
@@ -52,7 +52,7 @@ public:
   **/
   constexpr size_t Size() const noexcept
   {
-    return size();
+    return _buffer.size();
   }
 
   /**
@@ -61,7 +61,7 @@ public:
   **/
   constexpr const uint8_t* Buffer() const noexcept
   {
-    return data();
+    return _buffer.data();
   }
 
   /**
@@ -69,7 +69,7 @@ public:
   **/
   constexpr void Clear() noexcept
   {
-    clear();
+    _buffer.clear();
   }
 
   /**
@@ -81,9 +81,9 @@ public:
   template<class T>
   constexpr T& PushObject(const T& value)
   {
-    auto last = size();
-    reserve(last + sizeof(T));
-    return (*reinterpret_cast<T*>(&this[last]) = value);
+    auto last = _buffer.size();
+    _buffer.resize(last + sizeof(value), 0x0);
+    return (*reinterpret_cast<T*>(_buffer.data() + last) = value);
   }
 
   /**
@@ -94,13 +94,13 @@ public:
   template<class T>
   constexpr T& PopObject()
   {
-    auto last = size();
+    auto last = _buffer.size();
     auto offset = last - sizeof(T);
-    if (offset >= last)
+    if (offset >= last || sizeof(T) > last)
       throw runtime_error(_STRCAT(__FUNCSIG__, "\tTried to pop object larger than vector size"));
 
-    auto obj = *reinterpret_cast<T*>(&this[offset]);
-    resize(offset);
+    auto obj = *reinterpret_cast<T*>(_buffer.data() + offset - 1);
+    _buffer.resize(offset);
     return obj;
   }
 
@@ -113,10 +113,13 @@ public:
   template<class T>
   constexpr T& ReadObject(const size_t offset)
   {
-    if (size() < offset + sizeof(T))
+    if (_buffer.size() < offset + sizeof(T))
       throw runtime_error(_STRCAT(__FUNCSIG__, "\tTried to read object larger than vector size"));
-    return *reinterpret_cast<T*>(&this[offset]);
+    return *reinterpret_cast<T*>(_buffer.data() + offset);
   }
+
+private:
+  vector<uint8_t> _buffer;
 };
 
 /**

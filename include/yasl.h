@@ -40,10 +40,10 @@ private:
   list<Script>       _scripts;       //!< List of scripts found
   unique_ptr<Status> _status;        //!< Pointer to status object
 
-  const path _CONFIG_FILE = L"./yasl.lua";  //!< Configure file path
-  const path _LOG_FILE = L"./yaslLog.md";   //!< Log file path
-  const wstring _PROJECT_NAME = L"YASL";    //!< Project name
-  const wstring _PROJECT_VERSION = L"v0.1"; //!< Project version
+  const path _CONFIG_FILE = L"./yasl.lua";    //!< Configure file path
+  const path _LOG_FILE = L"./yaslLog.md";     //!< Log file path
+  const wstring _PROJECT_NAME = L"YASL";      //!< Project name
+  const wstring _PROJECT_VERSION = L"v0.6.4"; //!< Project version
 
   bool _IsFileExtSupported(const path& filename) const;
   void _LoadConfig();
@@ -52,6 +52,9 @@ private:
 
 static void Start();
 static void End();
-void Dummy();
-static void Hook();
 static void Fatal(const exception& e);
+void Dummy();
+int Hook();
+
+//!< File global trampoline pointer, must only be destroyed on program termination
+Memory::Trampoline<int>* _trampoline;
