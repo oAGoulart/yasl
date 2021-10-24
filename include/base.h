@@ -30,6 +30,7 @@
 #include <fstream>
 #include <list>
 #include <cwchar>
+#include <sstream>
 
 #pragma comment(lib, "Imagehlp.lib")
 
@@ -48,8 +49,8 @@
 #error "Must compile using C++"
 #endif
 
-#ifdef _DEBUG
-#pragma warning("Do not use Debug version with a Release binary")
+#if defined(_DEBUG) || !defined(NDEBUG)
+#pragma message("Do not use Debug version with a Release binary")
 #endif
 
 #ifndef _DLL
@@ -62,25 +63,7 @@
 #define _BASE_ADDRESS 0x140000000
 #endif
 
-#define _STRCATA(A, B) A ## B
-
-/**
-  @def   _STRCAT
-  @brief Concatenate two literal strings
-  @param A First string
-  @param B Second string
-**/
-#define _STRCAT(A, B) _STRCATA(A, B)
-
-/**
-  @def   _UB
-  @brief Cast to @ c uint8_t
-  @param A Value to be cast
-**/
-#define _UB(A) static_cast<uint8_t>(A)
-
 #define _STATIC_BUFF_SIZE MAX_PATH * 4  //!< Static buffer maximum size
-#define _CONFIG_SIZE_MAX INT32_MAX      //!< Configuration file maximum length
 
 using namespace std;
 using namespace std::filesystem;
@@ -95,3 +78,71 @@ using hfile_t = FILE;
 using peimage_t = LOADED_IMAGE;
 using exception_t = EXCEPTION_POINTERS;
 using minidump_t = MINIDUMP_EXCEPTION_INFORMATION;
+
+/**
+  @def   _ubyte
+  @brief Cast value into unsigned byte
+  @param value Value to be cast
+**/
+#define \
+_ubyte(value) \
+  static_cast<uint8_t>(value)
+
+
+#if defined(_SGR) || !defined(NSGR)
+#define \
+_esc "\x1B"
+
+#define \
+_csi \
+  _esc "["
+
+#define \
+_osc \
+  _esc "]"
+
+/**
+  @def   _format
+  @brief Format string using escape sequence
+  @param seq Sequence to be escaped
+  @param str String to format
+  @see https://docs.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences#text-formatting
+**/
+#define \
+_format(seq, str) \
+  _csi seq  "m" str _csi "m"
+
+#else
+#define \
+_format(seq, str) \
+  str
+#endif
+
+/**
+  @def   _throws
+  @brief Throws runtime error with file, line, and message
+  @param msg Error message to be shown
+**/
+#define \
+_throws(msg) \
+{ \
+  string what(_format("33", "at file ")); \
+  what += __FILE__; \
+  what += _format("33", " on line ") + to_string(__LINE__) + "\r\n\t"; \
+  what += _format("37;41", "FAILURE\t") _format("31", msg) "\r\n"; \
+  throw runtime_error(what); \
+}
+
+/**
+  @def   _asserts
+  @brief Asserts condition to be true, throws if not
+  @param cond Condition to be evaluated
+  @param msg  Message to show if thrown
+**/
+#define \
+_asserts(cond, msg) \
+{ \
+  if (!(cond)) { \
+    _throws(msg); \
+  } \
+}

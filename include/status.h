@@ -71,7 +71,7 @@ public:
     auto time = system_clock::to_time_t(stamp);
     auto buffer = make_unique<wchar_t[]>(_STATIC_BUFF_SIZE);
     if (_wctime64_s(&buffer[0], _STATIC_BUFF_SIZE, &time))
-      throw runtime_error(_STRCAT(__FUNCSIG__, "\tCould not convert time into string"));
+      _throws("Could not convert time into string");
 
     auto length = wcsnlen_s(&buffer[0], _STATIC_BUFF_SIZE);
     buffer[length - 1] = L'\0'; // remove new line char

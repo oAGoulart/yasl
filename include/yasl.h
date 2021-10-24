@@ -43,7 +43,7 @@ private:
   const path _CONFIG_FILE = L"./yasl.lua";    //!< Configure file path
   const path _LOG_FILE = L"./yaslLog.md";     //!< Log file path
   const wstring _PROJECT_NAME = L"YASL";      //!< Project name
-  const wstring _PROJECT_VERSION = L"v0.6.4"; //!< Project version
+  const wstring _PROJECT_VERSION = L"v0.8.0"; //!< Project version
 
   bool _IsFileExtSupported(const path& filename) const;
   void _LoadConfig();
@@ -53,8 +53,8 @@ private:
 static void Start();
 static void End();
 static void Fatal(const exception& e);
-void Dummy();
+extern "C" void Dummy();
 int Hook();
 
-//!< File global trampoline pointer, must only be destroyed on program termination
+//!< Global trampoline pointer, must only be destroyed on program termination
 Memory::Trampoline<int>* _trampoline;

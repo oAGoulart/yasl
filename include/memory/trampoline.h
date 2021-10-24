@@ -136,12 +136,12 @@ public:
     _p(address, _TRAMPOLINE_HEAP_SIZE), _enabled(true), _trampoline(nullptr)
   {
     if (!_maxCalls)
-      throw runtime_error(_STRCAT(__FUNCSIG__, "\tInvalid arguments"));
+      _throws("Invalid arguments");
 
     _trampoline = reinterpret_cast<dummy_t>(
       HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, _TRAMPOLINE_HEAP_SIZE));
     if (_trampoline == nullptr)
-      throw runtime_error(_STRCAT(__FUNCSIG__, "\tCan't allocate heap memory"));
+      _throws("Can't allocate heap memory");
 
     auto p_tram = reinterpret_cast<uintptr_t>(_trampoline);
     auto l_this = reinterpret_cast<uintptr_t>(this);

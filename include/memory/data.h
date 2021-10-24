@@ -97,7 +97,7 @@ public:
     auto last = _buffer.size();
     auto offset = last - sizeof(T);
     if (offset >= last || sizeof(T) > last)
-      throw runtime_error(_STRCAT(__FUNCSIG__, "\tTried to pop object larger than vector size"));
+      _throws("Tried to pop object larger than vector size");
 
     auto obj = *reinterpret_cast<T*>(_buffer.data() + offset - 1);
     _buffer.resize(offset);
@@ -114,7 +114,7 @@ public:
   constexpr T& ReadObject(const size_t offset)
   {
     if (_buffer.size() < offset + sizeof(T))
-      throw runtime_error(_STRCAT(__FUNCSIG__, "\tTried to read object larger than vector size"));
+      _throws("Tried to read object larger than vector size");
     return *reinterpret_cast<T*>(_buffer.data() + offset);
   }
 
@@ -135,7 +135,7 @@ inline void Read(uintptr_t address, Data& data, const size_t count,
                  const size_t maxRead, const bool vp = true)
 {
   if (maxRead <= data.Size() + count)
-    throw runtime_error(_STRCAT(__FUNCSIG__, "\tTried to read beyond maximum allowed"));
+    _throws("Tried to read beyond maximum allowed");
 
   Protection protection(address, (vp) ? count : 0);
   for (size_t i = 0; i < count; ++i)
