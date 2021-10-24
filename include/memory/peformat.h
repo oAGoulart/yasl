@@ -65,11 +65,11 @@ public:
   {
     _filename = make_unique<char[]>(MAX_PATH); // MapAndLoad doesn't support wchar_t
     if (!GetModuleFileNameA(hmodule, &_filename[0], MAX_PATH))
-      throw runtime_error(_STRCAT(__FUNCSIG__, "\tUnable to find process filename"));
+      _throws("Unable to find process filename");
 
     _image = make_unique<peimage_t>();
     if (!MapAndLoad(&_filename[0], NULL, &*_image, FALSE, TRUE))
-      throw runtime_error(_STRCAT(__FUNCSIG__, "\tCould not map process binary file"));
+      _throws("Could not map process binary file");
   }
 
   /**

@@ -83,7 +83,7 @@ public:
     _address(address), _offset(address), _maxRead(maxRead)
   {
     if (_address < _BASE_ADDRESS)
-      throw runtime_error(_STRCAT(__FUNCSIG__, "\tInvalid address"));
+      _throws("Invalid address");
   }
 
   /**
@@ -139,7 +139,7 @@ public:
   **/
   void mov(const Register r, const uint8_t value)
   {
-    auto ub = _UB(r);
+    auto ub = _ubyte(r);
     switch (r) {
       case al:
       case cl:
@@ -149,7 +149,7 @@ public:
       case ch:
       case dh:
       case bh:
-        *this << _UB('\xB0' + ub - _UB(al));
+        *this << _ubyte('\xB0' + ub - _ubyte(al));
         break;
 
 #ifndef __X86_ARCH__
@@ -157,7 +157,7 @@ public:
       case bpl:
       case sil:
       case dil:
-        *this << '\x40' << _UB('\xB4' + ub - _UB(spl));
+        *this << '\x40' << _ubyte('\xB4' + ub - _ubyte(spl));
         break;
 
       case r8b:
@@ -168,7 +168,7 @@ public:
       case r13b:
       case r14b:
       case r15b:
-        *this << '\x41' << _UB('\xB0' + ub - _UB(r8b));
+        *this << '\x41' << _ubyte('\xB0' + ub - _ubyte(r8b));
         break;
 #endif
       default:
@@ -188,7 +188,7 @@ public:
   **/
   void mov(const Register r, const uint16_t value)
   {
-    auto ub = _UB(r);
+    auto ub = _ubyte(r);
     switch (r) {
       case ax:
       case cx:
@@ -198,7 +198,7 @@ public:
       case bp:
       case si:
       case di:
-        *this << '\x66' << _UB('\xB8' + ub - _UB(ax));
+        *this << '\x66' << _ubyte('\xB8' + ub - _ubyte(ax));
         break;
 
 #ifndef __X86_ARCH__
@@ -210,7 +210,7 @@ public:
       case r13w:
       case r14w:
       case r15w:
-        *this << '\x66' << '\x41' << _UB('\xB8' + ub - _UB(r8w));
+        *this << '\x66' << '\x41' << _ubyte('\xB8' + ub - _ubyte(r8w));
         break;
 #endif
       default:
@@ -231,7 +231,7 @@ public:
   **/
   void mov(const Register r, const uint32_t value)
   {
-    auto ub = _UB(r);
+    auto ub = _ubyte(r);
     switch (r) {
       case eax:
       case ecx:
@@ -241,7 +241,7 @@ public:
       case ebp:
       case esi:
       case edi:
-        *this << _UB('\xB8' + ub - _UB(eax));
+        *this << _ubyte('\xB8' + ub - _ubyte(eax));
         break;
 
 #ifndef __X86_ARCH__
@@ -253,7 +253,7 @@ public:
       case r13d:
       case r14d:
       case r15d:
-        *this << '\x41' << _UB('\xB8' + ub - _UB(r8d));
+        *this << '\x41' << _ubyte('\xB8' + ub - _ubyte(r8d));
         break;
 
       case rax:
@@ -264,7 +264,7 @@ public:
       case rbp:
       case rsi:
       case rdi:
-        *this << '\x48' << '\xC7' << _UB('\xC0' + ub - _UB(rax));
+        *this << '\x48' << '\xC7' << _ubyte('\xC0' + ub - _ubyte(rax));
         break;
 
       case r8:
@@ -275,11 +275,11 @@ public:
       case r13:
       case r14:
       case r15:
-        *this << '\x49' << '\xC7' << _UB('\xC0' + ub - _UB(r8));
+        *this << '\x49' << '\xC7' << _ubyte('\xC0' + ub - _ubyte(r8));
         break;
 #endif
       default:
-        throw runtime_error(_STRCAT(__FUNCSIG__, "\tInvalid register"));
+        _throws("Invalid register");
     }
     *this << value;
   }
@@ -291,7 +291,7 @@ public:
   **/
   void mov(const uint32_t address, const Register r)
   {
-    auto ub = _UB(r);
+    auto ub = _ubyte(r);
     switch (r) {
       case al:
         *this << '\xA2';
@@ -304,7 +304,7 @@ public:
       case ch:
       case dh:
       case bh:
-        *this << '\x88' << '\x0D' + _UB((ub - _UB(cl)) * 8) << '\x12';
+        *this << '\x88' << '\x0D' + _ubyte((ub - _ubyte(cl)) * 8) << '\x12';
         break;
 
 #ifndef __X86_ARCH__
@@ -312,7 +312,7 @@ public:
       case bpl:
       case sil:
       case dil:
-        *this << '\x40' << '\x88' << '\x24' + _UB((ub - _UB(spl)) * 8) << '\x25';
+        *this << '\x40' << '\x88' << '\x24' + _ubyte((ub - _ubyte(spl)) * 8) << '\x25';
         break;
 
       case r8b:
@@ -323,7 +323,7 @@ public:
       case r13b:
       case r14b:
       case r15b:
-        *this << '\x44' << '\x88' << '\x04' + _UB((ub - _UB(r8b)) * 8) << '\x25';
+        *this << '\x44' << '\x88' << '\x04' + _ubyte((ub - _ubyte(r8b)) * 8) << '\x25';
         break;
 #endif
       case eax:
@@ -341,7 +341,7 @@ public:
       case ebp:
       case esi:
       case edi:
-        *this << '\x89' << _UB('\x0D' + (ub - _UB(eax)) * 8);
+        *this << '\x89' << _ubyte('\x0D' + (ub - _ubyte(eax)) * 8);
         break;
 
 #ifndef __X86_ARCH__
@@ -353,7 +353,7 @@ public:
       case r13d:
       case r14d:
       case r15d:
-        *this << '\x41' << _UB('\xB8' + ub - _UB(r8d));
+        *this << '\x41' << _ubyte('\xB8' + ub - _ubyte(r8d));
         break;
 
       case rax:
@@ -364,7 +364,7 @@ public:
       case rbp:
       case rsi:
       case rdi:
-        *this << '\x48' << '\xC7' << _UB('\xC0' + ub - _UB(rax));
+        *this << '\x48' << '\xC7' << _ubyte('\xC0' + ub - _ubyte(rax));
         break;
 
       case r8:
@@ -375,11 +375,11 @@ public:
       case r13:
       case r14:
       case r15:
-        *this << '\x49' << '\xC7' << _UB('\xC0' + ub - _UB(r8));
+        *this << '\x49' << '\xC7' << _ubyte('\xC0' + ub - _ubyte(r8));
         break;
 #endif
       default:
-        throw runtime_error(_STRCAT(__FUNCSIG__, "\tInvalid register"));
+        _throws("Invalid register");
     }
     *this << address;
   }
@@ -395,7 +395,7 @@ public:
   **/
   void movabs(const Register r, const uint64_t value)
   {
-    auto ub = _UB(r);
+    auto ub = _ubyte(r);
     switch (r) {
       case rax:
       case rcx:
@@ -405,7 +405,7 @@ public:
       case rbp:
       case rsi:
       case rdi:
-        *this << '\x48' << _UB('\xB8' + ub - _UB(rax));
+        *this << '\x48' << _ubyte('\xB8' + ub - _ubyte(rax));
         break;
 
       case r8:
@@ -416,11 +416,11 @@ public:
       case r13:
       case r14:
       case r15:
-        *this << '\x49' << _UB('\xB8' + ub - _UB(r8));
+        *this << '\x49' << _ubyte('\xB8' + ub - _ubyte(r8));
         break;
 
       default:
-        throw runtime_error(_STRCAT(__FUNCSIG__, "\tInvalid register"));
+        _throws("Invalid register");
     }
     *this << value;
   }
@@ -432,7 +432,7 @@ public:
   **/
   void push(const Register r)
   {
-    auto ub = _UB(r);
+    auto ub = _ubyte(r);
     switch (r) {
       case ax:
       case cx:
@@ -442,7 +442,7 @@ public:
       case bp:
       case si:
       case di:
-        *this << '\x66' << _UB('\x50' + ub - _UB(ax));
+        *this << '\x66' << _ubyte('\x50' + ub - _ubyte(ax));
         break;
 
 #ifdef __X86_ARCH__
@@ -454,7 +454,7 @@ public:
       case ebp:
       case esi:
       case edi:
-        *this << _UB('\x50' + ub - _UB(eax));
+        *this << _ubyte('\x50' + ub - _ubyte(eax));
         break;
 #else
       case r8w:
@@ -465,7 +465,7 @@ public:
       case r13w:
       case r14w:
       case r15w:
-        *this << '\x66' << '\x41' << _UB('\x50' + ub - _UB(r8w));
+        *this << '\x66' << '\x41' << _ubyte('\x50' + ub - _ubyte(r8w));
         break;
 
       case rax:
@@ -476,7 +476,7 @@ public:
       case rbp:
       case rsi:
       case rdi:
-        *this << _UB('\x50' + ub - _UB(rax));
+        *this << _ubyte('\x50' + ub - _ubyte(rax));
         break;
 
       case r8:
@@ -487,11 +487,11 @@ public:
       case r13:
       case r14:
       case r15:
-        *this << '\x41' << _UB('\x50' + ub - _UB(r8));
+        *this << '\x41' << _ubyte('\x50' + ub - _ubyte(r8));
         break;
 #endif
       default:
-        throw runtime_error(_STRCAT(__FUNCSIG__, "\tInvalid register"));
+        _throws("Invalid register");
     }
   }
 
@@ -501,7 +501,7 @@ public:
   **/
   void pop(const Register r)
   {
-    auto ub = _UB(r);
+    auto ub = _ubyte(r);
     switch (r) {
       case ax:
       case cx:
@@ -511,7 +511,7 @@ public:
       case bp:
       case si:
       case di:
-        *this << '\x66' << _UB('\x58' + ub - _UB(ax));
+        *this << '\x66' << _ubyte('\x58' + ub - _ubyte(ax));
         break;
 
 #ifdef __X86_ARCH__
@@ -523,7 +523,7 @@ public:
       case ebp:
       case esi:
       case edi:
-        *this << _UB('\x58' + ub - _UB(eax));
+        *this << _ubyte('\x58' + ub - _ubyte(eax));
         break;
 #else
       case r8w:
@@ -534,7 +534,7 @@ public:
       case r13w:
       case r14w:
       case r15w:
-        *this << '\x66' << '\x41' << _UB('\x58' + ub - _UB(r8w));
+        *this << '\x66' << '\x41' << _ubyte('\x58' + ub - _ubyte(r8w));
         break;
 
       case rax:
@@ -545,7 +545,7 @@ public:
       case rbp:
       case rsi:
       case rdi:
-        *this << _UB('\x58' + ub - _UB(rax));
+        *this << _ubyte('\x58' + ub - _ubyte(rax));
         break;
 
       case r8:
@@ -556,11 +556,11 @@ public:
       case r13:
       case r14:
       case r15:
-        *this << '\x41' << _UB('\x58' + ub - _UB(r8));
+        *this << '\x41' << _ubyte('\x58' + ub - _ubyte(r8));
         break;
 #endif
       default:
-        throw runtime_error(_STRCAT(__FUNCSIG__, "\tInvalid register"));
+        _throws("Invalid register");
     }
   }
 
@@ -583,7 +583,7 @@ public:
   **/
   void jmp(const Register r)
   {
-    auto ub = _UB(r);
+    auto ub = _ubyte(r);
     switch (r) {
       case ax:
       case cx:
@@ -593,7 +593,7 @@ public:
       case bp:
       case si:
       case di:
-        *this << '\x66' << '\xFF' << _UB('\xE0' + ub - _UB(ax));
+        *this << '\x66' << '\xFF' << _ubyte('\xE0' + ub - _ubyte(ax));
         break;
 
 #ifdef __X86_ARCH__
@@ -605,7 +605,7 @@ public:
       case ebp:
       case esi:
       case edi:
-        *this << '\xFF' << _UB('\xE0' + ub - _UB(eax));
+        *this << '\xFF' << _ubyte('\xE0' + ub - _ubyte(eax));
         break;
 #else
       case r8w:
@@ -616,7 +616,7 @@ public:
       case r13w:
       case r14w:
       case r15w:
-        *this << '\x66' << '\x41' << '\xFF' << _UB('\xE0' + ub - _UB(r8w));
+        *this << '\x66' << '\x41' << '\xFF' << _ubyte('\xE0' + ub - _ubyte(r8w));
         break;
 
       case rax:
@@ -627,7 +627,7 @@ public:
       case rbp:
       case rsi:
       case rdi:
-        *this << '\xFF' << _UB('\xE0' + ub - _UB(rax));
+        *this << '\xFF' << _ubyte('\xE0' + ub - _ubyte(rax));
         break;
 
       case r8:
@@ -638,11 +638,11 @@ public:
       case r13:
       case r14:
       case r15:
-        *this << '\x41' << '\xFF' << _UB('\xE0' + ub - _UB(r8));
+        *this << '\x41' << '\xFF' << _ubyte('\xE0' + ub - _ubyte(r8));
         break;
 #endif
       default:
-        throw runtime_error(_STRCAT(__FUNCSIG__, "\tInvalid register"));
+        _throws("Invalid register");
     }
   }
 
@@ -666,7 +666,7 @@ public:
   **/
   void call(const Register r)
   {
-    auto ub = _UB(r);
+    auto ub = _ubyte(r);
     switch (r) {
       case ax:
       case cx:
@@ -676,7 +676,7 @@ public:
       case bp:
       case si:
       case di:
-        *this << '\x66' << '\xFF' << _UB('\xD0' + ub - _UB(ax));
+        *this << '\x66' << '\xFF' << _ubyte('\xD0' + ub - _ubyte(ax));
         break;
 
 #ifdef __X86_ARCH__
@@ -688,7 +688,7 @@ public:
       case ebp:
       case esi:
       case edi:
-        *this << '\xFF' << _UB('\xD0' + ub - _UB(eax));
+        *this << '\xFF' << _ubyte('\xD0' + ub - _ubyte(eax));
         break;
 #else
       case r8w:
@@ -699,7 +699,7 @@ public:
       case r13w:
       case r14w:
       case r15w:
-        *this << '\x66' << '\x41' << '\xFF' << _UB('\xD0' + ub - _UB(r8w));
+        *this << '\x66' << '\x41' << '\xFF' << _ubyte('\xD0' + ub - _ubyte(r8w));
         break;
 
       case rax:
@@ -710,7 +710,7 @@ public:
       case rbp:
       case rsi:
       case rdi:
-        *this '\xFF' << _UB('\xD0' + ub - _UB(rax));
+        *this '\xFF' << _ubyte('\xD0' + ub - _ubyte(rax));
         break;
 
       case r8:
@@ -721,11 +721,11 @@ public:
       case r13:
       case r14:
       case r15:
-        *this << '\x41' << '\xFF' << _UB('\xD0' + ub - _UB(r8));
+        *this << '\x41' << '\xFF' << _ubyte('\xD0' + ub - _ubyte(r8));
         break;
 #endif
       default:
-        throw runtime_error(_STRCAT(__FUNCSIG__, "\tInvalid register"));
+        _throws("Invalid register");
     }
   }
 
@@ -833,7 +833,7 @@ public:
   **/
   void inc(const Register r)
   {
-    auto ub = _UB(r);
+    auto ub = _ubyte(r);
     switch (r) {
       case al:
       case cl:
@@ -843,7 +843,7 @@ public:
       case ch:
       case dh:
       case bh:
-        *this << '\xFE' << _UB('\xC0' + ub - _UB(al));
+        *this << '\xFE' << _ubyte('\xC0' + ub - _ubyte(al));
         break;
 
       case ax:
@@ -855,9 +855,9 @@ public:
       case si:
       case di:
 #ifdef __X86_ARCH__
-        *this << '\x66' << _UB('\x40' + ub - _UB(ax));
+        *this << '\x66' << _ubyte('\x40' + ub - _ubyte(ax));
 #else
-        *this << '\x66' << '\xFF' << _UB('\xC0' + ub - _UB(ax));
+        *this << '\x66' << '\xFF' << _ubyte('\xC0' + ub - _ubyte(ax));
 #endif
         break;
 
@@ -870,9 +870,9 @@ public:
       case esi:
       case edi:
 #ifdef __X86_ARCH__
-        *this << _UB('\x40' + ub - _UB(eax));
+        *this << _ubyte('\x40' + ub - _ubyte(eax));
 #else
-        *this << '\xFF' << _UB('\xC0' + ub - _UB(ax));
+        *this << '\xFF' << _ubyte('\xC0' + ub - _ubyte(ax));
 #endif
         break;
 
@@ -885,7 +885,7 @@ public:
       case r13b:
       case r14b:
       case r15b:
-        *this << '\x41' << '\xFE' << _UB('\xC0' + ub - _UB(r8b));
+        *this << '\x41' << '\xFE' << _ubyte('\xC0' + ub - _ubyte(r8b));
         break;
 
       case r8w:
@@ -896,7 +896,7 @@ public:
       case r13w:
       case r14w:
       case r15w:
-        *this << '\x66' << '\x41' << '\xFF' << _UB('\xC0' + ub - _UB(r8w));
+        *this << '\x66' << '\x41' << '\xFF' << _ubyte('\xC0' + ub - _ubyte(r8w));
         break;
 
       case r8d:
@@ -907,7 +907,7 @@ public:
       case r13d:
       case r14d:
       case r15d:
-        *this << '\x41' << '\xFF' << _UB('\xC0' + ub - _UB(r8d));
+        *this << '\x41' << '\xFF' << _ubyte('\xC0' + ub - _ubyte(r8d));
         break;
 
       case rax:
@@ -918,7 +918,7 @@ public:
       case rbp:
       case rsi:
       case rdi:
-        *this << '\x48' << '\xFF' << _UB('\xC0' + ub - _UB(rax));
+        *this << '\x48' << '\xFF' << _ubyte('\xC0' + ub - _ubyte(rax));
         break;
 
       case r8:
@@ -929,11 +929,11 @@ public:
       case r13:
       case r14:
       case r15:
-        *this << '\x49' << '\xFF' << _UB('\xC0' + ub - _UB(r8));
+        *this << '\x49' << '\xFF' << _ubyte('\xC0' + ub - _ubyte(r8));
         break;
 #endif
       default:
-        throw runtime_error(_STRCAT(__FUNCSIG__, "\tInvalid register"));
+        _throws("Invalid register");
     }
   }
 
@@ -943,7 +943,7 @@ public:
   **/
   void dec(const Register r)
   {
-    auto ub = _UB(r);
+    auto ub = _ubyte(r);
     switch (r) {
       case al:
       case cl:
@@ -953,7 +953,7 @@ public:
       case ch:
       case dh:
       case bh:
-        *this << '\xFE' << _UB('\xC8' + ub - _UB(al));
+        *this << '\xFE' << _ubyte('\xC8' + ub - _ubyte(al));
         break;
 
       case ax:
@@ -965,9 +965,9 @@ public:
       case si:
       case di:
 #ifdef __X86_ARCH__
-        *this << '\x66' << _UB('\x48' + ub - _UB(ax));
+        *this << '\x66' << _ubyte('\x48' + ub - _ubyte(ax));
 #else
-        *this << '\x66' << '\xFF' << _UB('\xC8' + ub - _UB(ax));
+        *this << '\x66' << '\xFF' << _ubyte('\xC8' + ub - _ubyte(ax));
 #endif
         break;
 
@@ -980,9 +980,9 @@ public:
       case esi:
       case edi:
 #ifdef __X86_ARCH__
-        *this << _UB('\x48' + ub - _UB(eax));
+        *this << _ubyte('\x48' + ub - _ubyte(eax));
 #else
-        *this << '\xFF' << _UB('\xC8' + ub - _UB(eax));
+        *this << '\xFF' << _ubyte('\xC8' + ub - _ubyte(eax));
 #endif
         break;
 
@@ -995,7 +995,7 @@ public:
       case r13b:
       case r14b:
       case r15b:
-        *this << '\x41' << '\xFE' << _UB('\xC8' + ub - _UB(r8b));
+        *this << '\x41' << '\xFE' << _ubyte('\xC8' + ub - _ubyte(r8b));
         break;
 
       case r8w:
@@ -1006,7 +1006,7 @@ public:
       case r13w:
       case r14w:
       case r15w:
-        *this << '\x66' << '\x41' << '\xFF' << _UB('\xC8' + ub - _UB(r8w));
+        *this << '\x66' << '\x41' << '\xFF' << _ubyte('\xC8' + ub - _ubyte(r8w));
         break;
 
       case r8d:
@@ -1017,7 +1017,7 @@ public:
       case r13d:
       case r14d:
       case r15d:
-        *this << '\x41' << '\xFF' << _UB('\xC8' + ub - _UB(r8d));
+        *this << '\x41' << '\xFF' << _ubyte('\xC8' + ub - _ubyte(r8d));
         break;
 
       case rax:
@@ -1028,7 +1028,7 @@ public:
       case rbp:
       case rsi:
       case rdi:
-        *this << '\x48' << '\xFF' << _UB('\xC8' + ub - _UB(rax));
+        *this << '\x48' << '\xFF' << _ubyte('\xC8' + ub - _ubyte(rax));
         break;
 
       case r8:
@@ -1039,11 +1039,11 @@ public:
       case r13:
       case r14:
       case r15:
-        *this << '\x49' << '\xFF' << _UB('\xC8' + ub - _UB(r8));
+        *this << '\x49' << '\xFF' << _ubyte('\xC8' + ub - _ubyte(r8));
         break;
 #endif
       default:
-        throw runtime_error(_STRCAT(__FUNCSIG__, "\tInvalid register"));
+        _throws("Invalid register");
     }
   }
 
@@ -1053,7 +1053,7 @@ public:
   **/
   void nots(const Register r)
   {
-    auto ub = _UB(r);
+    auto ub = _ubyte(r);
     switch (r) {
       case al:
       case cl:
@@ -1063,7 +1063,7 @@ public:
       case ch:
       case dh:
       case bh:
-        *this << '\xF6' << _UB('\xD0' + ub - _UB(al));
+        *this << '\xF6' << _ubyte('\xD0' + ub - _ubyte(al));
         break;
 
       case ax:
@@ -1074,7 +1074,7 @@ public:
       case bp:
       case si:
       case di:
-        *this << '\x66' << '\xF7' << _UB('\xD0' + ub - _UB(ax));
+        *this << '\x66' << '\xF7' << _ubyte('\xD0' + ub - _ubyte(ax));
         break;
 
       case eax:
@@ -1085,7 +1085,7 @@ public:
       case ebp:
       case esi:
       case edi:
-        *this << '\xF7' << _UB('\xD0' + ub - _UB(eax));
+        *this << '\xF7' << _ubyte('\xD0' + ub - _ubyte(eax));
         break;
 
 #ifndef __X86_ARCH__
@@ -1097,7 +1097,7 @@ public:
       case r13b:
       case r14b:
       case r15b:
-        *this << '\x41' << '\xF6' << _UB('\xD0' + ub - _UB(r8b));
+        *this << '\x41' << '\xF6' << _ubyte('\xD0' + ub - _ubyte(r8b));
         break;
 
       case r8w:
@@ -1108,7 +1108,7 @@ public:
       case r13w:
       case r14w:
       case r15w:
-        *this << '\x66' << '\x41' << '\xF7' << _UB('\xD0' + ub - _UB(r8w));
+        *this << '\x66' << '\x41' << '\xF7' << _ubyte('\xD0' + ub - _ubyte(r8w));
         break;
 
       case r8d:
@@ -1119,7 +1119,7 @@ public:
       case r13d:
       case r14d:
       case r15d:
-        *this << '\x41' << '\xF7' << _UB('\xD0' + ub - _UB(r8d));
+        *this << '\x41' << '\xF7' << _ubyte('\xD0' + ub - _ubyte(r8d));
         break;
 
       case rax:
@@ -1130,7 +1130,7 @@ public:
       case rbp:
       case rsi:
       case rdi:
-        *this << '\x48' << '\xF7' << _UB('\xD0' + ub - _UB(rax));
+        *this << '\x48' << '\xF7' << _ubyte('\xD0' + ub - _ubyte(rax));
         break;
 
       case r8:
@@ -1141,11 +1141,11 @@ public:
       case r13:
       case r14:
       case r15:
-        *this << '\x49' << '\xF7' << _UB('\xD0' + ub - _UB(r8));
+        *this << '\x49' << '\xF7' << _ubyte('\xD0' + ub - _ubyte(r8));
         break;
 #endif
       default:
-        throw runtime_error(_STRCAT(__FUNCSIG__, "\tInvalid register"));
+        _throws("Invalid register");
     }
   }
 

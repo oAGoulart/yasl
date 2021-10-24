@@ -4,21 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
-- Changed project name from **Script Wrapper** to **Yet Another Script Loader**
-- Changed from static library to a proper hooking module
-- Deleted unused code
-- Updated visuals
-- Added Script module
-- Added Memory module
-  + Added Data submodule
-  + Added Patch submodule
-  + Added PEFormat submodule
-  + Added Protection submodule
-  + Added Trampoline submodule
-- Added Config module
-- Added Status module
-- Added pre-compiled headers
-- Added documentation
+## 0.8.0 - TBD
+
+### Added
+
+- Script, Config, and Status modules
+- Memory module and Data, Patch, PEFormat, Protection, Trampoline submodules
+- Tests for input/output related function
 
 ## 0.0.5 - 2021-02-22
 

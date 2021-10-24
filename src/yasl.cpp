@@ -50,13 +50,13 @@ lbool_t WINAPI DllMain(hmodule_t, ulong_t reason, pvoid_t)
 **/
 static void Start()
 {
-  SetUnhandledExceptionFilter(Status::CustomSEHFilter); // TODO: nop setter
+  SetUnhandledExceptionFilter(Status::CustomSEHFilter); // TODO: nop this setter
 
   auto pe = make_unique<Memory::PEFormat>(nullptr);
 
   // hook entry point with single use trampoline
   _trampoline = new Memory::Trampoline<int>(pe->GetEntry(), 1);
-  _trampoline->before += &Hook;
+  _trampoline->before += &Hook; // TODO: hook does not need to run on trampoline, only scripts
 }
 
 /**
@@ -178,7 +178,7 @@ static void Fatal(const exception& e)
 {
   hfile_t* tmp;
   freopen_s(&tmp, "./yaslFatal.md", "w", stderr);
-  fprintf_s(tmp, "Fatal:\n\t%s\n", e.what());
+  fprintf_s(tmp, "FATAL ERROR\n\t%s\n", e.what());
   fclose(tmp);
 }
 

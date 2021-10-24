@@ -38,17 +38,10 @@ public:
     wifstream file;
     file.open(_filename);
 
-    auto configFileSize = file_size(filename);
-    if (configFileSize >= _CONFIG_SIZE_MAX)
-      throw runtime_error(_STRCAT(__FUNCSIG__, "\tConfig file size is bigger than allowed"));
-
-    const auto bufferSize = static_cast<size_t>(configFileSize);
-    auto buffer = make_unique<wchar_t[]>(bufferSize + 1);
-    _ReadLua(&file, &buffer[0], bufferSize);
-    buffer[bufferSize] = L'\0'; // make sure buffer is null terminated
+    wstring buffer;
+    _ReadLua(file, buffer);
     file.close();
-
-    _ParseLuaEntries(&buffer[0]);
+    _ParseLuaEntries(buffer);
   };
 
   /**
@@ -178,92 +171,153 @@ private:
 
   /**
     @brief Read Lua file for config entries and maps
-    @param file   Pointer to input file stream
-    @param buffer Pointer to input buffer
-    @param size   Length of buffer
+    @param file   Input file stream
+    @param buffer String to store file data
   **/
-  void _ReadLua(wifstream* file, wchar_t* buffer, const size_t size)
+  void _ReadLua(wifstream& file, wstring& buffer)
   {
-    const wchar_t _LUA_COMMENT_START = L'[';
-    const wchar_t _LUA_COMMENT_END = L']';
-    const wchar_t _LUA_COMMENT_LINE = L'-';
+    wchar_t buf[4];
+    size_t count = 0;
 
-    wchar_t wch;
-    size_t n = 0;
-    while (file->get(wch)) {
-      // ignore Lua comments
-      if (wch == _LUA_COMMENT_LINE && file->peek() == _LUA_COMMENT_LINE) {
-        file->seekg(3, ios_base::cur); // skip comment start
-        if (file->get() == _LUA_COMMENT_START && file->peek() == _LUA_COMMENT_START) {
-          for (auto c = file->get(); c != EOF; c = file->get()) {
-            if (c == _LUA_COMMENT_END && file->peek() == _LUA_COMMENT_END) {
-              file->seekg(3, ios_base::cur); // skip comment end
-              break;
-            }
-            if (c == _LUA_COMMENT_START && file->peek() == _LUA_COMMENT_START)
-              throw runtime_error(_STRCAT(__FUNCSIG__, "\tFound wrapped multi-line comments"));
-          }
+    while (file.read(&buf[0], 4)) {
+      if (buf[1] == buf[0]) {
+        if (buf[0] == L'-') { // "--" single line comment
+          count += 4;
+          while (file.get(buf[0]) && buf[0] != L'\n')
+            ++count;
+          file.seekg(count);
+          continue;
         }
-        else
-          while (file->get() != '\n' && file->peek() != EOF); // go to next line
-        continue;
+        else if (buf[0] == L'[' && buf[2] == L'-' && buf[3] == buf[2]) { // "[[--" multiline comment
+          while (file.read(&buf[0], 4)) {
+            if (buf[1] == buf[0] && buf[3] == buf[2]) {
+              if (buf[0] == L'[' && buf[2] == L'-') // "[[--"
+                _throws("Found nested multiline comments");
+              if (buf[0] == L'-' && buf[2] == L']') { // "--]]"
+                count += 4;
+                file.seekg(count);
+                break;
+              }
+            }
+            file.seekg(++count);
+          }
+          continue;
+        }
       }
-      if (n >= size)
-        break;
-
-      buffer[n] = wch;
-      ++n;
+      buffer += buf[0];
+      file.seekg(++count);
     }
+    buffer += buf[0];
+    buffer += buf[1];
+    buffer += buf[2];
   };
 
   /**
     @brief Parse Lua entries and maps found on file
-    @param buffer Pointer to buffer used with @c _ReadLua
+    @param buffer Wide string buffer
   **/
-  void _ParseLuaEntries(wchar_t* buffer)
+  void _ParseLuaEntries(wstring& buffer)
   {
-    const wchar_t* _ENTRY_ASSIGN = L"=";
-    const wchar_t* _LUA_TABLE_START = L"{";
-    const wchar_t* _LUA_TABLE_END = L"}";
-    const wchar_t* _STR_INVALID = L"=()[]|!@#$%&*";
-    const wchar_t* _STR_DELIMITER = L"\x20\x2C\t\n\r";
+    struct {
+      bool needsEntry = true;
+      bool foundEntry = false;
+      bool parsingEntry = false;
+      bool needsKey = false;
+      bool foundKey = false;
+      bool parsingKey = false;
+      bool parsingString = false;
+      bool foundTable = false;
+      bool parsingTable = false;
+    } state;
+    wstring entry, key;
 
-    wchar_t* token = nullptr;
-    wchar_t* nextToken = nullptr;
-    bool isParsingTable = false;
-    token = wcstok_s(&buffer[0], _STR_DELIMITER, &nextToken);
-    while (token != nullptr) {
-      wstring str = token; // expects: key name or end of table
-      if (isParsingTable && str == _LUA_TABLE_END) {
-        isParsingTable = false;
+    for (auto wch = buffer.begin(); wch != buffer.end(); ++wch) {
+      if (!state.parsingEntry && !state.parsingKey && iswspace(*wch))
+        continue;
+
+      if (state.foundTable && !state.parsingTable) {
+        _maps.emplace_back(entry);
+        entry.clear();
+
+        state.foundTable = false;
+        state.parsingTable = true;
+        state.foundEntry = false;
+        state.needsEntry = true;
+      }
+
+      if (state.needsEntry) {
+        if (*wch == L'}') { // end of table
+          state.parsingTable = false;
+          continue;
+        }
+
+        if (iswalpha(*wch) || *wch == L'_') { // restrict to valid names
+          entry += *wch;
+          state.parsingEntry = true;
+          continue;
+        }
+        else {
+          state.needsEntry = false;
+          state.parsingEntry = false;
+          state.foundEntry = true;
+        }
+      }
+      else if (state.needsKey) {
+        auto tmp = wch;
+        auto next = ((++tmp) != buffer.end()) ? *tmp : L'\0';
+
+        if (*wch == L'{' && !state.parsingTable) { // start of table
+          state.needsKey = false;
+          state.foundTable = true;
+          continue;
+        }
+        else if (*wch == L'\'' || *wch == L'\"') { // start/end of string
+          state.parsingString = !state.parsingString;
+          continue;
+        }
+        else if ((*wch == L'[' || *wch == L']') && *wch == next) { // start/end of string
+          ++wch;
+          state.parsingString = !state.parsingString;
+          continue;
+        }
+
+        if (state.parsingString || iswalnum(*wch) || *wch == L'.' || *wch == L'-') {
+          key += *wch;
+          state.parsingKey = true;
+          continue;
+        }
+        else {
+          state.needsKey = false;
+          state.parsingKey = false;
+          state.foundKey = true;
+        }
+      }
+
+      if (state.foundEntry && state.foundKey) {
+        state.foundEntry = false;
+        state.foundKey = false;
+        state.needsEntry = true;
+
+        if (state.parsingTable)
+          _maps.back().Emplace(entry, key);
+        else
+          _entries.emplace_back(entry, key);
+
+        entry.clear();
+        key.clear();
         continue;
       }
-      if (str.find_first_of(_STR_INVALID) != wstring::npos)
-        break;
-
-      token = wcstok_s(nullptr, _STR_DELIMITER, &nextToken);
-      if (token == nullptr)
-        break;
-      wstring eql = token; // expects: = operator
-
-      token = wcstok_s(nullptr, _STR_DELIMITER, &nextToken);
-      if (token == nullptr)
-        break;
-      wstring key = token; // expects: key value or start of table
-
-      if (eql == _ENTRY_ASSIGN && key.find_first_of(_STR_INVALID) != wstring::npos)
-        throw runtime_error(_STRCAT(__FUNCSIG__, "\tFound unexpected characters"));
-
-      if (isParsingTable)
-        _maps.back().Emplace(str, key);
-      else if (key == _LUA_TABLE_START) {
-        _maps.emplace_back(str);
-        isParsingTable = true;
+      else if (state.foundEntry && !state.needsKey && !iswspace(*wch)) {
+        if (*wch == L'=') {
+          state.needsKey = true;
+          continue;
+        }
+        else
+          _throws("Expected operator=");
       }
-      else
-        _entries.emplace_back(str, key);
 
-      token = wcstok_s(nullptr, _STR_DELIMITER, &nextToken);
+      if (iswpunct(*wch) && *wch != L',')
+        _throws("Unexpected character found while parsing");
     }
   };
 };
