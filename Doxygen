@@ -1,0 +1,16 @@
+PROJECT_NAME      = YASL
+GENERATE_LATEX    = NO
+GENERATE_MAN      = NO
+GENERATE_RTF      = NO
+CASE_SENSE_NAMES  = NO
+INPUT             = include/base.h include/config.h include/memory.h include/script.h include/status.h include/yasl.h include/memory/data.h include/memory/patch.h include/memory/peformat.h include/memory/protection.h include/memory/trampoline.h
+QUIET             = YES
+JAVADOC_AUTOBRIEF = YES
+AUTOLINK_SUPPORT  = NO
+GENERATE_HTML     = NO
+GENERATE_XML      = YES
+XML_OUTPUT        = docs/doxyxml
+ALIASES           = "rst=\verbatim embed:rst"
+ALIASES          += "endrst=\endverbatim"
+MACRO_EXPANSION   = YES
+PREDEFINED        = _WIN32=1 __cplusplus=1 _MSVC_LANG=202002L _DLL=1
