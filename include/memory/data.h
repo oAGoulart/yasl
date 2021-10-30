@@ -24,10 +24,6 @@
 #include "base.h"
 #include "protection.h"
 
-/**
-  @namespace Memory
-  @brief     Used for memory related functions
-**/
 namespace Memory
 {
 
@@ -48,7 +44,7 @@ public:
 
   /**
     @brief  Get buffer length
-    @retval Size of buffer
+    @retval size_t Size of buffer
   **/
   constexpr size_t Size() const noexcept
   {
@@ -57,7 +53,7 @@ public:
 
   /**
     @brief  Get buffer address
-    @retval Buffer pointer
+    @retval uint8_t* Buffer pointer
   **/
   constexpr const uint8_t* Buffer() const noexcept
   {
@@ -76,7 +72,7 @@ public:
     @brief  Push object into buffer
     @tparam T     Object type
     @param  value Object value
-    @retval       Object reference
+    @retval T&    Object reference
   **/
   template<class T>
   constexpr T& PushObject(const T& value)
@@ -88,8 +84,8 @@ public:
 
   /**
     @brief  Pop object from buffer
-    @tparam T Object type
-    @retval   Object reference
+    @tparam T  Object type
+    @retval T& Object reference
   **/
   template<class T>
   constexpr T& PopObject()
@@ -108,7 +104,7 @@ public:
     @brief  Read object from buffer
     @tparam T      Object type
     @param  offset Offset in bytes from buffer base pointer
-    @retval        Object reference
+    @retval T&     Object reference
   **/
   template<class T>
   constexpr T& ReadObject(const size_t offset)
@@ -160,7 +156,7 @@ inline void Write(uintptr_t address, Data& data, const size_t count, const bool 
   @tparam T       Object type
   @param  address Memory address
   @param  vp      Is memory virtual protected?
-  @retval         Object reference
+  @retval T&      Object reference
 **/
 template<class T>
 inline T& ReadObject(uintptr_t address, const bool vp = true)
@@ -175,7 +171,7 @@ inline T& ReadObject(uintptr_t address, const bool vp = true)
   @param  address Memory address
   @param  value   Object reference
   @param  vp      Is memory virtual protected?
-  @retval         Object reference
+  @retval T&      Object reference
 **/
 template<class T>
 inline T& WriteObject(uintptr_t address, const T& value, const bool vp = true)

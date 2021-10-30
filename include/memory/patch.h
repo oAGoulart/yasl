@@ -23,14 +23,30 @@
 
 #include "base.h"
 #include "data.h"
-#include "peformat.h"
 
-/**
-  @namespace Memory
-  @brief     Used for memory related functions
-**/
 namespace Memory
 {
+
+/**
+  @brief  Calculate relative offset
+  @param  dest    Destination address
+  @param  from    Source address
+  @retval int32_t Relative address
+**/
+inline int32_t GetRelativeOffset(uintptr_t dest, uintptr_t from) noexcept
+{
+  return static_cast<int32_t>(dest - from);
+};
+
+/**
+  @brief  Calculate absolute address
+  @param  address   Virtual address
+  @retval uintptr_t Absolute address
+**/
+inline uintptr_t GetAbsolute(uintptr_t address) noexcept
+{
+  return address + _BASE_ADDRESS;
+};
 
 /**
   @enum  Memory::Register
@@ -74,7 +90,7 @@ public:
 
   /**
     @brief Patch object constructor
-    @param address Memory address to be patched
+    @param address Address on memory to be patched
     @param maxRead Maximum amount of bytes to be patched, this can
                    be used for preventing overflow depending on how
                    much space you have to apply the patch
@@ -88,7 +104,7 @@ public:
 
   /**
     @brief  Gets size of patch
-    @retval Number of bytes written into memory
+    @retval size_t Number of bytes written into memory
   **/
   constexpr size_t GetCount() const noexcept
   {
@@ -97,7 +113,7 @@ public:
 
   /**
     @brief  Get original data
-    @retval Original @c Data object, which contains the buffer storing
+    @retval Data& Original Data object, which contains the buffer storing
             the data replaced by the patch
   **/
   constexpr Data& GetOriginal() noexcept
@@ -107,7 +123,7 @@ public:
 
   /**
     @brief  Get payload data
-    @retval Current payload @c Data object with patch values
+    @retval Data& Current payload Data object with patch values
   **/
   constexpr Data& GetPayload() noexcept
   {
@@ -1158,10 +1174,10 @@ private:
 
   /**
     @brief  operator<<
-    @tparam T     Type of data to be written
-    @param  p     Reference to patch object
-    @param  value Value to be written into memory
-    @retval       Reference to modified patch object
+    @tparam T      Type of data to be written
+    @param  p      Reference to patch object
+    @param  value  Value to be written into memory
+    @retval Patch& Reference to modified patch object
   **/
   template<typename T>
   inline friend Patch& _PutObject(Patch& p, const T& value)

@@ -23,6 +23,29 @@
 
 #include "base.h"
 
+/**
+  @namespace Memory
+  @brief     Used for memory related functions
+**/
+namespace Memory
+{
+
+/**
+  @brief  Call and return
+  @tparam T       Return type
+  @tparam Args    Parameter pack type
+  @param  address Function address
+  @param  args    Parameter pack
+  @retval T       Function returned value
+**/
+template<typename T, typename... Args>
+inline T Call(uintptr_t address, Args&&... args)
+{
+  return reinterpret_cast<T(*)(Args&&...)>(address)(forward<Args>(args)...);
+}
+
+};
+
 #include "memory/protection.h"
 #include "memory/patch.h"
 #include "memory/trampoline.h"

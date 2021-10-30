@@ -5,6 +5,8 @@
 
 yaslFatal.*
 yaslLog.*
+_*/
+docs/doxyxml/
 
 # User-specific files
 *.rsuser

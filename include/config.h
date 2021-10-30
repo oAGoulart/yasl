@@ -46,8 +46,8 @@ public:
 
   /**
     @brief  Search for entry on configuration
-    @param  name Entry name
-    @retval      Key value or empty string if not found
+    @param  name    Entry name
+    @retval wstring Key value or empty string if not found
   **/
   wstring FindEntry(const wstring name) noexcept
   {
@@ -60,9 +60,9 @@ public:
 
   /**
     @brief  Search for entry on maps configuration
-    @param  map  Map name
-    @param  name Entry name
-    @retval      Key value or empty string if not found
+    @param  map     Map name
+    @param  name    Entry name
+    @retval wstring Key value or empty string if not found
   **/
   wstring FindEntry(const wstring map, const wstring name) noexcept
   {
@@ -92,7 +92,7 @@ private:
 
     /**
       @brief  Gets entry name
-      @retval Entry name
+      @retval wstring& Entry name
     **/
     wstring& GetName() noexcept
     {
@@ -101,7 +101,7 @@ private:
 
     /**
       @brief  Gets key value
-      @retval Key value
+      @retval wstring& Key value
     **/
     wstring& GetKey() noexcept
     {
@@ -139,8 +139,8 @@ private:
 
     /**
       @brief  Search for entry inside map
-      @param  name Entry name
-      @retval      Entry key or empty string if not found
+      @param  name    Entry name
+      @retval wstring Entry key or empty string if not found
     **/
     wstring FindEntry(const wstring name) noexcept
     {
@@ -153,7 +153,7 @@ private:
 
     /**
       @brief  Gets map name
-      @retval Map name
+      @retval wstring& Map name
     **/
     wstring& GetName() noexcept
     {

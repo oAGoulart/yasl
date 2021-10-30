@@ -25,10 +25,6 @@
 
 #include "base.h"
 
-/**
-  @namespace Memory
-  @brief     Used for memory related functions
-**/
 namespace Memory
 {
 
@@ -64,7 +60,7 @@ public:
 
   /**
     @brief  Check if protection change is enabled
-    @retval Is change enabled?
+    @retval bool Is change enabled?
   **/
   bool IsEnabled() const noexcept
   {
@@ -73,7 +69,7 @@ public:
 
   /**
     @brief  Gets old mode
-    @retval Old mode
+    @retval ulong_t Old mode
   **/
   ulong_t GetOldMode() const noexcept
   {
@@ -82,7 +78,7 @@ public:
 
   /**
     @brief  Gets current mode
-    @retval Current mode
+    @retval ulong_t& Current mode
   **/
   ulong_t& GetMode() noexcept
   {
