@@ -21,8 +21,9 @@ jobs:
 
     - name: Build
       run: |
-        ./docs.bat
-        cd ./docs/_build
+        cd docs
+        ../docs.bat
+        cd ../_build
         type nul >> .nojekyll
     - name: Deploy to GitHub Pages
       uses: Cecilapp/GitHub-Pages-deploy@v3
