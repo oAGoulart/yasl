@@ -21,9 +21,14 @@ jobs:
 
     - name: Build
       run: |
-        cd docs
-        ../docs.bat
-        cd ../_build
+        py -m pip install --user virtualenv
+        py -m venv _env
+        py _env/Scripts/pip install sphinx
+        py _env/Scripts/pip install breathe
+        py _env/Scripts/pip install sphinx-bulma
+        doxygen Doxygen
+        py _env/Scripts/sphinx-build -Dbreathe_projects.format=docs/doxyxml -b html docs _build
+        cd _build
         type nul >> .nojekyll
     - name: Deploy to GitHub Pages
       uses: Cecilapp/GitHub-Pages-deploy@v3
@@ -31,5 +36,5 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         email: 26435937+oAGoulart@users.noreply.github.com
-        build_dir: docs/_build/
+        build_dir: _build/
         
