@@ -25,10 +25,6 @@
 #include "patch.h"
 #include "data.h"
 
-/**
-  @namespace Memory
-  @brief     Used for memory related functions
-**/
 namespace Memory
 {
 
@@ -41,7 +37,7 @@ namespace Memory
   @tparam To   Type to be cast into
   @tparam From Current type
   @param  in   Current value
-  @retval      Cast type
+  @retval To   Cast type
   @warning Using this function may cause undefined behavior
 **/
 template<typename To, typename From>
@@ -75,7 +71,7 @@ public:
   public:
     /**
       @brief  Check if pool is empty
-      @retval Is pool empty?
+      @retval bool Is pool empty?
     **/
     constexpr bool IsEmpty() const noexcept
     {
@@ -84,8 +80,8 @@ public:
 
     /**
       @brief  operator+=
-      @param  f Function to be added to pool
-      @retval   @c this object reference
+      @param  f       Function to be added to pool
+      @retval Detour& This object reference
     **/
     Detour& operator+=(const dummy_t& f)
     {
@@ -95,8 +91,8 @@ public:
 
     /**
       @brief  operator-=
-      @param  f Function to be removed from pool
-      @retval   @c this object reference
+      @param  f       Function to be removed from pool
+      @retval Detour& This object reference
     **/
     Detour& operator-=(const dummy_t& f)
     {
@@ -107,7 +103,7 @@ public:
     /**
       @brief  Operator used to iterate through pool
       @param  arg Forwarded args
-      @retval     Return value
+      @retval T   Return value
     **/
     T operator()(Args&&... arg)
     {
@@ -211,7 +207,7 @@ public:
   /**
     @brief  Proxy function used to detour original function calls
     @param  arg Fowarded arguments
-    @retval     Original return type
+    @retval T   Original return type
   **/
   T Proxy(Args&&... arg)
   {
@@ -245,19 +241,5 @@ private:
 
   T (*_trampoline)(Args...);
 };
-
-/**
-  @brief  Call and return
-  @tparam T       Return type
-  @tparam Args    Parameter pack type
-  @param  address Function address
-  @param  args    Parameter pack
-  @retval         Function returned value
-**/
-template<typename T, typename... Args>
-inline T Call(uintptr_t address, Args&&... args)
-{
-  return reinterpret_cast<T(*)(Args&&...)>(address)(forward<Args>(args)...);
-}
 
 }

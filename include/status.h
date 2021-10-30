@@ -86,7 +86,7 @@ public:
   /**
     @brief  Custom SEH filter callback function
     @param  exceptionInfo Pointer to exception info
-    @retval               Exception status
+    @retval long_t        Exception status
   **/
   static long_t WINAPI CustomSEHFilter(exception_t* exceptionInfo)
   {

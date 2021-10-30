@@ -52,7 +52,7 @@ public:
 
   /**
     @brief  Gets script name
-    @retval Script name
+    @retval path& Script name
   **/
   path& GetName() noexcept
   {

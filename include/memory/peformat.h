@@ -23,33 +23,8 @@
 
 #include "base.h"
 
-/**
-  @namespace Memory
-  @brief     Used for memory related functions
-**/
 namespace Memory
 {
-
-/**
-  @brief  Calculate relative offset
-  @param  dest Destination address
-  @param  from Source address
-  @retval      Relative address
-**/
-inline int32_t GetRelativeOffset(uintptr_t dest, uintptr_t from) noexcept
-{
-  return static_cast<int32_t>(dest - from);
-};
-
-/**
-  @brief  Calculate absolute address
-  @param  address Virtual address
-  @retval         Absolute address
-**/
-inline uintptr_t GetAbsolute(uintptr_t address) noexcept
-{
-  return address + _BASE_ADDRESS;
-};
 
 /**
   @class PEFormat
@@ -82,7 +57,7 @@ public:
 
   /**
     @brief  Get entry point address
-    @retval Entry address
+    @retval uintptr_t Entry address
   **/
   uintptr_t GetEntry() noexcept
   {
