@@ -30,5 +30,5 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         email: 26435937+oAGoulart@users.noreply.github.com
-        build_dir: _build/
+        build_dir: docs/_build/
         
