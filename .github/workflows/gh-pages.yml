@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-and-deploy:
-    runs-on: windows-latest
+    runs-on: ubunto-latest
 
     steps:
     - name: Checkout
@@ -21,15 +21,16 @@ jobs:
 
     - name: Build
       run: |
-        py -m pip install --user virtualenv
-        py -m venv _env
-        py _env/Scripts/pip install sphinx
-        py _env/Scripts/pip install breathe
-        py _env/Scripts/pip install sphinx-bulma
+        apk add doxygen
+        python -m pip install --user virtualenv
+        python -m venv _env
+        python _env/Scripts/pip install sphinx
+        python _env/Scripts/pip install breathe
+        python _env/Scripts/pip install sphinx-bulma
         doxygen Doxygen
-        py _env/Scripts/sphinx-build -Dbreathe_projects.format=docs/doxyxml -b html docs _build
+        python _env/Scripts/sphinx-build -Dbreathe_projects.format=docs/doxyxml -b html docs _build
         cd _build
-        type nul >> .nojekyll
+        touch .nojekyll
     - name: Deploy to GitHub Pages
       uses: Cecilapp/GitHub-Pages-deploy@v3
       env:
