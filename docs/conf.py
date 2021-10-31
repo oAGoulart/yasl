@@ -55,8 +55,8 @@ exclude_patterns = ['_build']
 # a list of builtin themes.
 #
 
-html_favicon = '_static/favicon.ico'
-html_logo = '_static/logo.png'
+html_favicon = 'static/favicon.ico'
+html_logo = 'static/logo.png'
 html_theme = 'sphinx-bulma'
 html_theme_options = {
   'display_git': True,
