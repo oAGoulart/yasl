@@ -26,7 +26,7 @@ def build_docs():
   work_dir = '.'
   include_dir = os.path.join(work_dir, 'include')
   # Build doxygen xml.
-  cmd = ['doxygen', '-']
+  cmd = ['.\doxygen.exe', '-']
   p = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
   doxyxml_dir = os.path.join(doc_dir, 'doxyxml')
   out, _ = p.communicate(input=r'''
