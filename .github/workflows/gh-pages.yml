@@ -28,11 +28,11 @@ jobs:
       run: |
         python3 -m pip install --user virtualenv
         python3 -m venv _env
-        python3 _env/Scripts/pip install sphinx
-        python3 _env/Scripts/pip install breathe
-        python3 _env/Scripts/pip install sphinx-bulma
+        python3 _env/bin/pip3 install sphinx
+        python3 _env/bin/pip3 install breathe
+        python3 _env/bin/pip3 install sphinx-bulma
         doxygen Doxygen
-        python3 _env/Scripts/sphinx-build -Dbreathe_projects.format=docs/doxyxml -b html docs _build
+        python3 _env/bin/sphinx-build -Dbreathe_projects.format=docs/doxyxml -b html docs _build
         cd _build
         touch .nojekyll
     - name: Deploy to GitHub Pages
