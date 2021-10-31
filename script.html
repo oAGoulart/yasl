@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html class="dark-palette">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Script module &mdash; YASL 0.8.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css"/>
+      <link rel="stylesheet" href="_static/css/theme.min.css" type="text/css"/><style>
+    :root {
+      --primary: #6ca0ff;
+      --primary-invert: #fff;
+    }
+  </style>
+      <link rel="index" title="Index" href="genindex.html"/>
+      <link rel="search" title="Search" href="search.html"/>
+      <link rel="next" title="Status module" href="status.html"/>
+      <link rel="prev" title="Memory module" href="memory.html"/>
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script> 
+    <script src="_static/jquery.js"></script> 
+    <script src="_static/underscore.js"></script> 
+    <script src="_static/doctools.js"></script> 
+    
+</head>
+<body>
+<nav class="navbar is-primary" role="navigation" aria-label="main navigation">
+  <div class="navbar-menu container">
+    <div class="navbar-start">
+      <button id="light-switch" class="button is-light is-rounded is-small is-outlined">
+        <span class="icon is-small" aria-hidden="true">
+          <i class="icon"></i>
+        </span>
+        <span>Palette</span>
+      </button>
+    </div>
+    <div class="navbar-end">
+      <div class="navbar-brand">
+        <a class="navbar-item logo" href="index.html">
+          <span>YASL</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+<nav class="container breadcrumb has-arrow-separator is-right is-small" aria-label="breadcrumbs">
+  <div class="breadcrumb-aside">
+      <a href="https://github.com/oAGoulart/yasl/blob/master/docs/script.rst">
+        <span class="icon is-small">
+          <i class="icon-github-circled" aria-hidden="true"></i>
+        </span>
+        <span>Edit on GitHub</span>
+      </a>
+  </div>
+  <ul>
+    <li>
+      <a href="index.html">
+        <span class="icon is-small">
+          <i class="icon-home" aria-hidden="true"></i>
+        </span>
+        <span>Docs</span>
+      </a>
+    </li>
+    <li class="is-active">
+      <a href="#" aria-current="page">Script module</a>
+    </li>
+  </ul>
+</nav><main>
+  <div class="container">
+    <div class="columns">
+      <div class="column is-three-quarters">
+        <div class="document content">
+          
+  <section id="script-module">
+<h1>Script module<a class="headerlink" href="#script-module" title="Permalink to this headline">¶</a></h1>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv46Script">
+<span id="_CPPv36Script"></span><span id="_CPPv26Script"></span><span id="Script"></span><span class="target" id="class_script"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Script</span></span></span><a class="headerlink" href="#_CPPv46Script" title="Permalink to this definition">¶</a><br /></dt>
+<dd><em>#include &lt;script.h&gt;</em><p>Script module. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6Script6ScriptERK9hmodule_t7pfunc_tRK4path">
+<span id="_CPPv3N6Script6ScriptERK9hmodule_t7pfunc_tRK4path"></span><span id="_CPPv2N6Script6ScriptERK9hmodule_t7pfunc_tRK4path"></span><span id="Script::Script__hmodule_tCR.pfunc_t.pathCR"></span><span class="target" id="class_script_1a196f3a0319360224d20e0a149b975838"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Script</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="base.html#_CPPv49hmodule_t" title="hmodule_t"><span class="n"><span class="pre">hmodule_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">hmodule</span></span>, <a class="reference internal" href="base.html#_CPPv47pfunc_t" title="pfunc_t"><span class="n"><span class="pre">pfunc_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">func</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">path</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Script6ScriptERK9hmodule_t7pfunc_tRK4path" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Script object constructor. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hmodule</strong> – Handle to module where script is </p></li>
+<li><p><strong>func</strong> – Pointer to script main function </p></li>
+<li><p><strong>name</strong> – Script name string </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6ScriptD0Ev">
+<span id="_CPPv3N6ScriptD0Ev"></span><span id="_CPPv2N6ScriptD0Ev"></span><span id="Script::~Script"></span><span class="target" id="class_script_1a7f3a173d141bcfefce0ba98b941dc823"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~Script</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6ScriptD0Ev" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Script object destructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6Script7GetNameEv">
+<span id="_CPPv3N6Script7GetNameEv"></span><span id="_CPPv2N6Script7GetNameEv"></span><span id="Script::GetName"></span><span class="target" id="class_script_1acd95766bc3ad4abb45f0e183c0c9aa4e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">path</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetName</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N6Script7GetNameEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Gets script name. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>path&amp;</strong> – Script name </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6ScriptclEv">
+<span id="_CPPv3N6ScriptclEv"></span><span id="_CPPv2N6ScriptclEv"></span><span id="Script::call-operator"></span><span class="target" id="class_script_1aa49829923e3f1d0cf974d915b4644411"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6ScriptclEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Call main function. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-members">Private Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6Script5_nameE">
+<span id="_CPPv3N6Script5_nameE"></span><span id="_CPPv2N6Script5_nameE"></span><span id="Script::_name__path"></span><span class="target" id="class_script_1a4863982eba6902b0dc3313652011143f"></span><span class="n"><span class="pre">path</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_name</span></span></span><a class="headerlink" href="#_CPPv4N6Script5_nameE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Script name. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6Script7_moduleE">
+<span id="_CPPv3N6Script7_moduleE"></span><span id="_CPPv2N6Script7_moduleE"></span><span id="Script::_module__hmodule_t"></span><span class="target" id="class_script_1ab34856e26609c827960717d12bbcb8fe"></span><a class="reference internal" href="base.html#_CPPv49hmodule_t" title="hmodule_t"><span class="n"><span class="pre">hmodule_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_module</span></span></span><a class="headerlink" href="#_CPPv4N6Script7_moduleE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Handle to module. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6Script5_mainE">
+<span id="_CPPv3N6Script5_mainE"></span><span id="_CPPv2N6Script5_mainE"></span><span id="Script::_main__uintptr_t"></span><span class="target" id="class_script_1a1481bcb0f29ab71e7fbe43bf0dd9dc09"></span><span class="n"><span class="pre">uintptr_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_main</span></span></span><a class="headerlink" href="#_CPPv4N6Script5_mainE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Main function address. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+           
+        </div>
+      </div>
+      <div class="column is-flex is-flex-direction-column is-one-quarter">
+        
+  <form class="field is-align-self-flex-end has-addons" action="search.html" method="get">
+    <div class="control has-icons-right">
+      <input class="input is-small" type="text" name="q" placeholder="Search">
+      <span class="icon is-small is-right">
+        <i class="icon-search"></i>
+      </span>
+    </div>
+    <div class="control">
+      <button type="submit" class="button is-small is-primary">Go</button>
+    </div>
+  </form>
+        <aside class="menu is-align-self-flex-end has-text-right"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="base.html">Base module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Config module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memory.html">Memory module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="memory.html#data-submodule">Data submodule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memory.html#patch-submodule">Patch submodule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memory.html#peformat-submodule">PEFormat submodule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memory.html#protection-submodule">Protection submodule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memory.html#trampoline-submodule">Trampoline submodule</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Script module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="status.html">Status module</a></li>
+</ul>
+
+        </aside>
+      </div>
+    </div>
+  </div>
+</main>
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+<footer class="footer">
+  <div class="container content has-text-right">
+    <div class="columns">
+      <div class="column is-three-quarters"></div>
+      <div class="column is-one-quarter is-size-7">
+        <p>
+            &#169; Copyright 2021 Augusto Goulart
+        </p>
+        <div class="field is-grouped is-pulled-right">
+          <span class="control">
+            <a class="tags has-addons" href="http://sphinx-doc.org/">
+              <span class="tag is-dark is-normal">
+                <span class="icon is-small">
+                  <i class="icon-sphinx" aria-hidden="true"></i>
+                </span>
+                <span>Sphinx</span>
+              </span>
+              <span class="tag is-primary is-normal">4.2.0</span>
+            </a>
+          </span>
+          <span class="control">
+            <a class="tags has-addons" href="https://bulma.io">
+              <span class="tag is-dark is-normal">
+                <span class="icon is-small">
+                  <i class="icon-bulma" aria-hidden="true"></i>
+                </span>
+                <span>Bulma</span>
+              </span>
+              <span class="tag is-primary is-normal">0.9.3</span>
+            </a>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>  
+
+</body>
+</html>

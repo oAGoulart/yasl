@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html class="dark-palette">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Status module &mdash; YASL 0.8.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css"/>
+      <link rel="stylesheet" href="_static/css/theme.min.css" type="text/css"/><style>
+    :root {
+      --primary: #6ca0ff;
+      --primary-invert: #fff;
+    }
+  </style>
+      <link rel="index" title="Index" href="genindex.html"/>
+      <link rel="search" title="Search" href="search.html"/>
+      <link rel="prev" title="Script module" href="script.html"/>
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script> 
+    <script src="_static/jquery.js"></script> 
+    <script src="_static/underscore.js"></script> 
+    <script src="_static/doctools.js"></script> 
+    
+</head>
+<body>
+<nav class="navbar is-primary" role="navigation" aria-label="main navigation">
+  <div class="navbar-menu container">
+    <div class="navbar-start">
+      <button id="light-switch" class="button is-light is-rounded is-small is-outlined">
+        <span class="icon is-small" aria-hidden="true">
+          <i class="icon"></i>
+        </span>
+        <span>Palette</span>
+      </button>
+    </div>
+    <div class="navbar-end">
+      <div class="navbar-brand">
+        <a class="navbar-item logo" href="index.html">
+          <span>YASL</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+<nav class="container breadcrumb has-arrow-separator is-right is-small" aria-label="breadcrumbs">
+  <div class="breadcrumb-aside">
+      <a href="https://github.com/oAGoulart/yasl/blob/master/docs/status.rst">
+        <span class="icon is-small">
+          <i class="icon-github-circled" aria-hidden="true"></i>
+        </span>
+        <span>Edit on GitHub</span>
+      </a>
+  </div>
+  <ul>
+    <li>
+      <a href="index.html">
+        <span class="icon is-small">
+          <i class="icon-home" aria-hidden="true"></i>
+        </span>
+        <span>Docs</span>
+      </a>
+    </li>
+    <li class="is-active">
+      <a href="#" aria-current="page">Status module</a>
+    </li>
+  </ul>
+</nav><main>
+  <div class="container">
+    <div class="columns">
+      <div class="column is-three-quarters">
+        <div class="document content">
+          
+  <section id="status-module">
+<h1>Status module<a class="headerlink" href="#status-module" title="Permalink to this headline">¶</a></h1>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv46chrono">
+<span id="_CPPv36chrono"></span><span id="_CPPv26chrono"></span><span id="chrono"></span><span class="target" id="namespacechrono"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">chrono</span></span></span><a class="headerlink" href="#_CPPv46chrono" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Status module. </p>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv46Status">
+<span id="_CPPv36Status"></span><span id="_CPPv26Status"></span><span id="Status"></span><span class="target" id="class_status"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Status</span></span></span><a class="headerlink" href="#_CPPv46Status" title="Permalink to this definition">¶</a><br /></dt>
+<dd><em>#include &lt;status.h&gt;</em><p>Object used to store project status. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6Status6StatusERK4pathRK7wstringRK7wstring">
+<span id="_CPPv3N6Status6StatusERK4pathRK7wstringRK7wstring"></span><span id="_CPPv2N6Status6StatusERK4pathRK7wstringRK7wstring"></span><span id="Status::Status__pathCR.wstringCR.wstringCR"></span><span class="target" id="class_status_1ad621b8a059309e829e779d6f752667b9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Status</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">path</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">filename</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">wstring</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">wstring</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">version</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Status6StatusERK4pathRK7wstringRK7wstring" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Status object constructor. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> – Path to log file </p></li>
+<li><p><strong>name</strong> – Project name </p></li>
+<li><p><strong>version</strong> – Project version </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6StatusD0Ev">
+<span id="_CPPv3N6StatusD0Ev"></span><span id="_CPPv2N6StatusD0Ev"></span><span id="Status::~Status"></span><span class="target" id="class_status_1a1b24d90ef2560afffe9d7183e279c63c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~Status</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6StatusD0Ev" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Status object destructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6Status10LogMessageERK7wstring">
+<span id="_CPPv3N6Status10LogMessageERK7wstring"></span><span id="_CPPv2N6Status10LogMessageERK7wstring"></span><span id="Status::LogMessage__wstringCR"></span><span class="target" id="class_status_1a36fdc58a7801a7331caa549a2835aaab"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LogMessage</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">wstring</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">msg</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6Status10LogMessageERK7wstring" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Prints message to log file. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>msg</strong> – String to be print </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp">
+<span class="target" id="class_status_1a7c7b5f7578b771e867a0956104df6303"></span><span class="sig-name descname"><span class="pre">static</span> <span class="pre">inline</span> <span class="pre">long_t</span> <span class="pre">WINAPI</span> <span class="pre">CustomSEHFilter</span> <span class="pre">(exception_t</span> <span class="pre">*exceptionInfo)</span></span></dt>
+<dd><p>Custom SEH filter callback function. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>exceptionInfo</strong> – Pointer to exception info </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>long_t</strong> – Exception status </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-private-members">Private Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6Status9_filenameE">
+<span id="_CPPv3N6Status9_filenameE"></span><span id="_CPPv2N6Status9_filenameE"></span><span id="Status::_filename__path"></span><span class="target" id="class_status_1a40e84311c7885544c23566286cd0dcc0"></span><span class="n"><span class="pre">path</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_filename</span></span></span><a class="headerlink" href="#_CPPv4N6Status9_filenameE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Path to log file. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6Status5_fileE">
+<span id="_CPPv3N6Status5_fileE"></span><span id="_CPPv2N6Status5_fileE"></span><span id="Status::_file__wofstream"></span><span class="target" id="class_status_1ab59cb7f035446bae29843be2bf294d0a"></span><span class="n"><span class="pre">wofstream</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_file</span></span></span><a class="headerlink" href="#_CPPv4N6Status5_fileE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>File output stream. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6Status5_nameE">
+<span id="_CPPv3N6Status5_nameE"></span><span id="_CPPv2N6Status5_nameE"></span><span id="Status::_name__wstring"></span><span class="target" id="class_status_1aab77bac5e17dd20f3ca4cf54ebeb2746"></span><span class="n"><span class="pre">wstring</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_name</span></span></span><a class="headerlink" href="#_CPPv4N6Status5_nameE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Project name. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6Status8_versionE">
+<span id="_CPPv3N6Status8_versionE"></span><span id="_CPPv2N6Status8_versionE"></span><span id="Status::_version__wstring"></span><span class="target" id="class_status_1a6cb4dfdd0abebe83d010c675959ee6ce"></span><span class="n"><span class="pre">wstring</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_version</span></span></span><a class="headerlink" href="#_CPPv4N6Status8_versionE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Project version. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+
+
+           
+        </div>
+      </div>
+      <div class="column is-flex is-flex-direction-column is-one-quarter">
+        
+  <form class="field is-align-self-flex-end has-addons" action="search.html" method="get">
+    <div class="control has-icons-right">
+      <input class="input is-small" type="text" name="q" placeholder="Search">
+      <span class="icon is-small is-right">
+        <i class="icon-search"></i>
+      </span>
+    </div>
+    <div class="control">
+      <button type="submit" class="button is-small is-primary">Go</button>
+    </div>
+  </form>
+        <aside class="menu is-align-self-flex-end has-text-right"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="base.html">Base module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Config module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memory.html">Memory module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="memory.html#data-submodule">Data submodule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memory.html#patch-submodule">Patch submodule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memory.html#peformat-submodule">PEFormat submodule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memory.html#protection-submodule">Protection submodule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memory.html#trampoline-submodule">Trampoline submodule</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="script.html">Script module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Status module</a></li>
+</ul>
+
+        </aside>
+      </div>
+    </div>
+  </div>
+</main>
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+<footer class="footer">
+  <div class="container content has-text-right">
+    <div class="columns">
+      <div class="column is-three-quarters"></div>
+      <div class="column is-one-quarter is-size-7">
+        <p>
+            &#169; Copyright 2021 Augusto Goulart
+        </p>
+        <div class="field is-grouped is-pulled-right">
+          <span class="control">
+            <a class="tags has-addons" href="http://sphinx-doc.org/">
+              <span class="tag is-dark is-normal">
+                <span class="icon is-small">
+                  <i class="icon-sphinx" aria-hidden="true"></i>
+                </span>
+                <span>Sphinx</span>
+              </span>
+              <span class="tag is-primary is-normal">4.2.0</span>
+            </a>
+          </span>
+          <span class="control">
+            <a class="tags has-addons" href="https://bulma.io">
+              <span class="tag is-dark is-normal">
+                <span class="icon is-small">
+                  <i class="icon-bulma" aria-hidden="true"></i>
+                </span>
+                <span>Bulma</span>
+              </span>
+              <span class="tag is-primary is-normal">0.9.3</span>
+            </a>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>  
+
+</body>
+</html>
