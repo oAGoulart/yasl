@@ -8,8 +8,6 @@ on:
 jobs:
   build:
     runs-on: windows-latest
-    strategy:
-      max-parallel: 1
 
     steps:
     - name: Checkout
@@ -35,8 +33,7 @@ jobs:
         
   deploy:
     runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 1
+    needs: build
     
     steps:
     - name: Pop site
