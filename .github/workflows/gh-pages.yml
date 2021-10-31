@@ -32,7 +32,8 @@ jobs:
         python3 _env/bin/pip3 install breathe
         python3 _env/bin/pip3 install sphinx-bulma
         doxygen Doxygen
-        python3 _env/Scripts/sphinx-build -Dbreathe_projects.format=docs/doxyxml -b html docs _build
+        ls _env
+        python3 _env/scripts/sphinx-build -Dbreathe_projects.format=docs/doxyxml -b html docs _build
         cd _build
         touch .nojekyll
     - name: Deploy to GitHub Pages
