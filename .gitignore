@@ -7,6 +7,9 @@ yaslFatal.*
 yaslLog.*
 _*/
 docs/doxyxml/
+*.exe
+*.dll
+*.zip
 
 # User-specific files
 *.rsuser
