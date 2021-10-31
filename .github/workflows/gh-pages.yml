@@ -23,7 +23,7 @@ jobs:
       run: |
         ./docs.bat
         cd _build
-        type nul >> .nojekyll
+        New-Item -Path '.\.nojekyll' -ItemType File
     - name: Deploy to GitHub Pages
       uses: Cecilapp/GitHub-Pages-deploy@v3
       env:
