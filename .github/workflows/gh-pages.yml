@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: windows-latest
 
     steps:
@@ -24,11 +24,27 @@ jobs:
         ./docs.bat
         cd _build
         New-Item -Path '.\.nojekyll' -ItemType File
+    
+    - name: Push site
+      uses: actions/upload-artifact@master
+      with:
+        name: site
+        path: _build/
+        
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Pop site
+      uses: actions/download-artifact@master
+      with:
+        name: site
+        path: _build/
+        
     - name: Deploy to GitHub Pages
       uses: Cecilapp/GitHub-Pages-deploy@v3
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         email: 26435937+oAGoulart@users.noreply.github.com
-        build_dir: _build/
-        
+        build_dir: _build/  
