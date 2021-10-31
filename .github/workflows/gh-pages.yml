@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
     - name: Checkout
@@ -18,24 +18,12 @@ jobs:
       with:
         python-version: 3.10.0
         architecture: x64
-        
-    - name: Install doxygen
-      run: |
-        sudo apt-get update
-        sudo apt-get install doxygen
 
     - name: Build
       run: |
-        python3 -m pip install --user virtualenv
-        python3 -m venv _env
-        python3 _env/bin/pip3 install sphinx
-        python3 _env/bin/pip3 install breathe
-        python3 _env/bin/pip3 install sphinx-bulma
-        doxygen Doxygen
-        ls _env
-        python3 _env/scripts/sphinx-build -Dbreathe_projects.format=docs/doxyxml -b html docs _build
+        ./docs.bat
         cd _build
-        touch .nojekyll
+        type nul >> .nojekyll
     - name: Deploy to GitHub Pages
       uses: Cecilapp/GitHub-Pages-deploy@v3
       env:
