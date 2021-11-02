@@ -16823,31 +16823,6 @@ a.has-text-blood-dark:hover, a.has-text-blood-dark:focus {
 /*
  * General theme styles
  */
-.dark-palette body {
-  background-color: #0d1117;
-  color: #c9d1d9;
-}
-
-.light-palette body {
-  background-color: #fafafa;
-  color: #3e4551;
-}
-
-main .container .columns .column {
-  padding: 1rem;
-}
-
-main {
-  padding-bottom: 5rem;
-}
-.dark-palette main {
-  background-color: #0d1117;
-}
-
-.light-palette main {
-  background-color: #fafafa;
-}
-
 .dark-palette a {
   color: #a3c0ff;
 }
@@ -16864,64 +16839,14 @@ main {
   color: #30529c;
 }
 
-.dark-palette p {
+.dark-palette body {
+  background-color: #0d1117;
   color: #c9d1d9;
 }
 
-.light-palette p {
+.light-palette body {
+  background-color: #fafafa;
   color: #3e4551;
-}
-
-span.icon > i {
-  font-family: "fontello";
-  font-weight: 100;
-  content: "";
-}
-
-.dark-palette strong {
-  color: #c9d1d9;
-}
-
-.light-palette strong {
-  color: #3e4551;
-}
-
-.dark-palette input.input,
-.dark-palette .select select,
-.dark-palette .textarea {
-  background-color: transparent;
-  color: #c9d1d9;
-  border-color: #3e4551;
-}
-
-.light-palette input.input,
-.light-palette .select select,
-.light-palette .textarea {
-  background-color: transparent;
-  color: #3e4551;
-  border-color: #e5dcdc;
-}
-
-input.input::placeholder,
-.select select::placeholder,
-.textarea::placeholder {
-  color: inherit;
-  opacity: 1;
-}
-input.input::-ms-input-placeholder,
-.select select::-ms-input-placeholder,
-.textarea::-ms-input-placeholder {
-  color: inherit;
-}
-input.input:-ms-input-placeholder,
-.select select:-ms-input-placeholder,
-.textarea:-ms-input-placeholder {
-  color: inherit;
-}
-input.input::-webkit-input-placeholder,
-.select select::-webkit-input-placeholder,
-.textarea::-webkit-input-placeholder {
-  color: inherit;
 }
 
 button.button.is-outlined:not(.dummy):focus:not(:hover) {
@@ -16934,81 +16859,171 @@ dl {
   overflow: auto;
 }
 
-section.is-primary,
+.dark-palette input.input,
+.dark-palette .select select,
+.dark-palette .textarea {
+  background-color: transparent;
+  border-color: #3e4551;
+  color: #c9d1d9;
+}
+
+.light-palette input.input,
+.light-palette .select select,
+.light-palette .textarea {
+  background-color: transparent;
+  border-color: #e5dcdc;
+  color: #3e4551;
+}
+
+input.input:-ms-input-placeholder,
+.select select:-ms-input-placeholder,
+.textarea:-ms-input-placeholder {
+  color: inherit;
+}
+input.input::-ms-input-placeholder,
+.select select::-ms-input-placeholder,
+.textarea::-ms-input-placeholder {
+  color: inherit;
+}
+input.input::-webkit-input-placeholder,
+.select select::-webkit-input-placeholder,
+.textarea::-webkit-input-placeholder {
+  color: inherit;
+}
+input.input::placeholder,
+.select select::placeholder,
+.textarea::placeholder {
+  color: inherit;
+  opacity: 1;
+}
+
+main {
+  padding-bottom: 5rem;
+}
+.dark-palette main {
+  background-color: #0d1117;
+}
+
+.light-palette main {
+  background-color: #fafafa;
+}
+
+main .container .columns .column {
+  padding: 1rem;
+}
+
+.dark-palette p {
+  color: #c9d1d9;
+}
+
+.light-palette p {
+  color: #3e4551;
+}
+
+span.icon > i {
+  content: "";
+  font-family: "fontello";
+  font-weight: 100;
+}
+
+.dark-palette strong {
+  color: #c9d1d9;
+}
+
+.light-palette strong {
+  color: #3e4551;
+}
+
 div.is-primary,
 main.is-primary,
-.title.is-primary,
-.icon-text.is-primary,
+section.is-primary,
+.button.is-primary,
+.card.is-primary,
+.content.is-primary,
+.document.is-primary,
+.dropdown.is-primary,
 .icon.is-primary,
+.icon-text.is-primary,
+.message.is-primary,
+.navbar.is-primary,
+.notification.is-primary,
+.panel.is-primary,
 .progress.is-primary,
 .table.is-primary,
-.card.is-primary,
-.dropdown.is-primary,
-.navbar.is-primary,
-.panel.is-primary,
-.button.is-primary,
 .tag.is-primary,
 .tag:not(body).is-primary,
-.notification.is-primary,
-.message.is-primary,
-.document.is-primary,
-.content.is-primary {
+.title.is-primary {
   background-color: var(--primary);
 }
-section.is-primary, section.has-text-primary,
-div.is-primary,
-div.has-text-primary,
+div.is-primary, div.has-text-primary,
 main.is-primary,
 main.has-text-primary,
-.title.is-primary,
-.title.has-text-primary,
-.icon-text.is-primary,
-.icon-text.has-text-primary,
+section.is-primary,
+section.has-text-primary,
+.button.is-primary,
+.button.has-text-primary,
+.card.is-primary,
+.card.has-text-primary,
+.content.is-primary,
+.content.has-text-primary,
+.document.is-primary,
+.document.has-text-primary,
+.dropdown.is-primary,
+.dropdown.has-text-primary,
 .icon.is-primary,
 .icon.has-text-primary,
+.icon-text.is-primary,
+.icon-text.has-text-primary,
+.message.is-primary,
+.message.has-text-primary,
+.navbar.is-primary,
+.navbar.has-text-primary,
+.notification.is-primary,
+.notification.has-text-primary,
+.panel.is-primary,
+.panel.has-text-primary,
 .progress.is-primary,
 .progress.has-text-primary,
 .table.is-primary,
 .table.has-text-primary,
-.card.is-primary,
-.card.has-text-primary,
-.dropdown.is-primary,
-.dropdown.has-text-primary,
-.navbar.is-primary,
-.navbar.has-text-primary,
-.panel.is-primary,
-.panel.has-text-primary,
-.button.is-primary,
-.button.has-text-primary,
 .tag.is-primary,
 .tag.has-text-primary,
 .tag:not(body).is-primary,
 .tag:not(body).has-text-primary,
-.notification.is-primary,
-.notification.has-text-primary,
-.message.is-primary,
-.message.has-text-primary,
-.document.is-primary,
-.document.has-text-primary,
-.content.is-primary,
-.content.has-text-primary {
+.title.is-primary,
+.title.has-text-primary {
   color: var(--primary-invert);
 }
 
 /*
  * Navbar styles
  */
+#light-switch {
+  margin-top: 1.75rem;
+}
+#light-switch span.icon::after {
+  position: absolute;
+  visibility: visible;
+}
+.dark-palette #light-switch span.icon::after {
+  content: "\e900";
+  font-family: "fontello";
+  font-weight: 100;
+}
+
+.light-palette #light-switch span.icon::after {
+  content: "\e902";
+  font-family: "fontello";
+  font-weight: 100;
+}
+
 a.navbar-item.logo {
   min-height: 6rem;
   padding: 0.5rem 0.75rem;
 }
 a.navbar-item.logo img {
-  max-height: 5rem;
   height: 5rem;
-}
-
-nav.navbar div.navbar-menu div.navbar-brand a.navbar-item.logo:hover {
-  background-color: transparent;
+  max-height: 5rem;
 }
 
 nav.container.breadcrumb {
@@ -17030,6 +17045,10 @@ nav.container.breadcrumb {
   color: #3e4551;
 }
 
+nav.navbar div.navbar-menu div.navbar-brand a.navbar-item.logo:hover {
+  background-color: transparent;
+}
+
 .breadcrumb-aside {
   font-size: 0.7rem;
   position: absolute;
@@ -17038,32 +17057,13 @@ nav.container.breadcrumb {
   margin-top: -0.25rem;
 }
 
-#light-switch {
-  margin-top: 1.75rem;
-}
-#light-switch span.icon::after {
-  position: absolute;
-  visibility: visible;
-}
-.dark-palette #light-switch span.icon::after {
-  font-family: "fontello";
-  font-weight: 100;
-  content: "\e900";
-}
-
-.light-palette #light-switch span.icon::after {
-  font-family: "fontello";
-  font-weight: 100;
-  content: "\e902";
-}
-
 /*
  * Bulma responsiveness configuration
  */
 @media screen and (max-width: 1023px) {
   .container:not(.navbar-menu) {
-    margin: 3rem;
     background-color: inherit;
+    margin: 3rem;
   }
 }
 
@@ -17079,43 +17079,37 @@ nav.container.breadcrumb {
 
 @media screen and (max-width: 1023px) {
   .navbar-menu.container {
-    padding: 1.5rem;
     background-color: inherit;
     display: flex;
-  }
-  .navbar-menu.container .navbar-start {
-    justify-content: flex-start;
-    margin-right: auto;
+    padding: 1.5rem;
   }
   .navbar-menu.container .navbar-end {
     justify-content: flex-end;
     margin-left: auto;
+  }
+  .navbar-menu.container .navbar-start {
+    justify-content: flex-start;
+    margin-right: auto;
   }
 }
 
 /*
  * Side menu styles
  */
-.toctree-l1 > a {
-  font-weight: 700;
-}
-.toctree-l1 > a::after {
-  font-weight: 100;
-}
-
 aside.menu {
   margin-bottom: 5rem;
 }
-aside.menu .caption {
-  font-weight: bold;
+aside.menu li {
+  font-size: small;
+  line-height: 1.6;
 }
 aside.menu ul {
   list-style-type: none;
   padding-right: 0;
 }
 aside.menu ul li a::after {
-  margin-left: 0.5rem;
   font-size: 0.75rem;
+  margin-left: 0.5rem;
 }
 .dark-palette aside.menu ul li a::after {
   color: #a3c0ff;
@@ -17126,21 +17120,27 @@ aside.menu ul li a::after {
 }
 
 aside.menu ul .toctree-l1 a::after {
+  content: "\f097";
   font-family: "fontello";
   font-weight: 100;
-  content: "\f097";
 }
 aside.menu ul .toctree-l2 a::after {
+  content: "\f104";
   font-family: "fontello";
   font-weight: 100;
-  content: "\f104";
 }
 aside.menu ul ul {
   margin-right: 1.6rem;
 }
-aside.menu li {
-  font-size: small;
-  line-height: 1.6;
+aside.menu .caption {
+  font-weight: bold;
+}
+
+.toctree-l1 > a {
+  font-weight: 700;
+}
+.toctree-l1 > a::after {
+  font-weight: 100;
 }
 
 /*
@@ -17149,6 +17149,109 @@ aside.menu li {
 /*
  * Document component
  */
+#search-results a.headerlink,
+.content a.headerlink,
+.document a.headerlink {
+  position: absolute;
+  visibility: hidden;
+}
+#search-results a.headerlink::after,
+.content a.headerlink::after,
+.document a.headerlink::after {
+  font-size: 0.8em;
+  left: 0;
+  padding-right: 0.4em;
+  position: inherit;
+  top: 0.25rem;
+  content: "\e907";
+  font-family: "fontello";
+  font-weight: 100;
+  -moz-transform: scale(-1, 1);
+  -ms-transform: scale(-1, 1);
+  -o-transform: scale(-1, 1);
+  -webkit-transform: scale(-1, 1);
+  transform: scale(-1, 1);
+}
+#search-results aside.sidebar,
+.content aside.sidebar,
+.document aside.sidebar {
+  float: right;
+  margin: 0 1rem 2.5rem 2.5rem;
+  max-width: 40%;
+  padding: 1.5rem;
+}
+.dark-palette #search-results aside.sidebar,
+.dark-palette .content aside.sidebar,
+.dark-palette .document aside.sidebar {
+  background-color: #121921;
+}
+
+.light-palette #search-results aside.sidebar,
+.light-palette .content aside.sidebar,
+.light-palette .document aside.sidebar {
+  background-color: #faf0f0;
+}
+
+#search-results aside.sidebar dd,
+#search-results dd,
+#search-results .topic dd,
+.content aside.sidebar dd,
+.content dd,
+.content .topic dd,
+.document aside.sidebar dd,
+.document dd,
+.document .topic dd {
+  border-left: 1px solid var(--primary);
+  font-size: 14px;
+  line-height: 26px;
+  margin-left: 1rem;
+  margin-top: 0.25rem;
+  padding-left: 1rem;
+}
+#search-results code.download,
+#search-results tt.download,
+.content code.download,
+.content tt.download,
+.document code.download,
+.document tt.download {
+  background: inherit;
+  border: inherit;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: 400;
+  padding: inherit;
+  white-space: inherit;
+}
+#search-results code.download::before,
+#search-results tt.download::before,
+.content code.download::before,
+.content tt.download::before,
+.document code.download::before,
+.document tt.download::before {
+  padding-right: 0.5rem;
+  content: "\e824";
+  font-family: "fontello";
+  font-weight: 100;
+}
+#search-results div.viewcode-block a.viewcode-back,
+.content div.viewcode-block a.viewcode-back,
+.document div.viewcode-block a.viewcode-back {
+  font-size: 0;
+  margin-right: 0.5rem;
+  visibility: hidden;
+}
+#search-results div.viewcode-block a.viewcode-back::before,
+.content div.viewcode-block a.viewcode-back::before,
+.document div.viewcode-block a.viewcode-back::before {
+  font-size: medium;
+  font-weight: 100;
+  position: relative;
+  visibility: visible;
+  content: "\f0f6  \f177";
+  font-family: "fontello";
+  font-weight: 100;
+}
 #search-results h1,
 #search-results h2,
 #search-results h3,
@@ -17231,31 +17334,28 @@ aside.menu li {
 .document h4:hover a.headerlink::after,
 .document h5:hover a.headerlink::after,
 .document h6:hover a.headerlink::after {
-  visibility: visible;
   opacity: 0.6;
+  visibility: visible;
 }
-#search-results a.headerlink,
-.content a.headerlink,
-.document a.headerlink {
-  position: absolute;
-  visibility: hidden;
+#search-results ol.loweralpha,
+.content ol.loweralpha,
+.document ol.loweralpha {
+  list-style-type: lower-alpha;
 }
-#search-results a.headerlink::after,
-.content a.headerlink::after,
-.document a.headerlink::after {
-  -moz-transform: scale(-1, 1);
-  -webkit-transform: scale(-1, 1);
-  -o-transform: scale(-1, 1);
-  -ms-transform: scale(-1, 1);
-  transform: scale(-1, 1);
-  font-family: "fontello";
-  font-weight: 100;
-  content: "\e907";
-  position: inherit;
-  left: 0;
-  padding-right: 0.4em;
-  font-size: 0.8em;
-  top: 0.25rem;
+#search-results ol.lowerroman,
+.content ol.lowerroman,
+.document ol.lowerroman {
+  list-style-type: lower-roman;
+}
+#search-results ol.upperalpha,
+.content ol.upperalpha,
+.document ol.upperalpha {
+  list-style-type: upper-alpha;
+}
+#search-results ol.upperroman,
+.content ol.upperroman,
+.document ol.upperroman {
+  list-style-type: upper-roman;
 }
 #search-results section,
 .content section,
@@ -17268,18 +17368,53 @@ aside.menu li {
 .document section:not(:first-child) {
   margin-top: 2rem;
 }
+#search-results table,
+.content table,
+.document table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  width: 100%;
+}
+#search-results table td,
+.content table td,
+.document table td {
+  border: none;
+}
+.dark-palette #search-results table tr.row-odd,
+.dark-palette .content table tr.row-odd,
+.dark-palette .document table tr.row-odd {
+  background-color: #121921;
+}
+
+.light-palette #search-results table tr.row-odd,
+.light-palette .content table tr.row-odd,
+.light-palette .document table tr.row-odd {
+  background-color: #faf0f0;
+}
+
+#search-results ul li p:not(:last-child),
+.content ul li p:not(:last-child),
+.document ul li p:not(:last-child) {
+  margin: 0;
+}
+#search-results ul.simple,
+.content ul.simple,
+.document ul.simple {
+  list-style: circle outside;
+}
 .dark-palette #search-results .admonition,
 .dark-palette .content .admonition,
 .dark-palette .document .admonition {
-  margin: 0.5rem;
   background-color: #121921;
+  margin: 0.5rem;
 }
 .dark-palette #search-results .admonition p,
 .dark-palette .content .admonition p,
 .dark-palette .document .admonition p {
-  padding: 0 0.75rem 0.25rem 0.75rem;
   background-color: rgba(62, 69, 81, 0.25);
   color: white;
+  padding: 0 0.75rem 0.25rem 0.75rem;
 }
 .dark-palette #search-results .admonition p.admonition-title,
 .dark-palette .content .admonition p.admonition-title,
@@ -17291,11 +17426,6 @@ aside.menu li {
 .dark-palette .document .admonition p.admonition-title::before {
   margin-right: 0.5rem;
 }
-.dark-palette #search-results .admonition p:not(:last-child),
-.dark-palette .content .admonition p:not(:last-child),
-.dark-palette .document .admonition p:not(:last-child) {
-  margin: 0;
-}
 .dark-palette #search-results .admonition p:first-child,
 .dark-palette .content .admonition p:first-child,
 .dark-palette .document .admonition p:first-child {
@@ -17306,51 +17436,10 @@ aside.menu li {
 .dark-palette .document .admonition p:last-child {
   border-radius: 0 0 4px 4px;
 }
-.dark-palette #search-results .admonition.note p, .dark-palette #search-results .admonition.important p,
-.dark-palette .content .admonition.note p,
-.dark-palette .content .admonition.important p,
-.dark-palette .document .admonition.note p,
-.dark-palette .document .admonition.important p {
-  background-color: rgba(0, 173, 107, 0.25);
-}
-.dark-palette #search-results .admonition.note p.admonition-title, .dark-palette #search-results .admonition.important p.admonition-title,
-.dark-palette .content .admonition.note p.admonition-title,
-.dark-palette .content .admonition.important p.admonition-title,
-.dark-palette .document .admonition.note p.admonition-title,
-.dark-palette .document .admonition.important p.admonition-title {
-  color: #14ffa5;
-}
-.dark-palette #search-results .admonition.note p.admonition-title::before, .dark-palette #search-results .admonition.important p.admonition-title::before,
-.dark-palette .content .admonition.note p.admonition-title::before,
-.dark-palette .content .admonition.important p.admonition-title::before,
-.dark-palette .document .admonition.note p.admonition-title::before,
-.dark-palette .document .admonition.important p.admonition-title::before {
-  font-family: "fontello";
-  font-weight: 100;
-  content: "\e859";
-}
-.dark-palette #search-results .admonition.hint p, .dark-palette #search-results .admonition.tip p,
-.dark-palette .content .admonition.hint p,
-.dark-palette .content .admonition.tip p,
-.dark-palette .document .admonition.hint p,
-.dark-palette .document .admonition.tip p {
-  background-color: rgba(68, 156, 197, 0.25);
-}
-.dark-palette #search-results .admonition.hint p.admonition-title, .dark-palette #search-results .admonition.tip p.admonition-title,
-.dark-palette .content .admonition.hint p.admonition-title,
-.dark-palette .content .admonition.tip p.admonition-title,
-.dark-palette .document .admonition.hint p.admonition-title,
-.dark-palette .document .admonition.tip p.admonition-title {
-  color: #92c5dd;
-}
-.dark-palette #search-results .admonition.hint p.admonition-title::before, .dark-palette #search-results .admonition.tip p.admonition-title::before,
-.dark-palette .content .admonition.hint p.admonition-title::before,
-.dark-palette .content .admonition.tip p.admonition-title::before,
-.dark-palette .document .admonition.hint p.admonition-title::before,
-.dark-palette .document .admonition.tip p.admonition-title::before {
-  font-family: "fontello";
-  font-weight: 100;
-  content: "\e823";
+.dark-palette #search-results .admonition p:not(:last-child),
+.dark-palette .content .admonition p:not(:last-child),
+.dark-palette .document .admonition p:not(:last-child) {
+  margin: 0;
 }
 .dark-palette #search-results .admonition.attention p, .dark-palette #search-results .admonition.caution p, .dark-palette #search-results .admonition.warning p,
 .dark-palette .content .admonition.attention p,
@@ -17377,9 +17466,9 @@ aside.menu li {
 .dark-palette .document .admonition.attention p.admonition-title::before,
 .dark-palette .document .admonition.caution p.admonition-title::before,
 .dark-palette .document .admonition.warning p.admonition-title::before {
+  content: "\e829";
   font-family: "fontello";
   font-weight: 100;
-  content: "\e829";
 }
 .dark-palette #search-results .admonition.danger p, .dark-palette #search-results .admonition.error p,
 .dark-palette .content .admonition.danger p,
@@ -17400,23 +17489,69 @@ aside.menu li {
 .dark-palette .content .admonition.error p.admonition-title::before,
 .dark-palette .document .admonition.danger p.admonition-title::before,
 .dark-palette .document .admonition.error p.admonition-title::before {
+  content: "\f188";
   font-family: "fontello";
   font-weight: 100;
-  content: "\f188";
+}
+.dark-palette #search-results .admonition.important p, .dark-palette #search-results .admonition.note p,
+.dark-palette .content .admonition.important p,
+.dark-palette .content .admonition.note p,
+.dark-palette .document .admonition.important p,
+.dark-palette .document .admonition.note p {
+  background-color: rgba(0, 173, 107, 0.25);
+}
+.dark-palette #search-results .admonition.important p.admonition-title, .dark-palette #search-results .admonition.note p.admonition-title,
+.dark-palette .content .admonition.important p.admonition-title,
+.dark-palette .content .admonition.note p.admonition-title,
+.dark-palette .document .admonition.important p.admonition-title,
+.dark-palette .document .admonition.note p.admonition-title {
+  color: #14ffa5;
+}
+.dark-palette #search-results .admonition.important p.admonition-title::before, .dark-palette #search-results .admonition.note p.admonition-title::before,
+.dark-palette .content .admonition.important p.admonition-title::before,
+.dark-palette .content .admonition.note p.admonition-title::before,
+.dark-palette .document .admonition.important p.admonition-title::before,
+.dark-palette .document .admonition.note p.admonition-title::before {
+  content: "\e859";
+  font-family: "fontello";
+  font-weight: 100;
+}
+.dark-palette #search-results .admonition.hint p, .dark-palette #search-results .admonition.tip p,
+.dark-palette .content .admonition.hint p,
+.dark-palette .content .admonition.tip p,
+.dark-palette .document .admonition.hint p,
+.dark-palette .document .admonition.tip p {
+  background-color: rgba(68, 156, 197, 0.25);
+}
+.dark-palette #search-results .admonition.hint p.admonition-title, .dark-palette #search-results .admonition.tip p.admonition-title,
+.dark-palette .content .admonition.hint p.admonition-title,
+.dark-palette .content .admonition.tip p.admonition-title,
+.dark-palette .document .admonition.hint p.admonition-title,
+.dark-palette .document .admonition.tip p.admonition-title {
+  color: #92c5dd;
+}
+.dark-palette #search-results .admonition.hint p.admonition-title::before, .dark-palette #search-results .admonition.tip p.admonition-title::before,
+.dark-palette .content .admonition.hint p.admonition-title::before,
+.dark-palette .content .admonition.tip p.admonition-title::before,
+.dark-palette .document .admonition.hint p.admonition-title::before,
+.dark-palette .document .admonition.tip p.admonition-title::before {
+  content: "\e823";
+  font-family: "fontello";
+  font-weight: 100;
 }
 
 .light-palette #search-results .admonition,
 .light-palette .content .admonition,
 .light-palette .document .admonition {
-  margin: 0.5rem;
   background-color: #faf0f0;
+  margin: 0.5rem;
 }
 .light-palette #search-results .admonition p,
 .light-palette .content .admonition p,
 .light-palette .document .admonition p {
-  padding: 0 0.75rem 0.25rem 0.75rem;
   background-color: rgba(229, 220, 220, 0.25);
   color: #121417;
+  padding: 0 0.75rem 0.25rem 0.75rem;
 }
 .light-palette #search-results .admonition p.admonition-title,
 .light-palette .content .admonition p.admonition-title,
@@ -17428,11 +17563,6 @@ aside.menu li {
 .light-palette .document .admonition p.admonition-title::before {
   margin-right: 0.5rem;
 }
-.light-palette #search-results .admonition p:not(:last-child),
-.light-palette .content .admonition p:not(:last-child),
-.light-palette .document .admonition p:not(:last-child) {
-  margin: 0;
-}
 .light-palette #search-results .admonition p:first-child,
 .light-palette .content .admonition p:first-child,
 .light-palette .document .admonition p:first-child {
@@ -17443,51 +17573,10 @@ aside.menu li {
 .light-palette .document .admonition p:last-child {
   border-radius: 0 0 4px 4px;
 }
-.light-palette #search-results .admonition.note p, .light-palette #search-results .admonition.important p,
-.light-palette .content .admonition.note p,
-.light-palette .content .admonition.important p,
-.light-palette .document .admonition.note p,
-.light-palette .document .admonition.important p {
-  background-color: rgba(0, 173, 107, 0.25);
-}
-.light-palette #search-results .admonition.note p.admonition-title, .light-palette #search-results .admonition.important p.admonition-title,
-.light-palette .content .admonition.note p.admonition-title,
-.light-palette .content .admonition.important p.admonition-title,
-.light-palette .document .admonition.note p.admonition-title,
-.light-palette .document .admonition.important p.admonition-title {
-  color: #00472c;
-}
-.light-palette #search-results .admonition.note p.admonition-title::before, .light-palette #search-results .admonition.important p.admonition-title::before,
-.light-palette .content .admonition.note p.admonition-title::before,
-.light-palette .content .admonition.important p.admonition-title::before,
-.light-palette .document .admonition.note p.admonition-title::before,
-.light-palette .document .admonition.important p.admonition-title::before {
-  font-family: "fontello";
-  font-weight: 100;
-  content: "\e859";
-}
-.light-palette #search-results .admonition.hint p, .light-palette #search-results .admonition.tip p,
-.light-palette .content .admonition.hint p,
-.light-palette .content .admonition.tip p,
-.light-palette .document .admonition.hint p,
-.light-palette .document .admonition.tip p {
-  background-color: rgba(68, 156, 197, 0.25);
-}
-.light-palette #search-results .admonition.hint p.admonition-title, .light-palette #search-results .admonition.tip p.admonition-title,
-.light-palette .content .admonition.hint p.admonition-title,
-.light-palette .content .admonition.tip p.admonition-title,
-.light-palette .document .admonition.hint p.admonition-title,
-.light-palette .document .admonition.tip p.admonition-title {
-  color: #26617d;
-}
-.light-palette #search-results .admonition.hint p.admonition-title::before, .light-palette #search-results .admonition.tip p.admonition-title::before,
-.light-palette .content .admonition.hint p.admonition-title::before,
-.light-palette .content .admonition.tip p.admonition-title::before,
-.light-palette .document .admonition.hint p.admonition-title::before,
-.light-palette .document .admonition.tip p.admonition-title::before {
-  font-family: "fontello";
-  font-weight: 100;
-  content: "\e823";
+.light-palette #search-results .admonition p:not(:last-child),
+.light-palette .content .admonition p:not(:last-child),
+.light-palette .document .admonition p:not(:last-child) {
+  margin: 0;
 }
 .light-palette #search-results .admonition.attention p, .light-palette #search-results .admonition.caution p, .light-palette #search-results .admonition.warning p,
 .light-palette .content .admonition.attention p,
@@ -17514,9 +17603,9 @@ aside.menu li {
 .light-palette .document .admonition.attention p.admonition-title::before,
 .light-palette .document .admonition.caution p.admonition-title::before,
 .light-palette .document .admonition.warning p.admonition-title::before {
+  content: "\e829";
   font-family: "fontello";
   font-weight: 100;
-  content: "\e829";
 }
 .light-palette #search-results .admonition.danger p, .light-palette #search-results .admonition.error p,
 .light-palette .content .admonition.danger p,
@@ -17537,9 +17626,55 @@ aside.menu li {
 .light-palette .content .admonition.error p.admonition-title::before,
 .light-palette .document .admonition.danger p.admonition-title::before,
 .light-palette .document .admonition.error p.admonition-title::before {
+  content: "\f188";
   font-family: "fontello";
   font-weight: 100;
-  content: "\f188";
+}
+.light-palette #search-results .admonition.important p, .light-palette #search-results .admonition.note p,
+.light-palette .content .admonition.important p,
+.light-palette .content .admonition.note p,
+.light-palette .document .admonition.important p,
+.light-palette .document .admonition.note p {
+  background-color: rgba(0, 173, 107, 0.25);
+}
+.light-palette #search-results .admonition.important p.admonition-title, .light-palette #search-results .admonition.note p.admonition-title,
+.light-palette .content .admonition.important p.admonition-title,
+.light-palette .content .admonition.note p.admonition-title,
+.light-palette .document .admonition.important p.admonition-title,
+.light-palette .document .admonition.note p.admonition-title {
+  color: #00472c;
+}
+.light-palette #search-results .admonition.important p.admonition-title::before, .light-palette #search-results .admonition.note p.admonition-title::before,
+.light-palette .content .admonition.important p.admonition-title::before,
+.light-palette .content .admonition.note p.admonition-title::before,
+.light-palette .document .admonition.important p.admonition-title::before,
+.light-palette .document .admonition.note p.admonition-title::before {
+  content: "\e859";
+  font-family: "fontello";
+  font-weight: 100;
+}
+.light-palette #search-results .admonition.hint p, .light-palette #search-results .admonition.tip p,
+.light-palette .content .admonition.hint p,
+.light-palette .content .admonition.tip p,
+.light-palette .document .admonition.hint p,
+.light-palette .document .admonition.tip p {
+  background-color: rgba(68, 156, 197, 0.25);
+}
+.light-palette #search-results .admonition.hint p.admonition-title, .light-palette #search-results .admonition.tip p.admonition-title,
+.light-palette .content .admonition.hint p.admonition-title,
+.light-palette .content .admonition.tip p.admonition-title,
+.light-palette .document .admonition.hint p.admonition-title,
+.light-palette .document .admonition.tip p.admonition-title {
+  color: #26617d;
+}
+.light-palette #search-results .admonition.hint p.admonition-title::before, .light-palette #search-results .admonition.tip p.admonition-title::before,
+.light-palette .content .admonition.hint p.admonition-title::before,
+.light-palette .content .admonition.tip p.admonition-title::before,
+.light-palette .document .admonition.hint p.admonition-title::before,
+.light-palette .document .admonition.tip p.admonition-title::before {
+  content: "\e823";
+  font-family: "fontello";
+  font-weight: 100;
 }
 
 #search-results .citation-reference,
@@ -17552,245 +17687,196 @@ aside.menu li {
   position: relative;
   top: -0.5rem;
 }
+#search-results .deprecated:not(.versionmodified),
+#search-results .versionadded,
+#search-results .versionchanged,
+.content .deprecated:not(.versionmodified),
+.content .versionadded,
+.content .versionchanged,
+.document .deprecated:not(.versionmodified),
+.document .versionadded,
+.document .versionchanged {
+  margin-bottom: 0.5rem;
+  padding: 0.5rem;
+}
+.dark-palette #search-results .deprecated:not(.versionmodified),
+.dark-palette #search-results .versionadded,
+.dark-palette #search-results .versionchanged,
+.dark-palette .content .deprecated:not(.versionmodified),
+.dark-palette .content .versionadded,
+.dark-palette .content .versionchanged,
+.dark-palette .document .deprecated:not(.versionmodified),
+.dark-palette .document .versionadded,
+.dark-palette .document .versionchanged {
+  background-color: #202d3c;
+  border-top: 4px solid #3e4551;
+}
+.dark-palette #search-results .deprecated:not(.versionmodified) .versionmodified.added,
+.dark-palette #search-results .versionadded .versionmodified.added,
+.dark-palette #search-results .versionchanged .versionmodified.added,
+.dark-palette .content .deprecated:not(.versionmodified) .versionmodified.added,
+.dark-palette .content .versionadded .versionmodified.added,
+.dark-palette .content .versionchanged .versionmodified.added,
+.dark-palette .document .deprecated:not(.versionmodified) .versionmodified.added,
+.dark-palette .document .versionadded .versionmodified.added,
+.dark-palette .document .versionchanged .versionmodified.added {
+  color: #449cc5;
+}
+.dark-palette #search-results .deprecated:not(.versionmodified) .versionmodified.changed,
+.dark-palette #search-results .versionadded .versionmodified.changed,
+.dark-palette #search-results .versionchanged .versionmodified.changed,
+.dark-palette .content .deprecated:not(.versionmodified) .versionmodified.changed,
+.dark-palette .content .versionadded .versionmodified.changed,
+.dark-palette .content .versionchanged .versionmodified.changed,
+.dark-palette .document .deprecated:not(.versionmodified) .versionmodified.changed,
+.dark-palette .document .versionadded .versionmodified.changed,
+.dark-palette .document .versionchanged .versionmodified.changed {
+  color: #ff7b00;
+}
+.dark-palette #search-results .deprecated:not(.versionmodified) .versionmodified.deprecated,
+.dark-palette #search-results .versionadded .versionmodified.deprecated,
+.dark-palette #search-results .versionchanged .versionmodified.deprecated,
+.dark-palette .content .deprecated:not(.versionmodified) .versionmodified.deprecated,
+.dark-palette .content .versionadded .versionmodified.deprecated,
+.dark-palette .content .versionchanged .versionmodified.deprecated,
+.dark-palette .document .deprecated:not(.versionmodified) .versionmodified.deprecated,
+.dark-palette .document .versionadded .versionmodified.deprecated,
+.dark-palette .document .versionchanged .versionmodified.deprecated {
+  color: #e31c51;
+}
+
+.light-palette #search-results .deprecated:not(.versionmodified),
+.light-palette #search-results .versionadded,
+.light-palette #search-results .versionchanged,
+.light-palette .content .deprecated:not(.versionmodified),
+.light-palette .content .versionadded,
+.light-palette .content .versionchanged,
+.light-palette .document .deprecated:not(.versionmodified),
+.light-palette .document .versionadded,
+.light-palette .document .versionchanged {
+  background-color: whitesmoke;
+  border-top: 4px solid #e5dcdc;
+}
+.light-palette #search-results .deprecated:not(.versionmodified) .versionmodified.added,
+.light-palette #search-results .versionadded .versionmodified.added,
+.light-palette #search-results .versionchanged .versionmodified.added,
+.light-palette .content .deprecated:not(.versionmodified) .versionmodified.added,
+.light-palette .content .versionadded .versionmodified.added,
+.light-palette .content .versionchanged .versionmodified.added,
+.light-palette .document .deprecated:not(.versionmodified) .versionmodified.added,
+.light-palette .document .versionadded .versionmodified.added,
+.light-palette .document .versionchanged .versionmodified.added {
+  color: #449cc5;
+}
+.light-palette #search-results .deprecated:not(.versionmodified) .versionmodified.changed,
+.light-palette #search-results .versionadded .versionmodified.changed,
+.light-palette #search-results .versionchanged .versionmodified.changed,
+.light-palette .content .deprecated:not(.versionmodified) .versionmodified.changed,
+.light-palette .content .versionadded .versionmodified.changed,
+.light-palette .content .versionchanged .versionmodified.changed,
+.light-palette .document .deprecated:not(.versionmodified) .versionmodified.changed,
+.light-palette .document .versionadded .versionmodified.changed,
+.light-palette .document .versionchanged .versionmodified.changed {
+  color: #ff7b00;
+}
+.light-palette #search-results .deprecated:not(.versionmodified) .versionmodified.deprecated,
+.light-palette #search-results .versionadded .versionmodified.deprecated,
+.light-palette #search-results .versionchanged .versionmodified.deprecated,
+.light-palette .content .deprecated:not(.versionmodified) .versionmodified.deprecated,
+.light-palette .content .versionadded .versionmodified.deprecated,
+.light-palette .content .versionchanged .versionmodified.deprecated,
+.light-palette .document .deprecated:not(.versionmodified) .versionmodified.deprecated,
+.light-palette .document .versionadded .versionmodified.deprecated,
+.light-palette .document .versionchanged .versionmodified.deprecated {
+  color: #e45649;
+}
+
+#search-results .field-list dd ul,
+.content .field-list dd ul,
+.document .field-list dd ul {
+  margin-top: 0;
+}
 #search-results .line-block,
 .content .line-block,
 .document .line-block {
   margin-bottom: 1rem;
   margin-left: 1rem;
 }
-#search-results aside.sidebar,
-.content aside.sidebar,
-.document aside.sidebar {
-  max-width: 40%;
-  float: right;
-  margin: 0 1rem 2.5rem 2.5rem;
-  padding: 1.5rem;
-}
-.dark-palette #search-results aside.sidebar,
-.dark-palette .content aside.sidebar,
-.dark-palette .document aside.sidebar {
-  background-color: #121921;
-}
-
-.light-palette #search-results aside.sidebar,
-.light-palette .content aside.sidebar,
-.light-palette .document aside.sidebar {
-  background-color: #faf0f0;
-}
-
 #search-results .rubric,
 .content .rubric,
 .document .rubric {
-  margin-bottom: 1.25rem;
   font-weight: 700;
+  margin-bottom: 1.25rem;
 }
-#search-results code.download,
-#search-results tt.download,
-.content code.download,
-.content tt.download,
-.document code.download,
-.document tt.download {
-  background: inherit;
-  padding: inherit;
-  font-weight: 400;
-  font-family: inherit;
-  font-size: inherit;
-  color: inherit;
-  border: inherit;
-  white-space: inherit;
-}
-#search-results code.download::before,
-#search-results tt.download::before,
-.content code.download::before,
-.content tt.download::before,
-.document code.download::before,
-.document tt.download::before {
-  font-family: "fontello";
-  font-weight: 100;
-  content: "\e824";
-  padding-right: 0.5rem;
-}
-#search-results ol.loweralpha,
-.content ol.loweralpha,
-.document ol.loweralpha {
-  list-style-type: lower-alpha;
-}
-#search-results ol.lowerroman,
-.content ol.lowerroman,
-.document ol.lowerroman {
-  list-style-type: lower-roman;
-}
-#search-results ol.upperalpha,
-.content ol.upperalpha,
-.document ol.upperalpha {
-  list-style-type: upper-alpha;
-}
-#search-results ol.upperroman,
-.content ol.upperroman,
-.document ol.upperroman {
-  list-style-type: upper-roman;
-}
-#search-results ul li p:not(:last-child),
-.content ul li p:not(:last-child),
-.document ul li p:not(:last-child) {
-  margin: 0;
-}
-#search-results ul.simple,
-.content ul.simple,
-.document ul.simple {
-  list-style: circle outside;
-}
-#search-results table,
-.content table,
-.document table {
-  overflow-x: auto;
-  display: block;
-  width: 100%;
-  max-width: 100%;
-}
-#search-results table td,
-.content table td,
-.document table td {
-  border: none;
-}
-.dark-palette #search-results table tr.row-odd,
-.dark-palette .content table tr.row-odd,
-.dark-palette .document table tr.row-odd {
-  background-color: #121921;
-}
-
-.light-palette #search-results table tr.row-odd,
-.light-palette .content table tr.row-odd,
-.light-palette .document table tr.row-odd {
-  background-color: #faf0f0;
-}
-
-#search-results dd,
-#search-results .topic dd,
-#search-results aside.sidebar dd,
-.content dd,
-.content .topic dd,
-.content aside.sidebar dd,
-.document dd,
-.document .topic dd,
-.document aside.sidebar dd {
-  margin-left: 2em;
-  font-size: 14px;
-  line-height: 26px;
-}
-#search-results .viewcode-link span.pre,
-.content .viewcode-link span.pre,
-.document .viewcode-link span.pre {
-  visibility: hidden;
-  font-size: 0;
-  margin-left: 0.5rem;
-}
-#search-results .viewcode-link span.pre::after,
-.content .viewcode-link span.pre::after,
-.document .viewcode-link span.pre::after {
-  font-family: "fontello";
-  font-weight: 100;
-  content: "\f1c9";
-  visibility: visible;
-  position: relative;
-  font-weight: 100;
-  font-size: medium;
-}
-#search-results div.viewcode-block a.viewcode-back,
-.content div.viewcode-block a.viewcode-back,
-.document div.viewcode-block a.viewcode-back {
-  visibility: hidden;
-  font-size: 0;
-  margin-right: 0.5rem;
-}
-#search-results div.viewcode-block a.viewcode-back::before,
-.content div.viewcode-block a.viewcode-back::before,
-.document div.viewcode-block a.viewcode-back::before {
-  font-family: "fontello";
-  font-weight: 100;
-  content: "\f0f6  \f177";
-  visibility: visible;
-  position: relative;
-  font-weight: 100;
-  font-size: medium;
-}
-#search-results .tagmod, .light-palette #search-results .glossary dt, .light-palette #search-results dt,
+#search-results .tagmod, .light-palette #search-results .glossary dt,
+.light-palette .content .glossary #search-results dt,
+.light-palette .document .glossary #search-results dt, .light-palette #search-results span.guilabel,
+#search-results .light-palette .content span.guilabel,
+#search-results .light-palette .document span.guilabel, .light-palette #search-results dt,
 .light-palette #search-results .label,
 #search-results .light-palette .content dt,
-.light-palette .content #search-results dt,
 #search-results .light-palette .content .label,
 #search-results .light-palette .document dt,
-.light-palette .document #search-results dt,
-#search-results .light-palette .document .label, .light-palette #search-results span.guilabel,
-#search-results .light-palette .content span.guilabel,
-#search-results .light-palette .document span.guilabel, .dark-palette #search-results .glossary dt, .dark-palette #search-results dt,
+#search-results .light-palette .document .label, .dark-palette #search-results .glossary dt,
+.dark-palette .content .glossary #search-results dt,
+.dark-palette .document .glossary #search-results dt, .dark-palette #search-results span.guilabel,
+#search-results .dark-palette .content span.guilabel,
+#search-results .dark-palette .document span.guilabel, .dark-palette #search-results dt,
 .dark-palette #search-results .label,
 #search-results .dark-palette .content dt,
-.dark-palette .content #search-results dt,
 #search-results .dark-palette .content .label,
 #search-results .dark-palette .document dt,
-.dark-palette .document #search-results dt,
-#search-results .dark-palette .document .label, .dark-palette #search-results span.guilabel,
-#search-results .dark-palette .content span.guilabel,
-#search-results .dark-palette .document span.guilabel,
+#search-results .dark-palette .document .label,
 .content .tagmod,
 .light-palette .content .glossary dt,
 .content .light-palette .document .glossary dt,
 .light-palette .document .glossary .content dt,
-.content .light-palette #search-results dt,
-.light-palette #search-results .content dt,
+.light-palette .content span.guilabel,
+.content .light-palette .document span.guilabel,
+.light-palette .document .content span.guilabel,
 .light-palette .content dt,
 .light-palette .content .label,
 .content .light-palette .document dt,
 .light-palette .document .content dt,
 .content .light-palette .document .label,
 .light-palette .document .content .label,
-.light-palette .content span.guilabel,
-.content .light-palette .document span.guilabel,
-.light-palette .document .content span.guilabel,
 .dark-palette .content .glossary dt,
 .content .dark-palette .document .glossary dt,
 .dark-palette .document .glossary .content dt,
-.content .dark-palette #search-results dt,
-.dark-palette #search-results .content dt,
+.dark-palette .content span.guilabel,
+.content .dark-palette .document span.guilabel,
+.dark-palette .document .content span.guilabel,
 .dark-palette .content dt,
 .dark-palette .content .label,
 .content .dark-palette .document dt,
 .dark-palette .document .content dt,
 .content .dark-palette .document .label,
 .dark-palette .document .content .label,
-.dark-palette .content span.guilabel,
-.content .dark-palette .document span.guilabel,
-.dark-palette .document .content span.guilabel,
 .document .tagmod,
 .document .light-palette .content .glossary dt,
 .light-palette .content .glossary .document dt,
 .light-palette .document .glossary dt,
-.document .light-palette #search-results dt,
-.light-palette #search-results .document dt,
+.document .light-palette .content span.guilabel,
+.light-palette .content .document span.guilabel,
+.light-palette .document span.guilabel,
 .document .light-palette .content dt,
 .light-palette .content .document dt,
 .document .light-palette .content .label,
 .light-palette .content .document .label,
 .light-palette .document dt,
 .light-palette .document .label,
-.document .light-palette .content span.guilabel,
-.light-palette .content .document span.guilabel,
-.light-palette .document span.guilabel,
 .document .dark-palette .content .glossary dt,
 .dark-palette .content .glossary .document dt,
 .dark-palette .document .glossary dt,
-.document .dark-palette #search-results dt,
-.dark-palette #search-results .document dt,
+.document .dark-palette .content span.guilabel,
+.dark-palette .content .document span.guilabel,
+.dark-palette .document span.guilabel,
 .document .dark-palette .content dt,
 .dark-palette .content .document dt,
 .document .dark-palette .content .label,
 .dark-palette .content .document .label,
 .dark-palette .document dt,
-.dark-palette .document .label,
-.document .dark-palette .content span.guilabel,
-.dark-palette .content .document span.guilabel,
-.dark-palette .document span.guilabel {
+.dark-palette .document .label {
   align-items: center;
   border-radius: 4px;
   display: inline-flex;
@@ -17800,11 +17886,58 @@ aside.menu li {
   padding-left: 0.75em;
   padding-right: 0.75em;
 }
+#search-results .viewcode-link span.pre,
+.content .viewcode-link span.pre,
+.document .viewcode-link span.pre {
+  font-size: 0;
+  margin-left: 0.5rem;
+  visibility: hidden;
+}
+#search-results .viewcode-link span.pre::after,
+.content .viewcode-link span.pre::after,
+.document .viewcode-link span.pre::after {
+  font-size: medium;
+  font-weight: 100;
+  position: relative;
+  visibility: visible;
+  content: "\f1c9";
+  font-family: "fontello";
+  font-weight: 100;
+}
 .dark-palette #search-results blockquote,
 .dark-palette .content blockquote,
 .dark-palette .document blockquote {
   background-color: #202d3c;
   border-left: 5px solid #3e4551;
+}
+.dark-palette #search-results dt,
+.dark-palette #search-results .label,
+.dark-palette .content dt,
+.dark-palette .content .label,
+.dark-palette .document dt,
+.dark-palette .document .label {
+  background-color: transparent;
+  border: 1px solid #449cc5;
+  color: #449cc5;
+  margin-top: 0.5rem;
+}
+.dark-palette #search-results span.guilabel,
+.dark-palette .content span.guilabel,
+.dark-palette .document span.guilabel {
+  background-color: transparent;
+  border: 1px solid #885bfb;
+  color: #885bfb;
+  font-size: 0.8rem;
+  font-weight: 100;
+  height: 1.25rem;
+}
+.dark-palette #search-results .glossary dt,
+.dark-palette .content .glossary dt,
+.dark-palette .document .glossary dt {
+  background-color: transparent;
+  border: 1px solid #4078f2;
+  color: #4078f2;
+  margin-top: 0.5rem;
 }
 .dark-palette #search-results .topic,
 .dark-palette .content .topic,
@@ -17816,39 +17949,41 @@ aside.menu li {
 .dark-palette .document .topic-title {
   color: #faf0f0;
 }
-.dark-palette #search-results span.guilabel,
-.dark-palette .content span.guilabel,
-.dark-palette .document span.guilabel {
-  background-color: transparent;
-  color: #885bfb;
-  border: 1px solid #885bfb;
-  height: 1.25rem;
-  font-size: 0.8rem;
-  font-weight: 100;
-}
-.dark-palette #search-results dt,
-.dark-palette #search-results .label,
-.dark-palette .content dt,
-.dark-palette .content .label,
-.dark-palette .document dt,
-.dark-palette .document .label {
-  background-color: transparent;
-  color: #449cc5;
-  border: 1px solid #449cc5;
-}
-.dark-palette #search-results .glossary dt,
-.dark-palette .content .glossary dt,
-.dark-palette .document .glossary dt {
-  background-color: transparent;
-  color: #4078f2;
-  border: 1px solid #4078f2;
-}
 
 .light-palette #search-results blockquote,
 .light-palette .content blockquote,
 .light-palette .document blockquote {
   background-color: whitesmoke;
   border-left: 5px solid #e5dcdc;
+}
+.light-palette #search-results dt,
+.light-palette #search-results .label,
+.light-palette .content dt,
+.light-palette .content .label,
+.light-palette .document dt,
+.light-palette .document .label {
+  background-color: #eff7fa;
+  border: none;
+  color: #449cc5;
+  margin-top: 0.5rem;
+}
+.light-palette #search-results span.guilabel,
+.light-palette .content span.guilabel,
+.light-palette .document span.guilabel {
+  background-color: #885bfb;
+  border: none;
+  color: #fafafa;
+  font-size: 0.8rem;
+  font-weight: 100;
+  height: 1.25rem;
+}
+.light-palette #search-results .glossary dt,
+.light-palette .content .glossary dt,
+.light-palette .document .glossary dt {
+  background-color: #4078f2;
+  border: none;
+  color: #fafafa;
+  margin-top: 0.5rem;
 }
 .light-palette #search-results .topic,
 .light-palette .content .topic,
@@ -17859,137 +17994,6 @@ aside.menu li {
 .light-palette .content .topic-title,
 .light-palette .document .topic-title {
   color: #0d1117;
-}
-.light-palette #search-results span.guilabel,
-.light-palette .content span.guilabel,
-.light-palette .document span.guilabel {
-  background-color: #885bfb;
-  color: #fafafa;
-  border: none;
-  height: 1.25rem;
-  font-size: 0.8rem;
-  font-weight: 100;
-}
-.light-palette #search-results dt,
-.light-palette #search-results .label,
-.light-palette .content dt,
-.light-palette .content .label,
-.light-palette .document dt,
-.light-palette .document .label {
-  background-color: #eff7fa;
-  color: #449cc5;
-  border: none;
-}
-.light-palette #search-results .glossary dt,
-.light-palette .content .glossary dt,
-.light-palette .document .glossary dt {
-  background-color: #4078f2;
-  color: #fafafa;
-  border: none;
-}
-
-#search-results .versionadded,
-#search-results .versionchanged,
-#search-results .deprecated:not(.versionmodified),
-.content .versionadded,
-.content .versionchanged,
-.content .deprecated:not(.versionmodified),
-.document .versionadded,
-.document .versionchanged,
-.document .deprecated:not(.versionmodified) {
-  padding: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-.dark-palette #search-results .versionadded,
-.dark-palette #search-results .versionchanged,
-.dark-palette #search-results .deprecated:not(.versionmodified),
-.dark-palette .content .versionadded,
-.dark-palette .content .versionchanged,
-.dark-palette .content .deprecated:not(.versionmodified),
-.dark-palette .document .versionadded,
-.dark-palette .document .versionchanged,
-.dark-palette .document .deprecated:not(.versionmodified) {
-  background-color: #202d3c;
-  border-top: 4px solid #3e4551;
-}
-.dark-palette #search-results .versionadded .versionmodified.added,
-.dark-palette #search-results .versionchanged .versionmodified.added,
-.dark-palette #search-results .deprecated:not(.versionmodified) .versionmodified.added,
-.dark-palette .content .versionadded .versionmodified.added,
-.dark-palette .content .versionchanged .versionmodified.added,
-.dark-palette .content .deprecated:not(.versionmodified) .versionmodified.added,
-.dark-palette .document .versionadded .versionmodified.added,
-.dark-palette .document .versionchanged .versionmodified.added,
-.dark-palette .document .deprecated:not(.versionmodified) .versionmodified.added {
-  color: #449cc5;
-}
-.dark-palette #search-results .versionadded .versionmodified.changed,
-.dark-palette #search-results .versionchanged .versionmodified.changed,
-.dark-palette #search-results .deprecated:not(.versionmodified) .versionmodified.changed,
-.dark-palette .content .versionadded .versionmodified.changed,
-.dark-palette .content .versionchanged .versionmodified.changed,
-.dark-palette .content .deprecated:not(.versionmodified) .versionmodified.changed,
-.dark-palette .document .versionadded .versionmodified.changed,
-.dark-palette .document .versionchanged .versionmodified.changed,
-.dark-palette .document .deprecated:not(.versionmodified) .versionmodified.changed {
-  color: #ff7b00;
-}
-.dark-palette #search-results .versionadded .versionmodified.deprecated,
-.dark-palette #search-results .versionchanged .versionmodified.deprecated,
-.dark-palette #search-results .deprecated:not(.versionmodified) .versionmodified.deprecated,
-.dark-palette .content .versionadded .versionmodified.deprecated,
-.dark-palette .content .versionchanged .versionmodified.deprecated,
-.dark-palette .content .deprecated:not(.versionmodified) .versionmodified.deprecated,
-.dark-palette .document .versionadded .versionmodified.deprecated,
-.dark-palette .document .versionchanged .versionmodified.deprecated,
-.dark-palette .document .deprecated:not(.versionmodified) .versionmodified.deprecated {
-  color: #e31c51;
-}
-
-.light-palette #search-results .versionadded,
-.light-palette #search-results .versionchanged,
-.light-palette #search-results .deprecated:not(.versionmodified),
-.light-palette .content .versionadded,
-.light-palette .content .versionchanged,
-.light-palette .content .deprecated:not(.versionmodified),
-.light-palette .document .versionadded,
-.light-palette .document .versionchanged,
-.light-palette .document .deprecated:not(.versionmodified) {
-  background-color: whitesmoke;
-  border-top: 4px solid #e5dcdc;
-}
-.light-palette #search-results .versionadded .versionmodified.added,
-.light-palette #search-results .versionchanged .versionmodified.added,
-.light-palette #search-results .deprecated:not(.versionmodified) .versionmodified.added,
-.light-palette .content .versionadded .versionmodified.added,
-.light-palette .content .versionchanged .versionmodified.added,
-.light-palette .content .deprecated:not(.versionmodified) .versionmodified.added,
-.light-palette .document .versionadded .versionmodified.added,
-.light-palette .document .versionchanged .versionmodified.added,
-.light-palette .document .deprecated:not(.versionmodified) .versionmodified.added {
-  color: #449cc5;
-}
-.light-palette #search-results .versionadded .versionmodified.changed,
-.light-palette #search-results .versionchanged .versionmodified.changed,
-.light-palette #search-results .deprecated:not(.versionmodified) .versionmodified.changed,
-.light-palette .content .versionadded .versionmodified.changed,
-.light-palette .content .versionchanged .versionmodified.changed,
-.light-palette .content .deprecated:not(.versionmodified) .versionmodified.changed,
-.light-palette .document .versionadded .versionmodified.changed,
-.light-palette .document .versionchanged .versionmodified.changed,
-.light-palette .document .deprecated:not(.versionmodified) .versionmodified.changed {
-  color: #ff7b00;
-}
-.light-palette #search-results .versionadded .versionmodified.deprecated,
-.light-palette #search-results .versionchanged .versionmodified.deprecated,
-.light-palette #search-results .deprecated:not(.versionmodified) .versionmodified.deprecated,
-.light-palette .content .versionadded .versionmodified.deprecated,
-.light-palette .content .versionchanged .versionmodified.deprecated,
-.light-palette .content .deprecated:not(.versionmodified) .versionmodified.deprecated,
-.light-palette .document .versionadded .versionmodified.deprecated,
-.light-palette .document .versionchanged .versionmodified.deprecated,
-.light-palette .document .deprecated:not(.versionmodified) .versionmodified.deprecated {
-  color: #e45649;
 }
 
 /*
@@ -18022,25 +18026,113 @@ aside.menu li {
 /*
  * Default code styles
  */
-code, pre {
+code,
+pre {
   font-family: "Courier Prime", monospace;
 }
-.dark-palette code, .dark-palette pre {
+.dark-palette code,
+.dark-palette pre {
   background-color: #121921;
 }
 
-.light-palette code, .light-palette pre {
+.light-palette code,
+.light-palette pre {
   background-color: #faf0f0;
 }
 
-.dark-palette pre:not(.dummy) {
-  padding: 1.5rem;
+div [class^=highlight-] {
+  margin-bottom: 1rem;
+  overflow-x: auto;
+}
+
+.dark-palette dt:not(footer),
+.dark-palette span.guilabel:not(footer),
+.dark-palette .glossary dt:not(footer),
+.dark-palette .label:not(footer),
+.dark-palette .tag:not(footer) {
+  font-family: "Courier Prime", monospace;
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0.1rem;
+  white-space: pre;
+}
+.dark-palette dt:not(footer) .property span.pre,
+.dark-palette span.guilabel:not(footer) .property span.pre,
+.dark-palette .glossary dt:not(footer) .property span.pre,
+.dark-palette .label:not(footer) .property span.pre,
+.dark-palette .tag:not(footer) .property span.pre {
+  color: #d45ece;
+}
+.dark-palette dt:not(footer) .sig-name,
+.dark-palette span.guilabel:not(footer) .sig-name,
+.dark-palette .glossary dt:not(footer) .sig-name,
+.dark-palette .label:not(footer) .sig-name,
+.dark-palette .tag:not(footer) .sig-name {
   color: #e31c51;
+}
+.dark-palette dt:not(footer) .sig-param,
+.dark-palette span.guilabel:not(footer) .sig-param,
+.dark-palette .glossary dt:not(footer) .sig-param,
+.dark-palette .label:not(footer) .sig-param,
+.dark-palette .tag:not(footer) .sig-param {
+  color: #c9d1d9;
+}
+.dark-palette dt:not(footer) .sig-prename,
+.dark-palette span.guilabel:not(footer) .sig-prename,
+.dark-palette .glossary dt:not(footer) .sig-prename,
+.dark-palette .label:not(footer) .sig-prename,
+.dark-palette .tag:not(footer) .sig-prename {
+  color: #255bd0;
+}
+
+.light-palette dt:not(footer),
+.light-palette span.guilabel:not(footer),
+.light-palette .glossary dt:not(footer),
+.light-palette .label:not(footer),
+.light-palette .tag:not(footer) {
+  font-family: "Courier Prime", monospace;
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0.1rem;
+  white-space: pre;
+}
+.light-palette dt:not(footer) .property span.pre,
+.light-palette span.guilabel:not(footer) .property span.pre,
+.light-palette .glossary dt:not(footer) .property span.pre,
+.light-palette .label:not(footer) .property span.pre,
+.light-palette .tag:not(footer) .property span.pre {
+  color: #f57fef;
+}
+.light-palette dt:not(footer) .sig-name,
+.light-palette span.guilabel:not(footer) .sig-name,
+.light-palette .glossary dt:not(footer) .sig-name,
+.light-palette .label:not(footer) .sig-name,
+.light-palette .tag:not(footer) .sig-name {
+  color: #e45649;
+}
+.light-palette dt:not(footer) .sig-param,
+.light-palette span.guilabel:not(footer) .sig-param,
+.light-palette .glossary dt:not(footer) .sig-param,
+.light-palette .label:not(footer) .sig-param,
+.light-palette .tag:not(footer) .sig-param {
+  color: #2f3546;
+}
+.light-palette dt:not(footer) .sig-prename,
+.light-palette span.guilabel:not(footer) .sig-prename,
+.light-palette .glossary dt:not(footer) .sig-prename,
+.light-palette .label:not(footer) .sig-prename,
+.light-palette .tag:not(footer) .sig-prename {
+  color: #4078f2;
+}
+
+.dark-palette pre:not(.dummy) {
+  color: #e31c51;
+  padding: 1.5rem;
 }
 
 .light-palette pre:not(.dummy) {
-  padding: 1.5rem;
   color: #e45649;
+  padding: 1.5rem;
 }
 
 pre:not(.dummy) span {
@@ -18062,107 +18154,82 @@ pre {
   padding: 2rem;
 }
 
-div [class^=highlight-] {
-  overflow-x: auto;
-  margin-bottom: 1rem;
-}
-
-.dark-palette .glossary dt:not(footer),
-.dark-palette .label:not(footer),
-.dark-palette dt:not(footer),
-.dark-palette span.guilabel:not(footer),
-.dark-palette .tag:not(footer) {
-  white-space: pre;
-  font-family: "Courier Prime", monospace;
-  font-weight: 600;
-  font-size: 14px;
-  margin: 0.1rem;
-}
-.dark-palette .glossary dt:not(footer) .property span.pre,
-.dark-palette .label:not(footer) .property span.pre,
-.dark-palette dt:not(footer) .property span.pre,
-.dark-palette span.guilabel:not(footer) .property span.pre,
-.dark-palette .tag:not(footer) .property span.pre {
-  color: #d45ece;
-}
-.dark-palette .glossary dt:not(footer) .sig-prename,
-.dark-palette .label:not(footer) .sig-prename,
-.dark-palette dt:not(footer) .sig-prename,
-.dark-palette span.guilabel:not(footer) .sig-prename,
-.dark-palette .tag:not(footer) .sig-prename {
-  color: #255bd0;
-}
-.dark-palette .glossary dt:not(footer) .sig-name,
-.dark-palette .label:not(footer) .sig-name,
-.dark-palette dt:not(footer) .sig-name,
-.dark-palette span.guilabel:not(footer) .sig-name,
-.dark-palette .tag:not(footer) .sig-name {
-  color: #e31c51;
-}
-.dark-palette .glossary dt:not(footer) .sig-param,
-.dark-palette .label:not(footer) .sig-param,
-.dark-palette dt:not(footer) .sig-param,
-.dark-palette span.guilabel:not(footer) .sig-param,
-.dark-palette .tag:not(footer) .sig-param {
-  color: #c9d1d9;
-}
-
-.light-palette .glossary dt:not(footer),
-.light-palette .label:not(footer),
-.light-palette dt:not(footer),
-.light-palette span.guilabel:not(footer),
-.light-palette .tag:not(footer) {
-  white-space: pre;
-  font-family: "Courier Prime", monospace;
-  font-weight: 600;
-  font-size: 14px;
-  margin: 0.1rem;
-}
-.light-palette .glossary dt:not(footer) .property span.pre,
-.light-palette .label:not(footer) .property span.pre,
-.light-palette dt:not(footer) .property span.pre,
-.light-palette span.guilabel:not(footer) .property span.pre,
-.light-palette .tag:not(footer) .property span.pre {
-  color: #f57fef;
-}
-.light-palette .glossary dt:not(footer) .sig-prename,
-.light-palette .label:not(footer) .sig-prename,
-.light-palette dt:not(footer) .sig-prename,
-.light-palette span.guilabel:not(footer) .sig-prename,
-.light-palette .tag:not(footer) .sig-prename {
-  color: #4078f2;
-}
-.light-palette .glossary dt:not(footer) .sig-name,
-.light-palette .label:not(footer) .sig-name,
-.light-palette dt:not(footer) .sig-name,
-.light-palette span.guilabel:not(footer) .sig-name,
-.light-palette .tag:not(footer) .sig-name {
-  color: #e45649;
-}
-.light-palette .glossary dt:not(footer) .sig-param,
-.light-palette .label:not(footer) .sig-param,
-.light-palette dt:not(footer) .sig-param,
-.light-palette span.guilabel:not(footer) .sig-param,
-.light-palette .tag:not(footer) .sig-param {
-  color: #2f3546;
-}
-
 .highlight {
   margin: 1rem 0;
 }
 .highlight pre {
   padding: 1rem;
 }
-.dark-palette .highlight .hll {
-  background-color: #39040c;
+.dark-palette .highlight .bp,
+.dark-palette .highlight .o,
+.dark-palette .highlight .vc,
+.dark-palette .highlight .vi,
+.dark-palette .highlight .vg {
+  color: #255bd0;
+}
+.dark-palette .highlight .c,
+.dark-palette .highlight .cm {
+  color: #5ea14f;
+  font-style: italic;
+}
+.dark-palette .highlight .c1,
+.dark-palette .highlight .cs {
+  color: #5ea14f;
+  font-style: italic;
+}
+.dark-palette .highlight .cp {
+  font-style: italic;
+  color: #00ad6b;
 }
 .dark-palette .highlight .err {
   color: #c9d1d9;
 }
-.dark-palette .highlight .w {
-  color: transparent;
+.dark-palette .highlight .g,
+.dark-palette .highlight .gd,
+.dark-palette .highlight .ge,
+.dark-palette .highlight .gh,
+.dark-palette .highlight .gi,
+.dark-palette .highlight .go,
+.dark-palette .highlight .gp,
+.dark-palette .highlight .gr,
+.dark-palette .highlight .gs,
+.dark-palette .highlight .gt,
+.dark-palette .highlight .gu {
+  color: #a3c0ff;
 }
-.dark-palette .highlight .x, .dark-palette .highlight .n {
+.dark-palette .highlight .hll {
+  background-color: #39040c;
+}
+.dark-palette .highlight .il,
+.dark-palette .highlight .ld,
+.dark-palette .highlight .m,
+.dark-palette .highlight .mf,
+.dark-palette .highlight .mh,
+.dark-palette .highlight .mi,
+.dark-palette .highlight .mo {
+  color: #ff7b00;
+}
+.dark-palette .highlight .k,
+.dark-palette .highlight .kc,
+.dark-palette .highlight .kd {
+  color: #d45ece;
+}
+.dark-palette .highlight .kc {
+  color: #ff7b00;
+}
+.dark-palette .highlight .kn {
+  color: #255bd0;
+}
+.dark-palette .highlight .kp,
+.dark-palette .highlight .kr,
+.dark-palette .highlight .kt {
+  color: #d45ece;
+}
+.dark-palette .highlight .l {
+  color: #5ea14f;
+}
+.dark-palette .highlight .n,
+.dark-palette .highlight .x {
   color: #c9d1d9;
 }
 .dark-palette .highlight .na {
@@ -18174,10 +18241,12 @@ div [class^=highlight-] {
 .dark-palette .highlight .nc {
   color: #255bd0;
 }
-.dark-palette .highlight .no, .dark-palette .highlight .nd {
+.dark-palette .highlight .nd,
+.dark-palette .highlight .no {
   color: #d45ece;
 }
-.dark-palette .highlight .ni, .dark-palette .highlight .ne {
+.dark-palette .highlight .ne,
+.dark-palette .highlight .ni {
   color: #c9d1d9;
 }
 .dark-palette .highlight .nf {
@@ -18189,74 +18258,111 @@ div [class^=highlight-] {
 .dark-palette .highlight .nn {
   color: #ff7b00;
 }
-.dark-palette .highlight .nx {
-  color: #449cc5;
-}
-.dark-palette .highlight .py {
-  color: #c9d1d9;
-}
 .dark-palette .highlight .nt {
   color: #da990b;
 }
 .dark-palette .highlight .nv {
   color: #ff7b00;
 }
-.dark-palette .highlight .vc, .dark-palette .highlight .vg, .dark-palette .highlight .vi, .dark-palette .highlight .bp, .dark-palette .highlight .o {
-  color: #255bd0;
+.dark-palette .highlight .nx {
+  color: #449cc5;
 }
 .dark-palette .highlight .ow {
   color: #d45ece;
 }
-.dark-palette .highlight .c, .dark-palette .highlight .cm {
-  font-style: italic;
-  color: #5ea14f;
+.dark-palette .highlight .py {
+  color: #c9d1d9;
 }
-.dark-palette .highlight .cp {
-  font-style: italic;
-  color: #00ad6b;
-}
-.dark-palette .highlight .c1, .dark-palette .highlight .cs {
-  font-style: italic;
-  color: #5ea14f;
-}
-.dark-palette .highlight .k, .dark-palette .highlight .kc, .dark-palette .highlight .kd {
-  color: #d45ece;
-}
-.dark-palette .highlight .kc {
-  color: #ff7b00;
-}
-.dark-palette .highlight .kn {
-  color: #255bd0;
-}
-.dark-palette .highlight .kp, .dark-palette .highlight .kr, .dark-palette .highlight .kt {
-  color: #d45ece;
-}
-.dark-palette .highlight .l {
-  color: #5ea14f;
-}
-.dark-palette .highlight .ld, .dark-palette .highlight .m, .dark-palette .highlight .mf, .dark-palette .highlight .mh, .dark-palette .highlight .mi, .dark-palette .highlight .mo, .dark-palette .highlight .il {
-  color: #ff7b00;
-}
-.dark-palette .highlight .s, .dark-palette .highlight .sb, .dark-palette .highlight .sc, .dark-palette .highlight .sd, .dark-palette .highlight .s2, .dark-palette .highlight .se, .dark-palette .highlight .sh, .dark-palette .highlight .si, .dark-palette .highlight .sx, .dark-palette .highlight .sr, .dark-palette .highlight .s1 {
+.dark-palette .highlight .s,
+.dark-palette .highlight .s1,
+.dark-palette .highlight .s2,
+.dark-palette .highlight .sb,
+.dark-palette .highlight .sc,
+.dark-palette .highlight .sd,
+.dark-palette .highlight .se,
+.dark-palette .highlight .sh,
+.dark-palette .highlight .si,
+.dark-palette .highlight .sr,
+.dark-palette .highlight .sx {
   color: #5ea14f;
 }
 .dark-palette .highlight .ss {
   color: #449cc5;
 }
-.dark-palette .highlight .g, .dark-palette .highlight .gd, .dark-palette .highlight .ge, .dark-palette .highlight .gr, .dark-palette .highlight .gh, .dark-palette .highlight .gi, .dark-palette .highlight .go, .dark-palette .highlight .gp, .dark-palette .highlight .gs, .dark-palette .highlight .gu, .dark-palette .highlight .gt {
-  color: #a3c0ff;
+.dark-palette .highlight .w {
+  color: transparent;
 }
 
-.light-palette .highlight .hll {
-  background-color: #ffffcc;
+.light-palette .highlight .bp,
+.light-palette .highlight .o,
+.light-palette .highlight .vc,
+.light-palette .highlight .vi,
+.light-palette .highlight .vg {
+  color: #4078f2;
+}
+.light-palette .highlight .c,
+.light-palette .highlight .cm {
+  color: #5ea14f;
+  font-style: italic;
+}
+.light-palette .highlight .c1,
+.light-palette .highlight .cs {
+  color: #5ea14f;
+  font-style: italic;
+}
+.light-palette .highlight .cp {
+  font-style: italic;
+  color: #00ad6b;
 }
 .light-palette .highlight .err {
   color: #2f3546;
 }
-.light-palette .highlight .w {
-  color: transparent;
+.light-palette .highlight .g,
+.light-palette .highlight .gd,
+.light-palette .highlight .ge,
+.light-palette .highlight .gh,
+.light-palette .highlight .gi,
+.light-palette .highlight .go,
+.light-palette .highlight .gp,
+.light-palette .highlight .gr,
+.light-palette .highlight .gs,
+.light-palette .highlight .gt,
+.light-palette .highlight .gu {
+  color: #4078f2;
 }
-.light-palette .highlight .x, .light-palette .highlight .n {
+.light-palette .highlight .hll {
+  background-color: #ffffcc;
+}
+.light-palette .highlight .il,
+.light-palette .highlight .ld,
+.light-palette .highlight .m,
+.light-palette .highlight .mf,
+.light-palette .highlight .mh,
+.light-palette .highlight .mi,
+.light-palette .highlight .mo {
+  color: #ff7b00;
+}
+.light-palette .highlight .k,
+.light-palette .highlight .kc,
+.light-palette .highlight .kd {
+  color: #f57fef;
+}
+.light-palette .highlight .kc {
+  color: #ff7b00;
+}
+.light-palette .highlight .kn {
+  color: #4078f2;
+}
+.light-palette .highlight .kp,
+.light-palette .highlight .kr,
+.light-palette .highlight .kt {
+  color: #f57fef;
+}
+.light-palette .highlight .l {
+  color: #5ea14f;
+}
+.light-palette .highlight .n,
+.light-palette .highlight .x {
   color: #2f3546;
 }
 .light-palette .highlight .na {
@@ -18268,10 +18374,12 @@ div [class^=highlight-] {
 .light-palette .highlight .nc {
   color: #4078f2;
 }
-.light-palette .highlight .no, .light-palette .highlight .nd {
+.light-palette .highlight .nd,
+.light-palette .highlight .no {
   color: #f57fef;
 }
-.light-palette .highlight .ni, .light-palette .highlight .ne {
+.light-palette .highlight .ne,
+.light-palette .highlight .ni {
   color: #2f3546;
 }
 .light-palette .highlight .nf {
@@ -18283,62 +18391,39 @@ div [class^=highlight-] {
 .light-palette .highlight .nn {
   color: #ff7b00;
 }
-.light-palette .highlight .nx {
-  color: #449cc5;
-}
-.light-palette .highlight .py {
-  color: #2f3546;
-}
 .light-palette .highlight .nt {
   color: #c18401;
 }
 .light-palette .highlight .nv {
   color: #ff7b00;
 }
-.light-palette .highlight .vc, .light-palette .highlight .vg, .light-palette .highlight .vi, .light-palette .highlight .bp, .light-palette .highlight .o {
-  color: #4078f2;
+.light-palette .highlight .nx {
+  color: #449cc5;
 }
 .light-palette .highlight .ow {
   color: #f57fef;
 }
-.light-palette .highlight .c, .light-palette .highlight .cm {
-  font-style: italic;
-  color: #5ea14f;
+.light-palette .highlight .py {
+  color: #2f3546;
 }
-.light-palette .highlight .cp {
-  font-style: italic;
-  color: #00ad6b;
-}
-.light-palette .highlight .c1, .light-palette .highlight .cs {
-  font-style: italic;
-  color: #5ea14f;
-}
-.light-palette .highlight .k, .light-palette .highlight .kc, .light-palette .highlight .kd {
-  color: #f57fef;
-}
-.light-palette .highlight .kc {
-  color: #ff7b00;
-}
-.light-palette .highlight .kn {
-  color: #4078f2;
-}
-.light-palette .highlight .kp, .light-palette .highlight .kr, .light-palette .highlight .kt {
-  color: #f57fef;
-}
-.light-palette .highlight .l {
-  color: #5ea14f;
-}
-.light-palette .highlight .ld, .light-palette .highlight .m, .light-palette .highlight .mf, .light-palette .highlight .mh, .light-palette .highlight .mi, .light-palette .highlight .mo, .light-palette .highlight .il {
-  color: #ff7b00;
-}
-.light-palette .highlight .s, .light-palette .highlight .sb, .light-palette .highlight .sc, .light-palette .highlight .sd, .light-palette .highlight .s2, .light-palette .highlight .se, .light-palette .highlight .sh, .light-palette .highlight .si, .light-palette .highlight .sx, .light-palette .highlight .sr, .light-palette .highlight .s1 {
+.light-palette .highlight .s,
+.light-palette .highlight .s1,
+.light-palette .highlight .s2,
+.light-palette .highlight .sb,
+.light-palette .highlight .sc,
+.light-palette .highlight .sd,
+.light-palette .highlight .se,
+.light-palette .highlight .sh,
+.light-palette .highlight .si,
+.light-palette .highlight .sr,
+.light-palette .highlight .sx {
   color: #5ea14f;
 }
 .light-palette .highlight .ss {
   color: #449cc5;
 }
-.light-palette .highlight .g, .light-palette .highlight .gd, .light-palette .highlight .ge, .light-palette .highlight .gr, .light-palette .highlight .gh, .light-palette .highlight .gi, .light-palette .highlight .go, .light-palette .highlight .gp, .light-palette .highlight .gs, .light-palette .highlight .gu, .light-palette .highlight .gt {
-  color: #4078f2;
+.light-palette .highlight .w {
+  color: transparent;
 }
 
 /*
