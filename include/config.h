@@ -183,9 +183,12 @@ private:
       if (buf[1] == buf[0]) {
         if (buf[0] == L'-') { // "--" single line comment
           count += 4;
-          while (file.get(buf[0]) && buf[0] != L'\n')
-            ++count;
-          file.seekg(count);
+          if (buf[2] != L'\n' && buf[3] != L'\n') {
+            for (; file.get(buf[0]) && buf[0] != L'\n'; ++count);
+            file.seekg(count);
+          }
+          buf[1] = L'\x20';
+          buf[2] = L'\x20';
           continue;
         }
         else if (buf[0] == L'[' && buf[2] == L'-' && buf[3] == buf[2]) { // "[[--" multiline comment

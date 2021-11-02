@@ -19,7 +19,7 @@ static void _ValidConfig()
   // boolean value
   _asserts(cfg.FindEntry(L"Potato", L"some_bool") == L"true", "");
   // multiline string
-  _asserts(cfg.FindEntry(L"some_multiline_string") == L"This is a very big\n\n  multiline string\n\n", "");
+  _asserts(cfg.FindEntry(L"some_multiline_string") == L"This is a\n\n  multiline string\n\n", "");
 }
 
 static void _SketchyConfig()
