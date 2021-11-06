@@ -52,10 +52,11 @@ static void Start()
 {
   SetUnhandledExceptionFilter(Status::CustomSEHFilter); // TODO: nop this setter
 
-  auto pe = make_unique<Memory::PEFormat>(nullptr);
+  Memory::Data sig{ 0x4Du, 0x5Au };
+  auto pe = make_unique<Memory::PEFormat>(sig);
 
   // hook entry point with single use trampoline
-  _trampoline = new Memory::Trampoline<int>(pe->GetEntry(), 1);
+  _trampoline = new Memory::Trampoline<int>(*pe, pe->GetEntryPoint(), 1);
   _trampoline->before += &Hook; // TODO: hook does not need to run on trampoline, only scripts
 }
 
@@ -154,8 +155,8 @@ void YASL::_LoadScripts()
         auto script = LoadLibraryW(name.c_str());
         if (script != nullptr) {
           size_t count;
-          auto buffer = make_unique<char[]>(_STATIC_BUFF_SIZE);
-          wcstombs_s(&count, &buffer[0], _STATIC_BUFF_SIZE, _mainName.c_str(), _STATIC_BUFF_SIZE);
+          auto buffer = make_unique<char[]>(_static_size);
+          wcstombs_s(&count, &buffer[0], _static_size, _mainName.c_str(), _static_size);
 
           auto func = GetProcAddress(script, &buffer[0]);
           if (func != nullptr) {

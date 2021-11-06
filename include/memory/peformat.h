@@ -22,52 +22,104 @@
 #pragma once
 
 #include "base.h"
+#include "protection.h"
+#include "pointer.h"
 
 namespace Memory
 {
 
-/**
-  @class PEFormat
-  @brief Object used to store PE image values
-**/
+#pragma pack(push, imagedos, 1)
+typedef struct _align(1) IMAGE_DOS_HEADER {
+  uint8_t  e_magic[2];
+  uint16_t e_cblp;
+  uint16_t e_cp;
+  uint16_t e_crlc;
+  uint16_t e_cparhdr;
+  uint16_t e_minalloc;
+  uint16_t e_maxalloc;
+  uint16_t e_ss;
+  uint16_t e_sp;
+  uint16_t e_csum;
+  uint16_t e_ip;
+  uint16_t e_cs;
+  uint16_t e_lfarlc;
+  uint16_t e_ovno;
+  uint16_t e_res1[4];
+  uint16_t e_oemid;
+  uint16_t e_oeminfo;
+  uint16_t e_res2[10];
+  uint32_t e_lfanew;
+} dosheader_t;
+#pragma pack(pop, imagedos)
+
+using ntheaders_t = IMAGE_NT_HEADERS;
+using meminfo_t = MEMORY_BASIC_INFORMATION;
+
 class PEFormat {
 public:
-  /**
-    @brief PEFormat object constructor
-    @param hmodule Module handle to be analyzed
-  **/
-  PEFormat(const hmodule_t& hmodule) : _module(hmodule)
+  PEFormat(const Data& signature) :
+    _baseAddr(0u), _dosHeader(0u), _ntHeaders(0u), _dosSignature(signature)
   {
-    _filename = make_unique<char[]>(MAX_PATH); // MapAndLoad doesn't support wchar_t
-    if (!GetModuleFileNameA(hmodule, &_filename[0], MAX_PATH))
-      _throws("Unable to find process filename");
+    _baseAddr = _FindBaseAddress(_dosSignature);
+    if (_baseAddr == -1)
+      _throws("Could not find PE data on any virtual memory section");
 
-    _image = make_unique<peimage_t>();
-    if (!MapAndLoad(&_filename[0], NULL, &*_image, FALSE, TRUE))
-      _throws("Could not map process binary file");
+    _dosHeader = _baseAddr.ToVoid();
+    _ntHeaders = _baseAddr + _dosHeader.ToObject<dosheader_t>()->e_lfanew;
   }
 
-  /**
-    @brief PEFormat object destructor
-  **/
-  ~PEFormat()
+  Pointer& GetBaseAddress() noexcept
   {
-    UnMapAndLoad(&*_image);
+    return _baseAddr;
   }
 
-  /**
-    @brief  Get entry point address
-    @retval uintptr_t Entry address
-  **/
-  uintptr_t GetEntry() noexcept
+  const Pointer GetEntryPoint() noexcept
   {
-    return GetAbsolute(_image->FileHeader->OptionalHeader.AddressOfEntryPoint);
+    return FindDynamicAddress(_ntHeaders.ToObject<ntheaders_t>()->OptionalHeader.AddressOfEntryPoint);
+  }
+
+  const Pointer FindDynamicAddress(const uintptr_t& staticAddress) noexcept
+  {
+#ifndef __X86_ARCH__
+    return (_baseAddr == 0x140000000u) ? staticAddress : _baseAddr + (staticAddress - 0x140000000u);
+#else
+    return (_baseAddr == 0x400000u) ? staticAddress : _baseAddr + (staticAddress - 0x400000u);
+#endif
   }
 
 private:
-  hmodule_t             _module;   //!< Module handle
-  unique_ptr<char[]>    _filename; //!< Module filename
-  unique_ptr<peimage_t> _image;    //!< Module PE image
+  Pointer _baseAddr;
+  Pointer _dosHeader;
+  Pointer _ntHeaders;
+  Data    _dosSignature;
+
+  static Pointer _FindBaseAddress(const Data& signature)
+  {
+    auto mi = make_unique<meminfo_t>();
+    VirtualQuery(0u, &*mi, sizeof(*mi));
+
+    Pointer currAddr = 0u;
+    do {
+      Protection protection(mi->AllocationBase, mi->RegionSize);
+      currAddr += mi->RegionSize;
+      if (protection.GetOldMode() == PAGE_NOACCESS)
+        continue;
+
+      if (mi->AllocationBase == mi->BaseAddress &&
+          (mi->AllocationProtect | PAGE_EXECUTE_READ)) {
+        size_t count = 0u;
+        for (size_t i = 0u; i < signature.Size(); ++i, ++count) {
+          if (signature[i] != *(reinterpret_cast<pdata_t>(mi->AllocationBase) + count)) {
+            count = -1;
+            break;
+          }
+        }
+        if (count != -1)
+          return mi->AllocationBase;
+      }
+    } while (VirtualQuery(currAddr.ToVoid(), &*mi, sizeof(*mi)));
+    return -1;
+  }
 };
 
 }

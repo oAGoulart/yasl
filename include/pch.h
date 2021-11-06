@@ -30,3 +30,4 @@
 #include <fstream>
 #include <list>
 #include <cwchar>
+#include <sstream>

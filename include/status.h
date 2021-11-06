@@ -30,6 +30,13 @@
 
 using namespace chrono;
 
+#define	DUMP_SIZE_MAX	8000	//max size of our dump
+#define	CALL_TRACE_MAX	((DUMP_SIZE_MAX - 2000) / (MAX_PATH + 40))	//max number of traced calls
+
+using exception_t = EXCEPTION_POINTERS;
+using minidump_t = MINIDUMP_TYPE;
+using miniexception_t = MINIDUMP_EXCEPTION_INFORMATION;
+
 /**
   @class Status
   @brief Object used to store project status
@@ -47,9 +54,11 @@ public:
   {
     _file.open(_filename);
 #ifdef __MARKDOWN_EXTEND__
-    _file << L"\t**" << _name << L"** " << _version << L" status output..." << L"\n\n" << flush;
+    _file << L"\t**" << _name << L"** " << _version << L" status output..." << _wcrlf
+          << _wcrlf << flush;
 #else
-    _file << L'\t' << _name << L' ' << _version << L" status output..." << L"\n\n" << flush;
+    _file << L'\t' << _name << L' ' << _version << L" status output..." << _wcrlf
+          << _wcrlf << flush;
 #endif
   };
 
@@ -69,19 +78,50 @@ public:
   {
     auto stamp = system_clock::now();
     auto time = system_clock::to_time_t(stamp);
-    auto buffer = make_unique<wchar_t[]>(_STATIC_BUFF_SIZE);
-    if (_wctime64_s(&buffer[0], _STATIC_BUFF_SIZE, &time))
+    auto buffer = make_unique<wchar_t[]>(_static_size);
+    if (_wctime64_s(&buffer[0], _static_size, &time))
       _throws("Could not convert time into string");
 
-    auto length = wcsnlen_s(&buffer[0], _STATIC_BUFF_SIZE);
+    auto length = wcsnlen_s(&buffer[0], _static_size);
     buffer[length - 1] = L'\0'; // remove new line char
 
 #ifdef __MARKDOWN_EXTEND__
-    _file << L"_[" << buffer << L"]_ **" << _name << L"**: " << msg << endl << flush;
+    _file << L"_[" << buffer << L"]_ **" << _name << L"**: " << msg << _wcrlf << flush;
 #else
-    _file << L'[' << buffer << L"] " << _name << L": " << msg << endl << flush;
+    _file << L'[' << buffer << L"] " << _name << L": " << msg << _wcrlf << flush;
 #endif
   };
+
+  static bool GetSystemInfo(wstring& outStr)
+  {
+
+    outStr += L"System metrics and configuration settings:" _wcrlf;
+    outStr += L"\tBoot mode: ";
+    auto displayCount = GetSystemMetrics(SM_CLEANBOOT);
+    outStr += (displayCount) ? L"Fail-safe boot" _wcrlf : L"Normal boot" _wcrlf;
+    outStr += L"\tDisplay count: ";
+    outStr += to_wstring(GetSystemMetrics(SM_CMONITORS)) + _wcrlf;
+    auto mouseButtons = GetSystemMetrics(SM_CMOUSEBUTTONS);
+    outStr += L"\tMouse buttons: ";
+    outStr += (mouseButtons) ? to_wstring(mouseButtons) + _wcrlf : L"Mouse not found" _wcrlf;
+    outStr += L"\tScreen width: ";
+    outStr += to_wstring(GetSystemMetrics(SM_CXSCREEN)) + _wcrlf;
+    outStr += L"\tScreen height: ";
+    outStr += to_wstring(GetSystemMetrics(SM_CYSCREEN)) + _wcrlf;
+
+    if (displayCount > 1) {
+      outStr += L"\tVirtual screen width: ";
+      outStr += to_wstring(GetSystemMetrics(SM_CXVIRTUALSCREEN)) + _wcrlf;
+      outStr += L"\tVirtual screen height: ";
+      outStr += to_wstring(GetSystemMetrics(SM_CYVIRTUALSCREEN)) + _wcrlf;
+    }
+
+    auto hasNetwork = GetSystemMetrics(SM_NETWORK);
+    outStr += L"\tNetwork: ";
+    outStr += (hasNetwork & 1) ? L"Available" _wcrlf : L"Not available" _wcrlf;
+
+    return true;
+  }
 
   /**
     @brief  Custom SEH filter callback function
@@ -103,7 +143,7 @@ public:
     auto file = CreateFileW(L"miniDump.md", GENERIC_WRITE, FILE_SHARE_WRITE,
                             nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
     if (file != INVALID_HANDLE_VALUE) {
-      minidump_t miniDump;
+      miniexception_t miniDump;
       memset(&miniDump, 0, sizeof(miniDump));
       miniDump.ThreadId = GetCurrentThreadId();
       miniDump.ExceptionPointers = exceptionInfo;

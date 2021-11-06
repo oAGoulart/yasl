@@ -28,7 +28,7 @@
   @brief     Used for memory related functions
 **/
 namespace Memory
-{
+{;
 
 /**
   @brief  Call and return
@@ -44,8 +44,18 @@ inline T Call(uintptr_t address, Args&&... args)
   return reinterpret_cast<T(*)(Args&&...)>(address)(forward<Args>(args)...);
 }
 
+#ifdef __X86_ARCH__
+template<typename T, typename C, typename... Args>
+inline T CallMethod(uintptr_t address, C _this, Args&&... args)
+{
+  return reinterpret_cast<T(__thiscall*)(C, Args&&...)>(address)(_this, forward<Args>(args)...);
+}
+#endif
+
 };
 
+// submodules
+#include "memory/pointer.h"
 #include "memory/protection.h"
 #include "memory/patch.h"
 #include "memory/trampoline.h"

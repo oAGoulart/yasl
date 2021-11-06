@@ -24,6 +24,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <imagehlp.h>
+#include <tlhelp32.h>
 #include <string>
 #include <iostream>
 #include <filesystem>
@@ -57,37 +58,28 @@
 #error "Must compile this code targeting a shared library"
 #endif
 
-#ifdef __X86_ARCH__
-#define _BASE_ADDRESS 0x400000
-#else
-#define _BASE_ADDRESS 0x140000000
-#endif
-
-#define _STATIC_BUFF_SIZE MAX_PATH * 4  //!< Static buffer maximum size
-
 using namespace std;
-using namespace std::filesystem;
+using namespace filesystem;
 
 using long_t = LONG;
 using ulong_t = DWORD;
+using ubyte_t = uint8_t;
 using pvoid_t = LPVOID;
 using pfunc_t = FARPROC;
+using pdata_t = ubyte_t*;
+using handle_t = HANDLE;
 using hmodule_t = HMODULE;
 using lbool_t = BOOL;
 using hfile_t = FILE;
-using peimage_t = LOADED_IMAGE;
-using exception_t = EXCEPTION_POINTERS;
-using minidump_t = MINIDUMP_EXCEPTION_INFORMATION;
 
-/**
-  @def   _ubyte
-  @brief Cast value into unsigned byte
-  @param value Value to be cast
-**/
 #define \
-_ubyte(value) \
-  static_cast<uint8_t>(value)
+_static_size MAX_PATH * 4
 
+#define \
+_crlf "\r\n"
+
+#define \
+_wcrlf L"\r\n"
 
 #if defined(_SGR) || !defined(NSGR)
 #define \
@@ -128,8 +120,8 @@ _throws(msg) \
 { \
   string what(_format("33", "at file ")); \
   what += __FILE__; \
-  what += _format("33", " on line ") + to_string(__LINE__) + "\r\n\t"; \
-  what += _format("37;41", "FAILURE\t") _format("31", msg) "\r\n"; \
+  what += _format("33", " on line ") + to_string(__LINE__) +  _crlf "\t"; \
+  what += _format("37;41", "FAILURE\t") _format("31", msg) _crlf; \
   throw runtime_error(what); \
 }
 
@@ -146,3 +138,7 @@ _asserts(cond, msg) \
     _throws(msg); \
   } \
 }
+
+#define \
+_align(value) \
+  __declspec(align(value))

@@ -24,6 +24,7 @@
 #pragma once
 
 #include "base.h"
+#include "pointer.h"
 
 namespace Memory
 {
@@ -31,21 +32,17 @@ namespace Memory
 /**
   @class Protection
   @brief Object used to change memory virtual protection
+
+  Changes page virtual protection on construction and reset to previous mode
+  when this object gets destroyed.
 **/
 class Protection {
 public:
-  /**
-    @brief Protection object constructor
-    @param address Memory address
-    @param size    Length of memory section
-    @param mode    Mode to change into
-  **/
-  Protection(const uintptr_t& address, const size_t& size,
-             const ulong_t& mode = PAGE_EXECUTE_READWRITE) :
-    _address(address), _size(size), _mode(mode)
+  Protection(const Pointer& ptr, const size_t& size, const ulong_t& mode = PAGE_EXECUTE_READWRITE) :
+    _ptr(ptr), _size(size), _mode(mode)
   {
     if (_size)
-      _isEnabled = VirtualProtect(reinterpret_cast<pvoid_t>(_address), _size, _mode, &_oldMode);
+      _isEnabled = VirtualProtect(_ptr.ToVoid(), _size, _mode, &_oldMode);
     _isEnabled = false;
   };
 
@@ -55,7 +52,7 @@ public:
   ~Protection()
   {
     if (_isEnabled)
-      _isEnabled = !VirtualProtect(reinterpret_cast<pvoid_t>(_address), _size, _oldMode, &_oldMode);
+      _isEnabled = !VirtualProtect(_ptr.ToVoid(), _size, _oldMode, &_oldMode);
   };
 
   /**
@@ -71,7 +68,7 @@ public:
     @brief  Gets old mode
     @retval ulong_t Old mode
   **/
-  ulong_t GetOldMode() const noexcept
+  ulong_t& GetOldMode() noexcept
   {
     return _oldMode;
   }
@@ -86,11 +83,11 @@ public:
   }
 
 private:
-  uintptr_t _address;   //!< Memory address
-  ulong_t   _mode;      //!< Current mode
-  ulong_t   _oldMode;   //!< Old mode
-  size_t    _size;      //!< Size of memory change
-  lbool_t   _isEnabled; //!< Is change enabled?
+  Pointer _ptr;
+  ulong_t _mode;      //!< Current mode
+  ulong_t _oldMode;   //!< Old mode
+  size_t  _size;      //!< Size of memory change
+  lbool_t _isEnabled; //!< Is change enabled?
 };
 
 }

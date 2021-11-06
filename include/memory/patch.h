@@ -22,31 +22,12 @@
 #pragma once
 
 #include "base.h"
+#include "pointer.h"
 #include "data.h"
+#include "peformat.h"
 
 namespace Memory
 {
-
-/**
-  @brief  Calculate relative offset
-  @param  dest    Destination address
-  @param  from    Source address
-  @retval int32_t Relative address
-**/
-inline int32_t GetRelativeOffset(uintptr_t dest, uintptr_t from) noexcept
-{
-  return static_cast<int32_t>(dest - from);
-};
-
-/**
-  @brief  Calculate absolute address
-  @param  address   Virtual address
-  @retval uintptr_t Absolute address
-**/
-inline uintptr_t GetAbsolute(uintptr_t address) noexcept
-{
-  return address + _BASE_ADDRESS;
-};
 
 /**
   @enum  Memory::Register
@@ -54,27 +35,27 @@ inline uintptr_t GetAbsolute(uintptr_t address) noexcept
   @note  Members value is used to calcule some opcodes binary value, changing
          this @c enum order will cause undefined behavior
 **/
-enum class Register : uint8_t {
-  //!<  Byte sized registers
+enum class Register : ubyte_t {
+  // byte sized registers
   al, cl, dl, bl, ah, ch, dh, bh,
 #ifndef __X86_ARCH__
   spl, bpl, sil, dil,
   r8b, r9b, r10b, r11b, r12b, r13b, r14b, r15b,
 #endif
-  //!<  Word sized registers
+  // word sized registers
   ax, cx, dx, bx, sp, bp, si, di,
 #ifndef __X86_ARCH__
   r8w, r9w, r10w, r11w, r12w, r13w, r14w, r15w,
 #endif
-  //!<  Dword sized registers
+  // dword sized registers
   eax, ecx, edx, ebx, esp, ebp, esi, edi,
 #ifndef __X86_ARCH__
   r8d, r9d, r10d, r11d, r12d, r13d, r14d, r15d,
-  //!<  Qword sized registers
+  // qword sized registers
   rax, rcx, rdx, rbx, rsp, rbp, rsi, rdi,
   r8, r9, r10, r11, r12, r13, r14, r15,
 #endif
-  noreg //!<  End of registers
+  noreg = 255u // marks end of registers
 };
 
 /**
@@ -88,27 +69,20 @@ class Patch {
 public:
   using enum Register;
 
-  /**
-    @brief Patch object constructor
-    @param address Address on memory to be patched
-    @param maxRead Maximum amount of bytes to be patched, this can
-                   be used for preventing overflow depending on how
-                   much space you have to apply the patch
-  **/
-  Patch(const uintptr_t& address, const size_t& maxRead) :
-    _address(address), _offset(address), _maxRead(maxRead)
+  Patch(const PEFormat& image, const Pointer& ptr) :
+    _image(image), _ptr(ptr), _offset(ptr), _original({}), _payload({})
   {
-    if (_address < _BASE_ADDRESS)
-      _throws("Invalid address");
+    if (_ptr < _image.GetBaseAddress())
+      _throws("Patch address is less than base address");
   }
 
   /**
     @brief  Gets size of patch
     @retval size_t Number of bytes written into memory
   **/
-  constexpr size_t GetCount() const noexcept
+  const size_t GetCount() const noexcept
   {
-    return _offset - _address;
+    return _offset.ToValue() - _ptr.ToValue();
   }
 
   /**
@@ -138,24 +112,15 @@ public:
   void Restore()
   {
     if (_original.Size()) {
-      Write(_address, _original, _original.Size());
-      _offset = _address;
+      Write(_ptr, _original, _original.Size());
+      _offset = _ptr;
       _payload.Clear();
     }
   };
 
-  /**
-    @brief Move byte into register
-
-    Moves @p value into register @p r, if register is bigger
-    than @c uint8_t then value will be cast into a bigger type
-
-    @param r     Register destination
-    @param value Byte value to be moved
-  **/
-  void mov(const Register r, const uint8_t value)
+  void mov(const Register r, const ubyte_t value)
   {
-    auto ub = _ubyte(r);
+    auto ub = static_cast<ubyte_t>(r);
     switch (r) {
       case al:
       case cl:
@@ -165,7 +130,7 @@ public:
       case ch:
       case dh:
       case bh:
-        *this << _ubyte('\xB0' + ub - _ubyte(al));
+        *this << static_cast<ubyte_t>('\xB0' + ub - static_cast<ubyte_t>(al));
         break;
 
 #ifndef __X86_ARCH__
@@ -173,7 +138,8 @@ public:
       case bpl:
       case sil:
       case dil:
-        *this << '\x40' << _ubyte('\xB4' + ub - _ubyte(spl));
+        *this << '\x40'
+              << static_cast<ubyte_t>('\xB4' + ub - static_cast<ubyte_t>(spl));
         break;
 
       case r8b:
@@ -184,7 +150,8 @@ public:
       case r13b:
       case r14b:
       case r15b:
-        *this << '\x41' << _ubyte('\xB0' + ub - _ubyte(r8b));
+        *this << '\x41'
+              << static_cast<ubyte_t>('\xB0' + ub - static_cast<ubyte_t>(r8b));
         break;
 #endif
       default:
@@ -204,7 +171,7 @@ public:
   **/
   void mov(const Register r, const uint16_t value)
   {
-    auto ub = _ubyte(r);
+    auto ub = static_cast<ubyte_t>(r);
     switch (r) {
       case ax:
       case cx:
@@ -214,7 +181,8 @@ public:
       case bp:
       case si:
       case di:
-        *this << '\x66' << _ubyte('\xB8' + ub - _ubyte(ax));
+        *this << '\x66'
+              << static_cast<ubyte_t>('\xB8' + ub - static_cast<ubyte_t>(ax));
         break;
 
 #ifndef __X86_ARCH__
@@ -226,7 +194,8 @@ public:
       case r13w:
       case r14w:
       case r15w:
-        *this << '\x66' << '\x41' << _ubyte('\xB8' + ub - _ubyte(r8w));
+        *this << '\x66' << '\x41'
+              << static_cast<ubyte_t>('\xB8' + ub - static_cast<ubyte_t>(r8w));
         break;
 #endif
       default:
@@ -247,7 +216,7 @@ public:
   **/
   void mov(const Register r, const uint32_t value)
   {
-    auto ub = _ubyte(r);
+    auto ub = static_cast<ubyte_t>(r);
     switch (r) {
       case eax:
       case ecx:
@@ -257,7 +226,7 @@ public:
       case ebp:
       case esi:
       case edi:
-        *this << _ubyte('\xB8' + ub - _ubyte(eax));
+        *this << static_cast<ubyte_t>('\xB8' + ub - static_cast<ubyte_t>(eax));
         break;
 
 #ifndef __X86_ARCH__
@@ -269,7 +238,8 @@ public:
       case r13d:
       case r14d:
       case r15d:
-        *this << '\x41' << _ubyte('\xB8' + ub - _ubyte(r8d));
+        *this << '\x41'
+              << static_cast<ubyte_t>('\xB8' + ub - static_cast<ubyte_t>(r8d));
         break;
 
       case rax:
@@ -280,7 +250,8 @@ public:
       case rbp:
       case rsi:
       case rdi:
-        *this << '\x48' << '\xC7' << _ubyte('\xC0' + ub - _ubyte(rax));
+        *this << '\x48' << '\xC7'
+              << static_cast<ubyte_t>('\xC0' + ub - static_cast<ubyte_t>(rax));
         break;
 
       case r8:
@@ -291,7 +262,8 @@ public:
       case r13:
       case r14:
       case r15:
-        *this << '\x49' << '\xC7' << _ubyte('\xC0' + ub - _ubyte(r8));
+        *this << '\x49' << '\xC7'
+              << static_cast<ubyte_t>('\xC0' + ub - static_cast<ubyte_t>(r8));
         break;
 #endif
       default:
@@ -307,7 +279,7 @@ public:
   **/
   void mov(const uint32_t address, const Register r)
   {
-    auto ub = _ubyte(r);
+    auto ub = static_cast<ubyte_t>(r);
     switch (r) {
       case al:
         *this << '\xA2';
@@ -320,7 +292,9 @@ public:
       case ch:
       case dh:
       case bh:
-        *this << '\x88' << '\x0D' + _ubyte((ub - _ubyte(cl)) * 8) << '\x12';
+        *this << '\x88'
+              << '\x0D' + static_cast<ubyte_t>((ub - static_cast<ubyte_t>(cl)) * 8u)
+              << '\x12';
         break;
 
 #ifndef __X86_ARCH__
@@ -328,7 +302,9 @@ public:
       case bpl:
       case sil:
       case dil:
-        *this << '\x40' << '\x88' << '\x24' + _ubyte((ub - _ubyte(spl)) * 8) << '\x25';
+        *this << '\x40' << '\x88'
+              << '\x24' + static_cast<ubyte_t>((ub - static_cast<ubyte_t>(spl)) * 8u)
+              << '\x25';
         break;
 
       case r8b:
@@ -339,7 +315,9 @@ public:
       case r13b:
       case r14b:
       case r15b:
-        *this << '\x44' << '\x88' << '\x04' + _ubyte((ub - _ubyte(r8b)) * 8) << '\x25';
+        *this << '\x44' << '\x88'
+              << '\x04' + static_cast<ubyte_t>((ub - static_cast<ubyte_t>(r8b)) * 8u)
+              << '\x25';
         break;
 #endif
       case eax:
@@ -357,7 +335,8 @@ public:
       case ebp:
       case esi:
       case edi:
-        *this << '\x89' << _ubyte('\x0D' + (ub - _ubyte(eax)) * 8);
+        *this << '\x89'
+              << static_cast<ubyte_t>('\x0D' + (ub - static_cast<ubyte_t>(eax)) * 8u);
         break;
 
 #ifndef __X86_ARCH__
@@ -369,7 +348,8 @@ public:
       case r13d:
       case r14d:
       case r15d:
-        *this << '\x41' << _ubyte('\xB8' + ub - _ubyte(r8d));
+        *this << '\x41'
+              << static_cast<ubyte_t>('\xB8' + ub - static_cast<ubyte_t>(r8d));
         break;
 
       case rax:
@@ -380,7 +360,8 @@ public:
       case rbp:
       case rsi:
       case rdi:
-        *this << '\x48' << '\xC7' << _ubyte('\xC0' + ub - _ubyte(rax));
+        *this << '\x48' << '\xC7'
+              << static_cast<ubyte_t>('\xC0' + ub - static_cast<ubyte_t>(rax));
         break;
 
       case r8:
@@ -391,7 +372,8 @@ public:
       case r13:
       case r14:
       case r15:
-        *this << '\x49' << '\xC7' << _ubyte('\xC0' + ub - _ubyte(r8));
+        *this << '\x49' << '\xC7'
+              << static_cast<ubyte_t>('\xC0' + ub - static_cast<ubyte_t>(r8));
         break;
 #endif
       default:
@@ -411,7 +393,7 @@ public:
   **/
   void movabs(const Register r, const uint64_t value)
   {
-    auto ub = _ubyte(r);
+    auto ub = static_cast<ubyte_t>(r);
     switch (r) {
       case rax:
       case rcx:
@@ -421,7 +403,8 @@ public:
       case rbp:
       case rsi:
       case rdi:
-        *this << '\x48' << _ubyte('\xB8' + ub - _ubyte(rax));
+        *this << '\x48'
+              << static_cast<ubyte_t>('\xB8' + ub - static_cast<ubyte_t>(rax));
         break;
 
       case r8:
@@ -432,7 +415,8 @@ public:
       case r13:
       case r14:
       case r15:
-        *this << '\x49' << _ubyte('\xB8' + ub - _ubyte(r8));
+        *this << '\x49'
+              << static_cast<ubyte_t>('\xB8' + ub - static_cast<ubyte_t>(r8));
         break;
 
       default:
@@ -448,7 +432,7 @@ public:
   **/
   void push(const Register r)
   {
-    auto ub = _ubyte(r);
+    auto ub = static_cast<ubyte_t>(r);
     switch (r) {
       case ax:
       case cx:
@@ -458,7 +442,8 @@ public:
       case bp:
       case si:
       case di:
-        *this << '\x66' << _ubyte('\x50' + ub - _ubyte(ax));
+        *this << '\x66'
+              << static_cast<ubyte_t>('\x50' + ub - static_cast<ubyte_t>(ax));
         break;
 
 #ifdef __X86_ARCH__
@@ -470,7 +455,7 @@ public:
       case ebp:
       case esi:
       case edi:
-        *this << _ubyte('\x50' + ub - _ubyte(eax));
+        *this << static_cast<ubyte_t>('\x50' + ub - static_cast<ubyte_t>(eax));
         break;
 #else
       case r8w:
@@ -481,7 +466,8 @@ public:
       case r13w:
       case r14w:
       case r15w:
-        *this << '\x66' << '\x41' << _ubyte('\x50' + ub - _ubyte(r8w));
+        *this << '\x66' << '\x41'
+              << static_cast<ubyte_t>('\x50' + ub - static_cast<ubyte_t>(r8w));
         break;
 
       case rax:
@@ -492,7 +478,7 @@ public:
       case rbp:
       case rsi:
       case rdi:
-        *this << _ubyte('\x50' + ub - _ubyte(rax));
+        *this << static_cast<ubyte_t>('\x50' + ub - static_cast<ubyte_t>(rax));
         break;
 
       case r8:
@@ -503,7 +489,8 @@ public:
       case r13:
       case r14:
       case r15:
-        *this << '\x41' << _ubyte('\x50' + ub - _ubyte(r8));
+        *this << '\x41'
+              << static_cast<ubyte_t>('\x50' + ub - static_cast<ubyte_t>(r8));
         break;
 #endif
       default:
@@ -517,7 +504,7 @@ public:
   **/
   void pop(const Register r)
   {
-    auto ub = _ubyte(r);
+    auto ub = static_cast<ubyte_t>(r);
     switch (r) {
       case ax:
       case cx:
@@ -527,7 +514,8 @@ public:
       case bp:
       case si:
       case di:
-        *this << '\x66' << _ubyte('\x58' + ub - _ubyte(ax));
+        *this << '\x66'
+              << static_cast<ubyte_t>('\x58' + ub - static_cast<ubyte_t>(ax));
         break;
 
 #ifdef __X86_ARCH__
@@ -539,7 +527,7 @@ public:
       case ebp:
       case esi:
       case edi:
-        *this << _ubyte('\x58' + ub - _ubyte(eax));
+        *this << static_cast<ubyte_t>('\x58' + ub - static_cast<ubyte_t>(eax));
         break;
 #else
       case r8w:
@@ -550,7 +538,8 @@ public:
       case r13w:
       case r14w:
       case r15w:
-        *this << '\x66' << '\x41' << _ubyte('\x58' + ub - _ubyte(r8w));
+        *this << '\x66' << '\x41'
+              << static_cast<ubyte_t>('\x58' + ub - static_cast<ubyte_t>(r8w));
         break;
 
       case rax:
@@ -561,7 +550,7 @@ public:
       case rbp:
       case rsi:
       case rdi:
-        *this << _ubyte('\x58' + ub - _ubyte(rax));
+        *this << static_cast<ubyte_t>('\x58' + ub - static_cast<ubyte_t>(rax));
         break;
 
       case r8:
@@ -572,7 +561,8 @@ public:
       case r13:
       case r14:
       case r15:
-        *this << '\x41' << _ubyte('\x58' + ub - _ubyte(r8));
+        *this << '\x41'
+              << static_cast<ubyte_t>('\x58' + ub - static_cast<ubyte_t>(r8));
         break;
 #endif
       default:
@@ -589,8 +579,7 @@ public:
   void jmp(const uintptr_t address)
   {
     *this << '\xE9';
-    auto addr = GetRelativeOffset(address, _offset + 4);
-    *this << addr;
+    *this << static_cast<int32_t>(address - (_offset + 4u));
   }
 
   /**
@@ -599,7 +588,7 @@ public:
   **/
   void jmp(const Register r)
   {
-    auto ub = _ubyte(r);
+    auto ub = static_cast<ubyte_t>(r);
     switch (r) {
       case ax:
       case cx:
@@ -609,7 +598,8 @@ public:
       case bp:
       case si:
       case di:
-        *this << '\x66' << '\xFF' << _ubyte('\xE0' + ub - _ubyte(ax));
+        *this << '\x66' << '\xFF'
+              << static_cast<ubyte_t>('\xE0' + ub - static_cast<ubyte_t>(ax));
         break;
 
 #ifdef __X86_ARCH__
@@ -621,7 +611,8 @@ public:
       case ebp:
       case esi:
       case edi:
-        *this << '\xFF' << _ubyte('\xE0' + ub - _ubyte(eax));
+        *this << '\xFF'
+              << static_cast<ubyte_t>('\xE0' + ub - static_cast<ubyte_t>(eax));
         break;
 #else
       case r8w:
@@ -632,7 +623,8 @@ public:
       case r13w:
       case r14w:
       case r15w:
-        *this << '\x66' << '\x41' << '\xFF' << _ubyte('\xE0' + ub - _ubyte(r8w));
+        *this << '\x66' << '\x41' << '\xFF'
+              << static_cast<ubyte_t>('\xE0' + ub - static_cast<ubyte_t>(r8w));
         break;
 
       case rax:
@@ -643,7 +635,8 @@ public:
       case rbp:
       case rsi:
       case rdi:
-        *this << '\xFF' << _ubyte('\xE0' + ub - _ubyte(rax));
+        *this << '\xFF'
+              << static_cast<ubyte_t>('\xE0' + ub - static_cast<ubyte_t>(rax));
         break;
 
       case r8:
@@ -654,7 +647,8 @@ public:
       case r13:
       case r14:
       case r15:
-        *this << '\x41' << '\xFF' << _ubyte('\xE0' + ub - _ubyte(r8));
+        *this << '\x41' << '\xFF'
+              << static_cast<ubyte_t>('\xE0' + ub - static_cast<ubyte_t>(r8));
         break;
 #endif
       default:
@@ -672,8 +666,7 @@ public:
   void call(const uintptr_t address)
   {
     *this << '\xE8';
-    auto addr = GetRelativeOffset(address, _offset + 4);
-    *this << addr;
+    *this << static_cast<int32_t>(address - (_offset + 4u));
   }
 
   /**
@@ -682,7 +675,7 @@ public:
   **/
   void call(const Register r)
   {
-    auto ub = _ubyte(r);
+    auto ub = static_cast<ubyte_t>(r);
     switch (r) {
       case ax:
       case cx:
@@ -692,7 +685,8 @@ public:
       case bp:
       case si:
       case di:
-        *this << '\x66' << '\xFF' << _ubyte('\xD0' + ub - _ubyte(ax));
+        *this << '\x66' << '\xFF'
+              << static_cast<ubyte_t>('\xD0' + ub - static_cast<ubyte_t>(ax));
         break;
 
 #ifdef __X86_ARCH__
@@ -704,7 +698,8 @@ public:
       case ebp:
       case esi:
       case edi:
-        *this << '\xFF' << _ubyte('\xD0' + ub - _ubyte(eax));
+        *this << '\xFF'
+              << static_cast<ubyte_t>('\xD0' + ub - static_cast<ubyte_t>(eax));
         break;
 #else
       case r8w:
@@ -715,7 +710,8 @@ public:
       case r13w:
       case r14w:
       case r15w:
-        *this << '\x66' << '\x41' << '\xFF' << _ubyte('\xD0' + ub - _ubyte(r8w));
+        *this << '\x66' << '\x41' << '\xFF'
+              << static_cast<ubyte_t>('\xD0' + ub - static_cast<ubyte_t>(r8w));
         break;
 
       case rax:
@@ -726,7 +722,8 @@ public:
       case rbp:
       case rsi:
       case rdi:
-        *this '\xFF' << _ubyte('\xD0' + ub - _ubyte(rax));
+        *this << '\xFF'
+              << static_cast<ubyte_t>('\xD0' + ub - static_cast<ubyte_t>(rax));
         break;
 
       case r8:
@@ -737,7 +734,8 @@ public:
       case r13:
       case r14:
       case r15:
-        *this << '\x41' << '\xFF' << _ubyte('\xD0' + ub - _ubyte(r8));
+        *this << '\x41' << '\xFF'
+              << static_cast<ubyte_t>('\xD0' + ub - static_cast<ubyte_t>(r8));
         break;
 #endif
       default:
@@ -751,7 +749,7 @@ public:
   **/
   void nop(const size_t count)
   {
-    Read(_offset, _original, count, _maxRead);
+    Read(_offset, _original, count);
     Fill(_offset, '\x90', count);
     _offset += count;
   }
@@ -789,7 +787,7 @@ public:
   **/
   void je(const uintptr_t address)
   {
-    *this << '\x0F' << '\x84' << GetRelativeOffset(address, _offset + 4);
+    *this << '\x0F' << '\x84' << static_cast<int32_t>(address - (_offset + 4u));
   }
   void (Patch::*jz)(const uintptr_t) = &Patch::je;  //!< Jump if zero
 
@@ -799,7 +797,7 @@ public:
   **/
   void jne(const uintptr_t address)
   {
-    *this << '\x0F' << '\x85' << GetRelativeOffset(address, _offset + 4);
+    *this << '\x0F' << '\x85' << static_cast<int32_t>(address - (_offset + 4u));
   }
   void (Patch::*jnz)(const uintptr_t) = &Patch::jne;  //!< Jump if not zero
 
@@ -809,7 +807,7 @@ public:
   **/
   void jg(const uintptr_t address)
   {
-    *this << '\x0F' << '\x8F' << GetRelativeOffset(address, _offset + 4);
+    *this << '\x0F' << '\x8F' << static_cast<int32_t>(address - (_offset + 4u));
   }
   void (Patch::*jnle)(const uintptr_t) = &Patch::jg;  //!< Jump if not less or equal
 
@@ -819,7 +817,7 @@ public:
   **/
   void jge(const uintptr_t address)
   {
-    *this << '\x0F' << '\x8D' << GetRelativeOffset(address, _offset + 4);
+    *this << '\x0F' << '\x8D' << static_cast<int32_t>(address - (_offset + 4u));
   }
   void (Patch::*jnl)(const uintptr_t) = &Patch::jge;  //!< Jump if not less
 
@@ -829,7 +827,7 @@ public:
   **/
   void jl(const uintptr_t address)
   {
-    *this << '\x0F' << '\x8C' << GetRelativeOffset(address, _offset + 4);
+    *this << '\x0F' << '\x8C' << static_cast<int32_t>(address - (_offset + 4u));
   }
   void (Patch::*jnge)(const uintptr_t) = &Patch::jl;  //!< Jump if not greater or equal
 
@@ -839,7 +837,7 @@ public:
   **/
   void jle(const uintptr_t address)
   {
-    *this << '\x0F' << '\x8E' << GetRelativeOffset(address, _offset + 4);
+    *this << '\x0F' << '\x8E' << static_cast<int32_t>(address - (_offset + 4u));
   }
   void (Patch::*jng)(const uintptr_t) = &Patch::jle;  //!< Jump not greater
 
@@ -849,7 +847,7 @@ public:
   **/
   void inc(const Register r)
   {
-    auto ub = _ubyte(r);
+    auto ub = static_cast<ubyte_t>(r);
     switch (r) {
       case al:
       case cl:
@@ -859,7 +857,8 @@ public:
       case ch:
       case dh:
       case bh:
-        *this << '\xFE' << _ubyte('\xC0' + ub - _ubyte(al));
+        *this << '\xFE'
+              << static_cast<ubyte_t>('\xC0' + ub - static_cast<ubyte_t>(al));
         break;
 
       case ax:
@@ -871,9 +870,11 @@ public:
       case si:
       case di:
 #ifdef __X86_ARCH__
-        *this << '\x66' << _ubyte('\x40' + ub - _ubyte(ax));
+        *this << '\x66'
+              << static_cast<ubyte_t>('\x40' + ub - static_cast<ubyte_t>(ax));
 #else
-        *this << '\x66' << '\xFF' << _ubyte('\xC0' + ub - _ubyte(ax));
+        *this << '\x66' << '\xFF'
+              << static_cast<ubyte_t>('\xC0' + ub - static_cast<ubyte_t>(ax));
 #endif
         break;
 
@@ -886,9 +887,10 @@ public:
       case esi:
       case edi:
 #ifdef __X86_ARCH__
-        *this << _ubyte('\x40' + ub - _ubyte(eax));
+        *this << static_cast<ubyte_t>('\x40' + ub - static_cast<ubyte_t>(eax));
 #else
-        *this << '\xFF' << _ubyte('\xC0' + ub - _ubyte(ax));
+        *this << '\xFF'
+              << static_cast<ubyte_t>('\xC0' + ub - static_cast<ubyte_t>(ax));
 #endif
         break;
 
@@ -901,7 +903,8 @@ public:
       case r13b:
       case r14b:
       case r15b:
-        *this << '\x41' << '\xFE' << _ubyte('\xC0' + ub - _ubyte(r8b));
+        *this << '\x41' << '\xFE'
+              << static_cast<ubyte_t>('\xC0' + ub - static_cast<ubyte_t>(r8b));
         break;
 
       case r8w:
@@ -912,7 +915,8 @@ public:
       case r13w:
       case r14w:
       case r15w:
-        *this << '\x66' << '\x41' << '\xFF' << _ubyte('\xC0' + ub - _ubyte(r8w));
+        *this << '\x66' << '\x41' << '\xFF'
+              << static_cast<ubyte_t>('\xC0' + ub - static_cast<ubyte_t>(r8w));
         break;
 
       case r8d:
@@ -923,7 +927,8 @@ public:
       case r13d:
       case r14d:
       case r15d:
-        *this << '\x41' << '\xFF' << _ubyte('\xC0' + ub - _ubyte(r8d));
+        *this << '\x41' << '\xFF'
+              << static_cast<ubyte_t>('\xC0' + ub - static_cast<ubyte_t>(r8d));
         break;
 
       case rax:
@@ -934,7 +939,8 @@ public:
       case rbp:
       case rsi:
       case rdi:
-        *this << '\x48' << '\xFF' << _ubyte('\xC0' + ub - _ubyte(rax));
+        *this << '\x48' << '\xFF'
+              << static_cast<ubyte_t>('\xC0' + ub - static_cast<ubyte_t>(rax));
         break;
 
       case r8:
@@ -945,7 +951,8 @@ public:
       case r13:
       case r14:
       case r15:
-        *this << '\x49' << '\xFF' << _ubyte('\xC0' + ub - _ubyte(r8));
+        *this << '\x49' << '\xFF'
+              << static_cast<ubyte_t>('\xC0' + ub - static_cast<ubyte_t>(r8));
         break;
 #endif
       default:
@@ -959,7 +966,7 @@ public:
   **/
   void dec(const Register r)
   {
-    auto ub = _ubyte(r);
+    auto ub = static_cast<ubyte_t>(r);
     switch (r) {
       case al:
       case cl:
@@ -969,7 +976,8 @@ public:
       case ch:
       case dh:
       case bh:
-        *this << '\xFE' << _ubyte('\xC8' + ub - _ubyte(al));
+        *this << '\xFE'
+              << static_cast<ubyte_t>('\xC8' + ub - static_cast<ubyte_t>(al));
         break;
 
       case ax:
@@ -981,9 +989,11 @@ public:
       case si:
       case di:
 #ifdef __X86_ARCH__
-        *this << '\x66' << _ubyte('\x48' + ub - _ubyte(ax));
+        *this << '\x66'
+              << static_cast<ubyte_t>('\x48' + ub - static_cast<ubyte_t>(ax));
 #else
-        *this << '\x66' << '\xFF' << _ubyte('\xC8' + ub - _ubyte(ax));
+        *this << '\x66' << '\xFF'
+              << static_cast<ubyte_t>('\xC8' + ub - static_cast<ubyte_t>(ax));
 #endif
         break;
 
@@ -996,9 +1006,10 @@ public:
       case esi:
       case edi:
 #ifdef __X86_ARCH__
-        *this << _ubyte('\x48' + ub - _ubyte(eax));
+        *this << static_cast<ubyte_t>('\x48' + ub - static_cast<ubyte_t>(eax));
 #else
-        *this << '\xFF' << _ubyte('\xC8' + ub - _ubyte(eax));
+        *this << '\xFF'
+              << static_cast<ubyte_t>('\xC8' + ub - static_cast<ubyte_t>(eax));
 #endif
         break;
 
@@ -1011,7 +1022,8 @@ public:
       case r13b:
       case r14b:
       case r15b:
-        *this << '\x41' << '\xFE' << _ubyte('\xC8' + ub - _ubyte(r8b));
+        *this << '\x41' << '\xFE'
+              << static_cast<ubyte_t>('\xC8' + ub - static_cast<ubyte_t>(r8b));
         break;
 
       case r8w:
@@ -1022,7 +1034,8 @@ public:
       case r13w:
       case r14w:
       case r15w:
-        *this << '\x66' << '\x41' << '\xFF' << _ubyte('\xC8' + ub - _ubyte(r8w));
+        *this << '\x66' << '\x41' << '\xFF'
+              << static_cast<ubyte_t>('\xC8' + ub - static_cast<ubyte_t>(r8w));
         break;
 
       case r8d:
@@ -1033,7 +1046,8 @@ public:
       case r13d:
       case r14d:
       case r15d:
-        *this << '\x41' << '\xFF' << _ubyte('\xC8' + ub - _ubyte(r8d));
+        *this << '\x41' << '\xFF'
+              << static_cast<ubyte_t>('\xC8' + ub - static_cast<ubyte_t>(r8d));
         break;
 
       case rax:
@@ -1044,7 +1058,8 @@ public:
       case rbp:
       case rsi:
       case rdi:
-        *this << '\x48' << '\xFF' << _ubyte('\xC8' + ub - _ubyte(rax));
+        *this << '\x48' << '\xFF'
+              << static_cast<ubyte_t>('\xC8' + ub - static_cast<ubyte_t>(rax));
         break;
 
       case r8:
@@ -1055,7 +1070,8 @@ public:
       case r13:
       case r14:
       case r15:
-        *this << '\x49' << '\xFF' << _ubyte('\xC8' + ub - _ubyte(r8));
+        *this << '\x49' << '\xFF'
+              << static_cast<ubyte_t>('\xC8' + ub - static_cast<ubyte_t>(r8));
         break;
 #endif
       default:
@@ -1069,7 +1085,7 @@ public:
   **/
   void nots(const Register r)
   {
-    auto ub = _ubyte(r);
+    auto ub = static_cast<ubyte_t>(r);
     switch (r) {
       case al:
       case cl:
@@ -1079,7 +1095,8 @@ public:
       case ch:
       case dh:
       case bh:
-        *this << '\xF6' << _ubyte('\xD0' + ub - _ubyte(al));
+        *this << '\xF6'
+              << static_cast<ubyte_t>('\xD0' + ub - static_cast<ubyte_t>(al));
         break;
 
       case ax:
@@ -1090,7 +1107,8 @@ public:
       case bp:
       case si:
       case di:
-        *this << '\x66' << '\xF7' << _ubyte('\xD0' + ub - _ubyte(ax));
+        *this << '\x66' << '\xF7'
+              << static_cast<ubyte_t>('\xD0' + ub - static_cast<ubyte_t>(ax));
         break;
 
       case eax:
@@ -1101,7 +1119,8 @@ public:
       case ebp:
       case esi:
       case edi:
-        *this << '\xF7' << _ubyte('\xD0' + ub - _ubyte(eax));
+        *this << '\xF7'
+              << static_cast<ubyte_t>('\xD0' + ub - static_cast<ubyte_t>(eax));
         break;
 
 #ifndef __X86_ARCH__
@@ -1113,7 +1132,8 @@ public:
       case r13b:
       case r14b:
       case r15b:
-        *this << '\x41' << '\xF6' << _ubyte('\xD0' + ub - _ubyte(r8b));
+        *this << '\x41' << '\xF6'
+              << static_cast<ubyte_t>('\xD0' + ub - static_cast<ubyte_t>(r8b));
         break;
 
       case r8w:
@@ -1124,7 +1144,8 @@ public:
       case r13w:
       case r14w:
       case r15w:
-        *this << '\x66' << '\x41' << '\xF7' << _ubyte('\xD0' + ub - _ubyte(r8w));
+        *this << '\x66' << '\x41' << '\xF7'
+              << static_cast<ubyte_t>('\xD0' + ub - static_cast<ubyte_t>(r8w));
         break;
 
       case r8d:
@@ -1135,7 +1156,8 @@ public:
       case r13d:
       case r14d:
       case r15d:
-        *this << '\x41' << '\xF7' << _ubyte('\xD0' + ub - _ubyte(r8d));
+        *this << '\x41' << '\xF7'
+              << static_cast<ubyte_t>('\xD0' + ub - static_cast<ubyte_t>(r8d));
         break;
 
       case rax:
@@ -1146,7 +1168,8 @@ public:
       case rbp:
       case rsi:
       case rdi:
-        *this << '\x48' << '\xF7' << _ubyte('\xD0' + ub - _ubyte(rax));
+        *this << '\x48' << '\xF7'
+              << static_cast<ubyte_t>('\xD0' + ub - static_cast<ubyte_t>(rax));
         break;
 
       case r8:
@@ -1157,7 +1180,8 @@ public:
       case r13:
       case r14:
       case r15:
-        *this << '\x49' << '\xF7' << _ubyte('\xD0' + ub - _ubyte(r8));
+        *this << '\x49' << '\xF7'
+              << static_cast<ubyte_t>('\xD0' + ub - static_cast<ubyte_t>(r8));
         break;
 #endif
       default:
@@ -1166,11 +1190,11 @@ public:
   }
 
 private:
-  uintptr_t _address;  //!< Points to firt byte of memory that will be patched
-  uintptr_t _offset;   //!< Points to last byte written
-  Data      _original; //!< Original data object
-  Data      _payload;  //!< Payload data object
-  size_t    _maxRead;  //!< Maximum amount of bytes to read
+  PEFormat _image;
+  Pointer  _ptr;
+  Pointer  _offset;
+  Data     _original;
+  Data     _payload;
 
   /**
     @brief  operator<<
@@ -1182,26 +1206,26 @@ private:
   template<typename T>
   inline friend Patch& _PutObject(Patch& p, const T& value)
   {
-    Read(p._offset, p._original, sizeof(value), p._maxRead);
+    Read(p._offset, p._original, sizeof(value));
     p._payload.PushObject<T>(value);
     WriteObject<T>(p._offset, value);
     p._offset += sizeof(value);
     return p;
   }
 
-  inline friend Patch& operator<<(Patch& p, const uint8_t& value)
+  inline friend Patch& operator<<(Patch& p, const ubyte_t& value)
   {
     return _PutObject(p, value);
   }
 
   inline friend Patch& operator<<(Patch& p, const int8_t& value)
   {
-    return p << static_cast<uint8_t>(value);
+    return p << static_cast<ubyte_t>(value);
   }
 
   inline friend Patch& operator<<(Patch& p, const char& value)
   {
-    return p << static_cast<uint8_t>(value);
+    return p << static_cast<ubyte_t>(value);
   }
 
   inline friend Patch& operator<<(Patch& p, const uint16_t& value)
