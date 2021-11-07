@@ -25,7 +25,6 @@
 #include "patch.h"
 #include "data.h"
 #include "pointer.h"
-#include <initializer_list>
 
 namespace Memory
 {
@@ -63,7 +62,7 @@ public:
       @param  f       Function to be added to pool
       @retval Detour& This object reference
     **/
-    Detour& operator+=(const dummy_t& f)
+    const Detour& operator+=(const dummy_t& f)
     {
       this->push_back(f);
       return *this;
@@ -74,7 +73,7 @@ public:
       @param  f       Function to be removed from pool
       @retval Detour& This object reference
     **/
-    Detour& operator-=(const dummy_t& f)
+    const Detour& operator-=(const dummy_t& f)
     {
       this->remove(f);
       return *this;
@@ -98,45 +97,39 @@ public:
   Detour replace; //!< Replace original call
   Detour after;   //!< After original call
 
-  /**
-    @brief Trampoline object constructor
-    @param address  Address of function to be hooked
-    @param maxCalls Maximum amount of calls to catch, defaults to -1
-                    which would be @c MAX_UINT - 1
-  **/
   Trampoline(const PEFormat& image, const Pointer& ptr, const size_t maxCalls = -1) :
     before({}), replace({}), after({}),
-    _heap_size(48u), _image(image), _ptr(ptr), _maxCalls(maxCalls), _callCount(0u),
-    _p(_image, _ptr), _enabled(true), _trampoline(0u)
+    _heapSize(48u), image_(image), ptr_(ptr), maxCalls_(maxCalls), callCount_(0u),
+    p_(image_, ptr_), isEnabled_(true), trampoline_(0u)
   {
-    if (!_maxCalls)
+    if (!maxCalls_)
       _throws("Invalid arguments");
 
-    _trampoline = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, _heap_size);
-    if (_trampoline.ToVoid() == nullptr)
+    trampoline_ = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, _heapSize);
+    if (trampoline_.ToVoid() == nullptr)
       _throws("Can't allocate heap memory");
 
-    Pointer l_this = Pointer::FromObject(this);
-    Pointer p_func = Pointer::FromAny(&Trampoline::Proxy);
-    Patch t(_image, _trampoline);
+    Pointer _this = Pointer::FromObject(this);
+    Pointer _func = Pointer::FromMethod<T>(&Trampoline::Proxy);
+    Patch t(image_, trampoline_);
 
-#ifdef __X86_ARCH__
-    t.mov(t.ecx, l_this.ToValue());
-    t.jmp(p_func.ToValue());
+#ifdef __X86__
+    t.mov(t.ecx, _this.ToValue());
+    t.jmp(_func.ToValue());
 #else
     t.pop(t.rcx);
-    t.mov(t.rdx, l_this.ToValue());
+    t.mov(t.rdx, _this.ToValue());
     t.push(t.rdx);
     t.push(t.rcx);
-    t.movabs(t.rcx, p_func.ToValue());
+    t.movabs(t.rcx, _func.ToValue());
     t.jmp(t.rcx);
 #endif
 
-#ifdef __X86_ARCH__
-    _p.jmp(p_func.ToValue());
+#ifdef __X86__
+    p_.jmp(trampoline_.ToValue());
 #else
-    _p.movabs(rcx, p_func.ToValue());
-    _p.jmp(_p.rcx);
+    p_.movabs(rcx, trampoline_.ToValue());
+    p_.jmp(p_.rcx);
 #endif
   }
 
@@ -145,10 +138,10 @@ public:
   **/
   ~Trampoline()
   {
-    if (_enabled)
+    if (isEnabled_)
       Finish();
-    if (_trampoline.ToVoid() != nullptr)
-      HeapFree(GetProcessHeap(), 0, _trampoline.ToVoid());
+    if (trampoline_.ToVoid() != nullptr)
+      HeapFree(GetProcessHeap(), 0, trampoline_.ToVoid());
   }
 
   /**
@@ -156,8 +149,9 @@ public:
   **/
   void Finish()
   {
-    _p.Restore();
-    _maxCalls = 0u;
+    p_.Restore();
+    maxCalls_ = 0u;
+    isEnabled_ = false;
   }
 
   /**
@@ -166,8 +160,8 @@ public:
   **/
   void Enable()
   {
-    if (!_enabled)
-      Write(_ptr, _p.GetPayload(), _p.GetCount());
+    if (!isEnabled_)
+      Write(ptr_, p_.GetPayload(), p_.GetCount());
   }
 
   /**
@@ -175,8 +169,8 @@ public:
   **/
   void Disable()
   {
-    if (_enabled)
-      Write(_ptr, _p.GetOriginal(), _p.GetCount());
+    if (isEnabled_)
+      Write(ptr_, p_.GetOriginal(), p_.GetCount());
   }
 
   /**
@@ -186,35 +180,33 @@ public:
   **/
   T Proxy(Args&&... arg)
   {
-    if (_maxCalls != -1 && _callCount >= _maxCalls) {
-      Finish();
-      return Call<T, Args...>(_ptr.ToValue(), forward<Args>(arg)...);
-    }
-
     auto result = before(forward<Args>(arg)...);
     if (!replace.Empty())
       result = replace(forward<Args>(arg)...);
     else {
       Disable();
-      result = Call<T, Args...>(_ptr.ToValue(), forward<Args>(arg)...);
+      result = Call<T, Args...>(ptr_.ToValue(), forward<Args>(arg)...);
       Enable();
     }
     result = after(forward<Args>(arg)...);
 
-    ++_callCount;
+    ++callCount_;
+    if (maxCalls_ != -1 && callCount_ >= maxCalls_)
+      Finish();
+
     return result;
   }
 
 private:
-  const size_t _heap_size;  //!< Number of bytes to allocate on heap
+  const size_t _heapSize;  //!< Number of bytes to allocate on heap
 
-  PEFormat _image;
-  Pointer  _ptr;
-  size_t   _maxCalls;   //!< Maximum amount of calls
-  size_t   _callCount;  //!< Current call count
-  Patch    _p;          //!< Pointer to patch object
-  bool     _enabled;    //!< Is trampoline enabled?
-  Pointer  _trampoline;
+  PEFormat image_;
+  Pointer  ptr_;
+  size_t   maxCalls_;   //!< Maximum amount of calls
+  size_t   callCount_;  //!< Current call count
+  Patch    p_;
+  bool     isEnabled_;    //!< Is trampoline enabled?
+  Pointer  trampoline_;
 };
 
 }

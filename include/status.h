@@ -26,16 +26,7 @@
 #include <chrono>
 #include <ctime>
 
-#pragma comment(lib, "Dbghelp.lib")
-
 using namespace chrono;
-
-#define	DUMP_SIZE_MAX	8000	//max size of our dump
-#define	CALL_TRACE_MAX	((DUMP_SIZE_MAX - 2000) / (MAX_PATH + 40))	//max number of traced calls
-
-using exception_t = EXCEPTION_POINTERS;
-using minidump_t = MINIDUMP_TYPE;
-using miniexception_t = MINIDUMP_EXCEPTION_INFORMATION;
 
 /**
   @class Status
@@ -50,14 +41,14 @@ public:
     @param version  Project version
   **/
   Status(const path& filename, const wstring& name, const wstring& version) :
-    _filename(filename), _name(name), _version(version)
+    filename_(filename), name_(name), version_(version)
   {
-    _file.open(_filename);
+    file_.open(filename_);
 #ifdef __MARKDOWN_EXTEND__
-    _file << L"\t**" << _name << L"** " << _version << L" status output..." << _wcrlf
+    file_ << L"\t**" << name_ << L"** " << version_ << L" status output..." << _wcrlf
           << _wcrlf << flush;
 #else
-    _file << L'\t' << _name << L' ' << _version << L" status output..." << _wcrlf
+    file_ << L'\t' << name_ << L' ' << version_ << L" status output..." << _wcrlf
           << _wcrlf << flush;
 #endif
   };
@@ -67,7 +58,7 @@ public:
   **/
   ~Status()
   {
-    _file.close();
+    file_.close();
   };
 
   /**
@@ -78,17 +69,17 @@ public:
   {
     auto stamp = system_clock::now();
     auto time = system_clock::to_time_t(stamp);
-    auto buffer = make_unique<wchar_t[]>(_static_size);
-    if (_wctime64_s(&buffer[0], _static_size, &time))
+    auto buffer = make_unique<wchar_t[]>(_staticSize);
+    if (_wctime64_s(&buffer[0], _staticSize, &time))
       _throws("Could not convert time into string");
 
-    auto length = wcsnlen_s(&buffer[0], _static_size);
+    auto length = wcsnlen_s(&buffer[0], _staticSize);
     buffer[length - 1] = L'\0'; // remove new line char
 
 #ifdef __MARKDOWN_EXTEND__
-    _file << L"_[" << buffer << L"]_ **" << _name << L"**: " << msg << _wcrlf << flush;
+    file_ << L"_[" << buffer << L"]_ **" << name_ << L"**: " << msg << _wcrlf << flush;
 #else
-    _file << L'[' << buffer << L"] " << _name << L": " << msg << _wcrlf << flush;
+    file_ << L'[' << buffer << L"] " << name_ << L": " << msg << _wcrlf << flush;
 #endif
   };
 
@@ -123,46 +114,9 @@ public:
     return true;
   }
 
-  /**
-    @brief  Custom SEH filter callback function
-    @param  exceptionInfo Pointer to exception info
-    @retval long_t        Exception status
-  **/
-  static long_t WINAPI CustomSEHFilter(exception_t* exceptionInfo)
-  {
-    wchar_t name[MAX_PATH];
-    wchar_t* item;
-    if (GetModuleFileNameW(GetModuleHandle(nullptr), name, MAX_PATH)) {
-      item = wcsrchr(name, L'\\');
-      *item = L'\0';
-      ++item;
-    }
-    else
-      wcscpy_s(name, L"err.unknown");
-
-    auto file = CreateFileW(L"miniDump.md", GENERIC_WRITE, FILE_SHARE_WRITE,
-                            nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-    if (file != INVALID_HANDLE_VALUE) {
-      miniexception_t miniDump;
-      memset(&miniDump, 0, sizeof(miniDump));
-      miniDump.ThreadId = GetCurrentThreadId();
-      miniDump.ExceptionPointers = exceptionInfo;
-      miniDump.ClientPointers = true;
-      MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(),
-                        file, MiniDumpWithDataSegs, &miniDump, nullptr, nullptr);
-      CloseHandle(file);
-    }
-
-    ShowCursor(true);
-    auto wnd = FindWindowW(0, L"");
-    SetForegroundWindow(wnd);
-
-    return EXCEPTION_CONTINUE_SEARCH;
-  };
-
 private:
-  path      _filename;  //!< Path to log file
-  wofstream _file;      //!< File output stream
-  wstring   _name;      //!< Project name
-  wstring   _version;   //!< Project version
+  path      filename_;  //!< Path to log file
+  wofstream file_;      //!< File output stream
+  wstring   name_;      //!< Project name
+  wstring   version_;   //!< Project version
 };

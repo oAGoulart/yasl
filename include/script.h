@@ -37,7 +37,7 @@ public:
     @param name    Script name string
   **/
   Script(const hmodule_t& hmodule, const Memory::Pointer& func, const path& name) :
-    _module(hmodule), _name(name), _main(func)
+    module_(hmodule), name_(name), main_(func)
   {
   }
 
@@ -46,17 +46,17 @@ public:
   **/
   ~Script()
   {
-    if (_module != nullptr)
-      FreeLibrary(_module);
+    if (module_ != nullptr)
+      FreeLibrary(module_);
   }
 
   /**
     @brief  Gets script name
     @retval path& Script name
   **/
-  path& GetName() noexcept
+  constexpr path& GetName() noexcept
   {
-    return _name;
+    return name_;
   }
 
   /**
@@ -64,11 +64,11 @@ public:
   **/
   void operator()()
   {
-    _main.ToFunc()();
+    main_.ToFunc()();
   }
 
 private:
-  path            _name;   //!< Script name
-  hmodule_t       _module; //!< Handle to module
-  Memory::Pointer _main;
+  path            name_;   //!< Script name
+  hmodule_t       module_; //!< Handle to module
+  Memory::Pointer main_;
 };

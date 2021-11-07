@@ -28,8 +28,7 @@
 namespace Memory
 {
 
-#pragma pack(push, imagedos, 1)
-typedef struct _align(1) IMAGE_DOS_HEADER {
+struct IMAGE_DOS_HEADER {
   uint8_t  e_magic[2];
   uint16_t e_cblp;
   uint16_t e_cp;
@@ -49,51 +48,54 @@ typedef struct _align(1) IMAGE_DOS_HEADER {
   uint16_t e_oeminfo;
   uint16_t e_res2[10];
   uint32_t e_lfanew;
-} dosheader_t;
-#pragma pack(pop, imagedos)
+};
 
+using dosheader_t = IMAGE_DOS_HEADER;
 using ntheaders_t = IMAGE_NT_HEADERS;
 using meminfo_t = MEMORY_BASIC_INFORMATION;
 
 class PEFormat {
 public:
   PEFormat(const Data& signature) :
-    _baseAddr(0u), _dosHeader(0u), _ntHeaders(0u), _dosSignature(signature)
+    baseAddress_(0u), dosHeader_(0u), ntHeaders_(0u), dosSignature_(signature)
   {
-    _baseAddr = _FindBaseAddress(_dosSignature);
-    if (_baseAddr == -1)
+    baseAddress_ = FindBaseAddress_(dosSignature_);
+    if (baseAddress_ == -1)
       _throws("Could not find PE data on any virtual memory section");
 
-    _dosHeader = _baseAddr.ToVoid();
-    _ntHeaders = _baseAddr + _dosHeader.ToObject<dosheader_t>()->e_lfanew;
+    dosHeader_ = baseAddress_.ToVoid();
+    ntHeaders_ = baseAddress_ + dosHeader_.ToObject<dosheader_t>()->e_lfanew;
   }
 
-  Pointer& GetBaseAddress() noexcept
+  constexpr Pointer& GetBaseAddress() noexcept
   {
-    return _baseAddr;
+    return baseAddress_;
   }
 
   const Pointer GetEntryPoint() noexcept
   {
-    return FindDynamicAddress(_ntHeaders.ToObject<ntheaders_t>()->OptionalHeader.AddressOfEntryPoint);
+    return FindDynamicAddress(ntHeaders_.ToObject<ntheaders_t>()->OptionalHeader.AddressOfEntryPoint, true);
   }
 
-  const Pointer FindDynamicAddress(const uintptr_t& staticAddress) noexcept
+  const Pointer FindDynamicAddress(const uintptr_t& staticAddress, const bool isRva = false) noexcept
   {
-#ifndef __X86_ARCH__
-    return (_baseAddr == 0x140000000u) ? staticAddress : _baseAddr + (staticAddress - 0x140000000u);
-#else
-    return (_baseAddr == 0x400000u) ? staticAddress : _baseAddr + (staticAddress - 0x400000u);
-#endif
+    auto addr = (isRva) ? staticAddress + staticBase_ : staticAddress;
+    return (baseAddress_ == staticBase_) ? addr : baseAddress_ + (addr - staticBase_);
   }
 
 private:
-  Pointer _baseAddr;
-  Pointer _dosHeader;
-  Pointer _ntHeaders;
-  Data    _dosSignature;
+#ifndef __X86__
+  const uintptr_t staticBase_ = 0x140000000u;
+#else
+  const uintptr_t staticBase_ = 0x400000u;
+#endif
 
-  static Pointer _FindBaseAddress(const Data& signature)
+  Pointer baseAddress_;
+  Pointer dosHeader_;
+  Pointer ntHeaders_;
+  Data    dosSignature_;
+
+  static Pointer FindBaseAddress_(const Data& signature)
   {
     auto mi = make_unique<meminfo_t>();
     VirtualQuery(0u, &*mi, sizeof(*mi));
@@ -109,7 +111,7 @@ private:
           (mi->AllocationProtect | PAGE_EXECUTE_READ)) {
         size_t count = 0u;
         for (size_t i = 0u; i < signature.Size(); ++i, ++count) {
-          if (signature[i] != *(reinterpret_cast<pdata_t>(mi->AllocationBase) + count)) {
+          if (signature[i] != *(reinterpret_cast<ubyte_t*>(mi->AllocationBase) + count)) {
             count = -1;
             break;
           }

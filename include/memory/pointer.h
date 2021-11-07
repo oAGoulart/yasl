@@ -28,164 +28,163 @@ namespace Memory
 
 class Pointer {
 public:
-  Pointer(const pvoid_t& address)
+  Pointer(const pvoid_t& void_)
   {
-    _pref._pvoid = address;
+    pref_.pvoid = void_;
   }
 
-  Pointer(const pfunc_t& address)
+  Pointer(const pfunc_t& func_)
   {
-    _pref._pfunc = address;
+    pref_.pfunc = func_;
   }
 
-  Pointer(const pdata_t& address)
+  Pointer(const pbytes_t& bytes_)
   {
-    _pref._pdata = address;
+    pref_.pbytes = bytes_;
   }
 
-  Pointer(const uintptr_t& address)
+  Pointer(const uintptr_t& value_)
   {
-    _pref._value = address;
-  }
-
-  template<typename T>
-  static Pointer FromObject(T* address)
-  {
-    return Pointer::_ForceCast<pvoid_t>(address);
-  }
-
-  // WARNING: Try not to use this method
-  template<typename T>
-  static Pointer FromAny(T address)
-  {
-    return Pointer::_ForceCast<pvoid_t>(&address);
-  }
-
-  pvoid_t ToVoid() const noexcept
-  {
-    return _pref._pvoid;
-  }
-
-  pfunc_t ToFunc() const noexcept
-  {
-    return _pref._pfunc;
-  }
-
-  pdata_t ToData() const noexcept
-  {
-    return _pref._pdata;
-  }
-
-  uintptr_t ToValue() const noexcept
-  {
-    return _pref._value;
+    pref_.value = value_;
   }
 
   template<typename T>
-  T* ToObject() const noexcept
+  static Pointer FromObject(T* obj_)
   {
-    return Pointer::_ForceCast<T>(_pref._pvoid);
+    return Pointer::_ForceCast<pvoid_t>(obj_);
+  }
+
+  template<typename R, typename C>
+  static Pointer FromMethod(R (C::*func_)())
+  {
+    return Pointer::_ForceCast<pvoid_t>(func_);
+  }
+
+  constexpr pvoid_t ToVoid() const noexcept
+  {
+    return pref_.pvoid;
+  }
+
+  constexpr pfunc_t ToFunc() const noexcept
+  {
+    return pref_.pfunc;
+  }
+
+  constexpr pbytes_t ToBytes() const noexcept
+  {
+    return pref_.pbytes;
+  }
+
+  constexpr uintptr_t ToValue() const noexcept
+  {
+    return pref_.value;
+  }
+
+  template<typename T>
+  constexpr T* ToObject() const noexcept
+  {
+    return Pointer::_ForceCast<T*>(pref_.pvoid);
   }
 
   const Pointer& operator+=(const Pointer& ptr) noexcept
   {
-    _pref._value += ptr.ToValue();
+    pref_.value += ptr.ToValue();
     return *this;
   }
 
   const Pointer& operator+=(const uintptr_t& address) noexcept
   {
-    _pref._value += address;
+    pref_.value += address;
     return *this;
   }
 
   const Pointer& operator++() noexcept
   {
-    _pref._value++;
+    pref_.value++;
     return *this;
   }
 
   const Pointer& operator-=(const Pointer& ptr) noexcept
   {
-    _pref._value -= ptr.ToValue();
+    pref_.value -= ptr.ToValue();
     return *this;
   }
 
   const Pointer& operator-=(const uintptr_t& address) noexcept
   {
-    _pref._value -= address;
+    pref_.value -= address;
     return *this;
   }
 
   const Pointer& operator--() noexcept
   {
-    _pref._value--;
+    pref_.value--;
     return *this;
   }
 
   const Pointer operator+(const Pointer& ptr) const noexcept
   {
-    return _pref._value + ptr.ToValue();
+    return pref_.value + ptr.ToValue();
   }
 
   const uintptr_t operator+(const uintptr_t& address) const noexcept
   {
-    return _pref._value + address;
+    return pref_.value + address;
   }
 
   const Pointer operator-(const Pointer& ptr) const noexcept
   {
-    return _pref._value - ptr.ToValue();
+    return pref_.value - ptr.ToValue();
   }
 
   const uintptr_t operator-(const uintptr_t& address) const noexcept
   {
-    return _pref._value - address;
+    return pref_.value - address;
   }
 
   const bool operator==(const uintptr_t& address) const noexcept
   {
-    return _pref._value == address;
+    return pref_.value == address;
   }
 
   const bool operator==(const Pointer& ptr) const noexcept
   {
-    return _pref._value == ptr.ToValue();
+    return pref_.value == ptr.ToValue();
   }
 
   const bool operator<(const uintptr_t& address) const noexcept
   {
-    return _pref._value < address;
+    return pref_.value < address;
   }
 
   const bool operator<(const Pointer& ptr) const noexcept
   {
-    return _pref._value < ptr.ToValue();
+    return pref_.value < ptr.ToValue();
   }
 
   const bool operator>(const uintptr_t& address) const noexcept
   {
-    return _pref._value > address;
+    return pref_.value > address;
   }
 
   const bool operator>(const Pointer& ptr) const noexcept
   {
-    return _pref._value > ptr.ToValue();
+    return pref_.value > ptr.ToValue();
   }
 
 private:
   union _pref_t {
-    pvoid_t   _pvoid;
-    pfunc_t   _pfunc;
-    pdata_t   _pdata;
-    uintptr_t _value;
-  } _pref;
+    pvoid_t   pvoid;
+    pfunc_t   pfunc;
+    pbytes_t  pbytes;
+    uintptr_t value;
+  } pref_;
 
   template<typename T, typename F>
-  static T* _ForceCast(F* in)
+  static T _ForceCast(F in_)
   {
-    union { F* in; T* out; } u = { in };
-    return u.out;
+    union { F in_; T out_; } u = { in_ };
+    return u.out_;
   }
 };
 

@@ -24,7 +24,6 @@
 #include "base.h"
 #include "protection.h"
 #include "pointer.h"
-#include <initializer_list>
 
 namespace Memory
 {
@@ -50,7 +49,7 @@ public:
   }
 
   template<class T>
-  constexpr T& PushObject(const T& value)
+  const T& PushObject(const T& value)
   {
     auto last = size();
     resize(last + sizeof(value), 0u);
@@ -58,7 +57,7 @@ public:
   }
 
   template<class T>
-  constexpr T PopObject()
+  const T PopObject()
   {
     auto last = size();
     auto offset = last - sizeof(T);
@@ -71,7 +70,7 @@ public:
   }
 
   template<class T>
-  constexpr T& ReadObject(const size_t offset)
+  const T& ReadObject(const size_t offset)
   {
     if (size() < offset + sizeof(T))
       _throws("Tried to read object larger than vector size");
@@ -82,7 +81,7 @@ public:
   {
     Protection protection(ptr, (vp) ? count : 0);
     for (auto p = ptr; p < ptr + count; ++p)
-      data.push_back(*p.ToData());
+      data.push_back(*p.ToBytes());
   }
 
   friend void Write(Pointer& ptr, Data& data, const size_t count, const bool vp = true)
@@ -111,7 +110,7 @@ inline T& WriteObject(Pointer& ptr, const T& value, const bool vp = true)
   return (*ptr.ToObject<T>() = value);
 };
 
-inline void Fill(Pointer& ptr, const uint8_t& value, const size_t size, const bool vp = true)
+inline void Fill(Pointer& ptr, const ubyte_t& value, const size_t size, const bool vp = true)
 {
   Protection protection(ptr, (vp) ? size : 0);
   memset(ptr.ToVoid(), value, size);

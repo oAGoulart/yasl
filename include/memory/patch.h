@@ -38,18 +38,18 @@ namespace Memory
 enum class Register : ubyte_t {
   // byte sized registers
   al, cl, dl, bl, ah, ch, dh, bh,
-#ifndef __X86_ARCH__
+#ifndef __X86__
   spl, bpl, sil, dil,
   r8b, r9b, r10b, r11b, r12b, r13b, r14b, r15b,
 #endif
   // word sized registers
   ax, cx, dx, bx, sp, bp, si, di,
-#ifndef __X86_ARCH__
+#ifndef __X86__
   r8w, r9w, r10w, r11w, r12w, r13w, r14w, r15w,
 #endif
   // dword sized registers
   eax, ecx, edx, ebx, esp, ebp, esi, edi,
-#ifndef __X86_ARCH__
+#ifndef __X86__
   r8d, r9d, r10d, r11d, r12d, r13d, r14d, r15d,
   // qword sized registers
   rax, rcx, rdx, rbx, rsp, rbp, rsi, rdi,
@@ -70,9 +70,9 @@ public:
   using enum Register;
 
   Patch(const PEFormat& image, const Pointer& ptr) :
-    _image(image), _ptr(ptr), _offset(ptr), _original({}), _payload({})
+    image_(image), ptr_(ptr), offset_(ptr), original_({}), payload_({})
   {
-    if (_ptr < _image.GetBaseAddress())
+    if (ptr_ < image_.GetBaseAddress())
       _throws("Patch address is less than base address");
   }
 
@@ -82,7 +82,7 @@ public:
   **/
   const size_t GetCount() const noexcept
   {
-    return _offset.ToValue() - _ptr.ToValue();
+    return offset_.ToValue() - ptr_.ToValue();
   }
 
   /**
@@ -92,7 +92,7 @@ public:
   **/
   constexpr Data& GetOriginal() noexcept
   {
-    return _original;
+    return original_;
   }
 
   /**
@@ -101,7 +101,7 @@ public:
   **/
   constexpr Data& GetPayload() noexcept
   {
-    return _payload;
+    return payload_;
   }
 
   /**
@@ -111,14 +111,14 @@ public:
   **/
   void Restore()
   {
-    if (_original.Size()) {
-      Write(_ptr, _original, _original.Size());
-      _offset = _ptr;
-      _payload.Clear();
+    if (original_.Size()) {
+      Write(ptr_, original_, original_.Size());
+      offset_ = ptr_;
+      payload_.Clear();
     }
   };
 
-  void mov(const Register r, const ubyte_t value)
+  void mov(const Register r, const uint8_t value)
   {
     auto ub = static_cast<ubyte_t>(r);
     switch (r) {
@@ -133,7 +133,7 @@ public:
         *this << static_cast<ubyte_t>('\xB0' + ub - static_cast<ubyte_t>(al));
         break;
 
-#ifndef __X86_ARCH__
+#ifndef __X86__
       case spl:
       case bpl:
       case sil:
@@ -185,7 +185,7 @@ public:
               << static_cast<ubyte_t>('\xB8' + ub - static_cast<ubyte_t>(ax));
         break;
 
-#ifndef __X86_ARCH__
+#ifndef __X86__
       case r8w:
       case r9w:
       case r10w:
@@ -229,7 +229,7 @@ public:
         *this << static_cast<ubyte_t>('\xB8' + ub - static_cast<ubyte_t>(eax));
         break;
 
-#ifndef __X86_ARCH__
+#ifndef __X86__
       case r8d:
       case r9d:
       case r10d:
@@ -297,7 +297,7 @@ public:
               << '\x12';
         break;
 
-#ifndef __X86_ARCH__
+#ifndef __X86__
       case spl:
       case bpl:
       case sil:
@@ -321,7 +321,7 @@ public:
         break;
 #endif
       case eax:
-#ifdef __X86_ARCH__
+#ifdef __X86__
         *this << '\xA3';
 #else
         *this << '\x89' << '\x04';
@@ -339,7 +339,7 @@ public:
               << static_cast<ubyte_t>('\x0D' + (ub - static_cast<ubyte_t>(eax)) * 8u);
         break;
 
-#ifndef __X86_ARCH__
+#ifndef __X86__
       case r8d:
       case r9d:
       case r10d:
@@ -382,7 +382,7 @@ public:
     *this << address;
   }
 
-#ifndef __X86_ARCH__
+#ifndef __X86__
   /**
     @brief Move value into register
 
@@ -446,7 +446,7 @@ public:
               << static_cast<ubyte_t>('\x50' + ub - static_cast<ubyte_t>(ax));
         break;
 
-#ifdef __X86_ARCH__
+#ifdef __X86__
       case eax:
       case ecx:
       case edx:
@@ -518,7 +518,7 @@ public:
               << static_cast<ubyte_t>('\x58' + ub - static_cast<ubyte_t>(ax));
         break;
 
-#ifdef __X86_ARCH__
+#ifdef __X86__
       case eax:
       case ecx:
       case edx:
@@ -579,7 +579,7 @@ public:
   void jmp(const uintptr_t address)
   {
     *this << '\xE9';
-    *this << static_cast<int32_t>(address - (_offset + 4u));
+    *this << static_cast<int32_t>(address - (offset_ + 4u));
   }
 
   /**
@@ -602,7 +602,7 @@ public:
               << static_cast<ubyte_t>('\xE0' + ub - static_cast<ubyte_t>(ax));
         break;
 
-#ifdef __X86_ARCH__
+#ifdef __X86__
       case eax:
       case ecx:
       case edx:
@@ -666,7 +666,7 @@ public:
   void call(const uintptr_t address)
   {
     *this << '\xE8';
-    *this << static_cast<int32_t>(address - (_offset + 4u));
+    *this << static_cast<int32_t>(address - (offset_ + 4u));
   }
 
   /**
@@ -689,7 +689,7 @@ public:
               << static_cast<ubyte_t>('\xD0' + ub - static_cast<ubyte_t>(ax));
         break;
 
-#ifdef __X86_ARCH__
+#ifdef __X86__
       case eax:
       case ecx:
       case edx:
@@ -749,16 +749,16 @@ public:
   **/
   void nop(const size_t count)
   {
-    Read(_offset, _original, count);
-    Fill(_offset, '\x90', count);
-    _offset += count;
+    Read(offset_, original_, count);
+    Fill(offset_, '\x90', count);
+    offset_ += count;
   }
 
   /**
     @brief Return from call/jump
     @param isFar Is return far?
   **/
-  void ret(const bool isFar = true)
+  void ret(const bool isFar = false)
   {
     *this << ((isFar) ? '\xCB' : '\xC3');
   }
@@ -776,7 +776,7 @@ public:
     @param code Code of interruption
     @see   https://pdos.csail.mit.edu/6.828/2005/lec/lec8-slides.pdf
   **/
-  void intr(const uint8_t code)
+  void intr(const ubyte_t code)
   {
     *this << '\xCD' << code;
   }
@@ -787,7 +787,7 @@ public:
   **/
   void je(const uintptr_t address)
   {
-    *this << '\x0F' << '\x84' << static_cast<int32_t>(address - (_offset + 4u));
+    *this << '\x0F' << '\x84' << static_cast<int32_t>(address - (offset_ + 4u));
   }
   void (Patch::*jz)(const uintptr_t) = &Patch::je;  //!< Jump if zero
 
@@ -797,7 +797,7 @@ public:
   **/
   void jne(const uintptr_t address)
   {
-    *this << '\x0F' << '\x85' << static_cast<int32_t>(address - (_offset + 4u));
+    *this << '\x0F' << '\x85' << static_cast<int32_t>(address - (offset_ + 4u));
   }
   void (Patch::*jnz)(const uintptr_t) = &Patch::jne;  //!< Jump if not zero
 
@@ -807,7 +807,7 @@ public:
   **/
   void jg(const uintptr_t address)
   {
-    *this << '\x0F' << '\x8F' << static_cast<int32_t>(address - (_offset + 4u));
+    *this << '\x0F' << '\x8F' << static_cast<int32_t>(address - (offset_ + 4u));
   }
   void (Patch::*jnle)(const uintptr_t) = &Patch::jg;  //!< Jump if not less or equal
 
@@ -817,7 +817,7 @@ public:
   **/
   void jge(const uintptr_t address)
   {
-    *this << '\x0F' << '\x8D' << static_cast<int32_t>(address - (_offset + 4u));
+    *this << '\x0F' << '\x8D' << static_cast<int32_t>(address - (offset_ + 4u));
   }
   void (Patch::*jnl)(const uintptr_t) = &Patch::jge;  //!< Jump if not less
 
@@ -827,7 +827,7 @@ public:
   **/
   void jl(const uintptr_t address)
   {
-    *this << '\x0F' << '\x8C' << static_cast<int32_t>(address - (_offset + 4u));
+    *this << '\x0F' << '\x8C' << static_cast<int32_t>(address - (offset_ + 4u));
   }
   void (Patch::*jnge)(const uintptr_t) = &Patch::jl;  //!< Jump if not greater or equal
 
@@ -837,7 +837,7 @@ public:
   **/
   void jle(const uintptr_t address)
   {
-    *this << '\x0F' << '\x8E' << static_cast<int32_t>(address - (_offset + 4u));
+    *this << '\x0F' << '\x8E' << static_cast<int32_t>(address - (offset_ + 4u));
   }
   void (Patch::*jng)(const uintptr_t) = &Patch::jle;  //!< Jump not greater
 
@@ -869,7 +869,7 @@ public:
       case bp:
       case si:
       case di:
-#ifdef __X86_ARCH__
+#ifdef __X86__
         *this << '\x66'
               << static_cast<ubyte_t>('\x40' + ub - static_cast<ubyte_t>(ax));
 #else
@@ -886,7 +886,7 @@ public:
       case ebp:
       case esi:
       case edi:
-#ifdef __X86_ARCH__
+#ifdef __X86__
         *this << static_cast<ubyte_t>('\x40' + ub - static_cast<ubyte_t>(eax));
 #else
         *this << '\xFF'
@@ -894,7 +894,7 @@ public:
 #endif
         break;
 
-#ifndef __X86_ARCH__
+#ifndef __X86__
       case r8b:
       case r9b:
       case r10b:
@@ -988,7 +988,7 @@ public:
       case bp:
       case si:
       case di:
-#ifdef __X86_ARCH__
+#ifdef __X86__
         *this << '\x66'
               << static_cast<ubyte_t>('\x48' + ub - static_cast<ubyte_t>(ax));
 #else
@@ -1005,7 +1005,7 @@ public:
       case ebp:
       case esi:
       case edi:
-#ifdef __X86_ARCH__
+#ifdef __X86__
         *this << static_cast<ubyte_t>('\x48' + ub - static_cast<ubyte_t>(eax));
 #else
         *this << '\xFF'
@@ -1013,7 +1013,7 @@ public:
 #endif
         break;
 
-#ifndef __X86_ARCH__
+#ifndef __X86__
       case r8b:
       case r9b:
       case r10b:
@@ -1123,7 +1123,7 @@ public:
               << static_cast<ubyte_t>('\xD0' + ub - static_cast<ubyte_t>(eax));
         break;
 
-#ifndef __X86_ARCH__
+#ifndef __X86__
       case r8b:
       case r9b:
       case r10b:
@@ -1190,11 +1190,11 @@ public:
   }
 
 private:
-  PEFormat _image;
-  Pointer  _ptr;
-  Pointer  _offset;
-  Data     _original;
-  Data     _payload;
+  PEFormat image_;
+  Pointer  ptr_;
+  Pointer  offset_;
+  Data     original_;
+  Data     payload_;
 
   /**
     @brief  operator<<
@@ -1204,33 +1204,33 @@ private:
     @retval Patch& Reference to modified patch object
   **/
   template<typename T>
-  inline friend Patch& _PutObject(Patch& p, const T& value)
+  inline friend Patch& PutObject_(Patch& p, const T& value)
   {
-    Read(p._offset, p._original, sizeof(value));
-    p._payload.PushObject<T>(value);
-    WriteObject<T>(p._offset, value);
-    p._offset += sizeof(value);
+    Read(p.offset_, p.original_, sizeof(value));
+    p.payload_.PushObject<T>(value);
+    WriteObject<T>(p.offset_, value);
+    p.offset_ += sizeof(value);
     return p;
   }
 
-  inline friend Patch& operator<<(Patch& p, const ubyte_t& value)
+  inline friend Patch& operator<<(Patch& p, const uint8_t& value)
   {
-    return _PutObject(p, value);
+    return PutObject_(p, value);
   }
 
   inline friend Patch& operator<<(Patch& p, const int8_t& value)
   {
-    return p << static_cast<ubyte_t>(value);
+    return p << static_cast<uint8_t>(value);
   }
 
   inline friend Patch& operator<<(Patch& p, const char& value)
   {
-    return p << static_cast<ubyte_t>(value);
+    return p << static_cast<uint8_t>(value);
   }
 
   inline friend Patch& operator<<(Patch& p, const uint16_t& value)
   {
-    return _PutObject(p, value);
+    return PutObject_(p, value);
   }
 
   inline friend Patch& operator<<(Patch& p, const int16_t& value)
@@ -1240,7 +1240,7 @@ private:
 
   inline friend Patch& operator<<(Patch& p, const uint32_t& value)
   {
-    return _PutObject(p, value);
+    return PutObject_(p, value);
   }
 
   inline friend Patch& operator<<(Patch& p, const int32_t& value)
@@ -1250,7 +1250,7 @@ private:
 
   inline friend Patch& operator<<(Patch& p, const uint64_t& value)
   {
-    return _PutObject(p, value);
+    return PutObject_(p, value);
   }
 
   inline friend Patch& operator<<(Patch& p, const int64_t& value)

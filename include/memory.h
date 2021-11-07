@@ -28,27 +28,19 @@
   @brief     Used for memory related functions
 **/
 namespace Memory
-{;
-
-/**
-  @brief  Call and return
-  @tparam T       Return type
-  @tparam Args    Parameter pack type
-  @param  address Function address
-  @param  args    Parameter pack
-  @retval T       Function returned value
-**/
-template<typename T, typename... Args>
-inline T Call(uintptr_t address, Args&&... args)
 {
-  return reinterpret_cast<T(*)(Args&&...)>(address)(forward<Args>(args)...);
+
+template<typename R, typename... Args>
+inline R Call(uintptr_t address, Args&&... args)
+{
+  return reinterpret_cast<R(*)(Args&&...)>(address)(forward<Args>(args)...);
 }
 
-#ifdef __X86_ARCH__
-template<typename T, typename C, typename... Args>
-inline T CallMethod(uintptr_t address, C _this, Args&&... args)
+#ifdef __X86__
+template<typename R, typename C, typename... Args>
+inline R CallMethod(uintptr_t address, C this_, Args&&... args)
 {
-  return reinterpret_cast<T(__thiscall*)(C, Args&&...)>(address)(_this, forward<Args>(args)...);
+  return reinterpret_cast<R(__thiscall*)(C, Args&&...)>(address)(this_, forward<Args>(args)...);
 }
 #endif
 

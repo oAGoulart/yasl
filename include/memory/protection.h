@@ -39,11 +39,11 @@ namespace Memory
 class Protection {
 public:
   Protection(const Pointer& ptr, const size_t& size, const ulong_t& mode = PAGE_EXECUTE_READWRITE) :
-    _ptr(ptr), _size(size), _mode(mode)
+    ptr_(ptr), size_(size), mode_(mode)
   {
-    if (_size)
-      _isEnabled = VirtualProtect(_ptr.ToVoid(), _size, _mode, &_oldMode);
-    _isEnabled = false;
+    if (size_)
+      isEnabled_ = VirtualProtect(ptr_.ToVoid(), size_, mode_, &oldMode_);
+    isEnabled_ = false;
   };
 
   /**
@@ -51,43 +51,43 @@ public:
   **/
   ~Protection()
   {
-    if (_isEnabled)
-      _isEnabled = !VirtualProtect(_ptr.ToVoid(), _size, _oldMode, &_oldMode);
+    if (isEnabled_)
+      isEnabled_ = !VirtualProtect(ptr_.ToVoid(), size_, oldMode_, &oldMode_);
   };
 
   /**
     @brief  Check if protection change is enabled
     @retval bool Is change enabled?
   **/
-  bool IsEnabled() const noexcept
+  constexpr bool IsEnabled() const noexcept
   {
-    return (_isEnabled);
+    return (isEnabled_);
   }
 
   /**
     @brief  Gets old mode
     @retval ulong_t Old mode
   **/
-  ulong_t& GetOldMode() noexcept
+  constexpr ulong_t& GetOldMode() noexcept
   {
-    return _oldMode;
+    return oldMode_;
   }
 
   /**
     @brief  Gets current mode
     @retval ulong_t& Current mode
   **/
-  ulong_t& GetMode() noexcept
+  constexpr ulong_t& GetMode() noexcept
   {
-    return _mode;
+    return mode_;
   }
 
 private:
-  Pointer _ptr;
-  ulong_t _mode;      //!< Current mode
-  ulong_t _oldMode;   //!< Old mode
-  size_t  _size;      //!< Size of memory change
-  lbool_t _isEnabled; //!< Is change enabled?
+  Pointer ptr_;
+  ulong_t mode_;      //!< Current mode
+  ulong_t oldMode_;   //!< Old mode
+  size_t  size_;      //!< Size of memory change
+  lbool_t isEnabled_; //!< Is change enabled?
 };
 
 }

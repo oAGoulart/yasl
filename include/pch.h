@@ -23,7 +23,7 @@
 
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
-#include <imagehlp.h>
+#include <dbgeng.h>
 #include <string>
 #include <iostream>
 #include <filesystem>
@@ -31,3 +31,4 @@
 #include <list>
 #include <cwchar>
 #include <sstream>
+#include <initializer_list>

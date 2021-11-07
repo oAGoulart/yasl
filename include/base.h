@@ -23,8 +23,7 @@
 
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
-#include <imagehlp.h>
-#include <tlhelp32.h>
+#include <dbgeng.h>
 #include <string>
 #include <iostream>
 #include <filesystem>
@@ -32,12 +31,11 @@
 #include <list>
 #include <cwchar>
 #include <sstream>
-
-#pragma comment(lib, "Imagehlp.lib")
+#include <initializer_list>
 
 #if defined(_M_IX86) || defined(_X86_) || defined(_WIN32)
-#undef __X86_ARCH__
-#define __X86_ARCH__ 1
+#undef __X86__
+#define __X86__ 1
 #elif !defined(_M_AMD64) && !defined(_M_X64) && !defined(_WIN64)
 #error "Unknown processor architecture"
 #endif
@@ -63,17 +61,17 @@ using namespace filesystem;
 
 using long_t = LONG;
 using ulong_t = DWORD;
-using ubyte_t = uint8_t;
+using ubyte_t = BYTE;
 using pvoid_t = LPVOID;
 using pfunc_t = FARPROC;
-using pdata_t = ubyte_t*;
+using pbytes_t = BYTE*;
 using handle_t = HANDLE;
 using hmodule_t = HMODULE;
 using lbool_t = BOOL;
 using hfile_t = FILE;
 
 #define \
-_static_size MAX_PATH * 4
+_staticSize MAX_PATH * 4u
 
 #define \
 _crlf "\r\n"
@@ -138,7 +136,3 @@ _asserts(cond, msg) \
     _throws(msg); \
   } \
 }
-
-#define \
-_align(value) \
-  __declspec(align(value))
