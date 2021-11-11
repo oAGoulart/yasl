@@ -1,6 +1,29 @@
+/**
+  @brief     Assembly submodule
+  @author    Augusto Goulart
+  @date      11.11.2021
+  @copyright   Copyright (c) 2021 Augusto Goulart
+               Permission is hereby granted, free of charge, to any person obtaining a copy
+               of this software and associated documentation files (the "Software"), to deal
+               in the Software without restriction, including without limitation the rights
+               to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+               copies of the Software, and to permit persons to whom the Software is
+               furnished to do so, subject to the following conditions:
+               The above copyright notice and this permission notice shall be included in all
+               copies or substantial portions of the Software.
+               THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+               IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+               FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+               AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+               LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+               OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+               SOFTWARE.
+**/
 #pragma once
 
 #include "base.h"
+#include "pointer.h"
+#include "data.h"
 
 namespace Memory
 {
@@ -154,13 +177,13 @@ private:
 
 class Opcode {
 public:
-  Opcode(const string& bytes, const ubyte_t& rm, const string& mnemonic,
+  Opcode(const Data& bytes, const ubyte_t& rm, const string& mnemonic,
          const string& left, const string& right) :
     bytes_(bytes), rm_(rm), mnemonic_(mnemonic), left_(left), right_(right)
   {
   }
 
-  const string GetBytes(const Operand left, const Operand right) const
+  Data GetBytes(const Operand left, const Operand right) const
   {
     auto r = (right.GetType() == 'r') ? right : left;
     auto m = (r == right) ? left : right;
@@ -171,27 +194,25 @@ public:
     else
       rm = rm_;
 
-    string result = bytes_;
+    Data result = bytes_;
     ubyte_t t = FindModDigit_(m);
     ubyte_t modrm = ((t & 24) << 3) | (rm << 3) | (t & 7);
-    result += ' ';
-    result += to_string(modrm);
-    result += ' ';
+    result.PushObject(modrm);
 
     if (!m.GetScalarIndex().empty()) {
       t = FindSibDigit_(m);
-      result += to_string(t);
+      result.PushObject(t);
     }
 
     t = m.GetDispSize();
     if (t == 'b')
-      result += to_string(m.GetDispByte());
+      result.PushObject(m.GetDispByte());
     else if (t == 'w')
-      result += to_string(m.GetDispShort());
+      result.PushObject(m.GetDispShort());
     else if (t == 'l')
-      result += to_string(m.GetDispLong());
+      result.PushObject(m.GetDispLong());
     else if (t == 'q')
-      result += to_string(m.GetDispQuad());
+      result.PushObject(m.GetDispQuad());
 
     return result;
   }
@@ -228,7 +249,7 @@ private:
     { "bh", "di", "edi", "st7", "mm7", "xmm7", "dr7" }
   };
 
-  string bytes_;
+  Data bytes_;
   ubyte_t rm_;
   string mnemonic_;
   string left_;
@@ -314,7 +335,7 @@ private:
 class Instruction {
 public:
   Instruction(const string& opcode, Operand& left, Operand& right) :
-    opcode_(opcode), left_(left), right_(right)
+    opcode_(opcode), left_(left), right_(right), bytes_({})
   {
     auto op = opcodes_.begin();
     for (; op != opcodes_.end(); ++op) {
@@ -323,40 +344,57 @@ public:
     }
     if (op == opcodes_.end())
       _throws("Unable to find opcode");
-    cout << op->GetBytes(left, right) << endl;
+    bytes_ = op->GetBytes(left, right);
+  }
+
+  Data GetBytes() const noexcept
+  {
+    return bytes_;
   }
 
 private:
   inline static const vector<Opcode> opcodes_ = {
     {
-      { "0", 'r', "add", "r/m b", "r b"},
-      { "1", 'r', "add", "r/m l", "r l"},
-      { "66 1", 'r', "add", "r/m w", "r w"},
-      { "2", 'r', "add", "r b", "r/m b"},
-      { "3", 'r', "add", "r l", "r/m l"},
-      { "66 3", 'r', "add", "r/m w", "r w"}
+      { { '\x01' }, 'r', "add", "r/m b", "r b"},
+      { { '\x01' }, 'r', "add", "r/m l", "r l"},
+      { { '\x66', '\x01' }, 'r', "add", "r/m w", "r w"},
+      { { '\x02' }, 'r', "add", "r b", "r/m b"},
+      { { '\x03' }, 'r', "add", "r l", "r/m l"},
+      { { '\x66', '\x03' }, 'r', "add", "r/m w", "r w"} // TODO: add remaining opcodes
     }
   };
 
   string opcode_;
   Operand left_;
   Operand right_;
+  Data bytes_;
 };
 
 class Patch {
 public:
-  Patch(int address) : address_(address), symbols_({})
+  Patch(const Pointer ptr = nullptr, const size_t maxSize = 48u) :
+    ptr_(ptr), original_({}), payload_({}), isEnabled_(false), maxSize_(maxSize)
   {
+    if (ptr_.ToVoid() == nullptr) {
+      auto tmp = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, maxSize_);
+      if (tmp == nullptr)
+        _throws("Can't allocate heap memory");
+      ptr_ = tmp;
+    }
   }
 
-  void Symbols(initializer_list<pair<const string, int>> il)
+  ~Patch()
   {
-    symbols_.insert(il);
+    HeapFree(GetProcessHeap(), 0, ptr_.ToVoid());
+  }
+
+  void Symbols(initializer_list<pair<const string, const Data>> il)
+  {
+    // TODO: parse symbols
   }
 
   void Assembly(const string& code)
   {
-    // TODO: parse symbols before instructions
     smatch ms;
     regex e("([\\w]+) *([^\\,\\n]*) *\\,? *([^\\n]*) *(?=\\n)");
 
@@ -364,15 +402,31 @@ public:
     while (regex_search(s, ms, e)) {
       Operand l(ms[2].str());
       Operand r(ms[3].str());
-      Instruction(ms[1].str(), l, r);
+      Instruction inst(ms[1].str(), l, r);
+      payload_ += inst.GetBytes();
       s = ms.suffix().str();
     }
+    Read(ptr_, original_, payload_.Size());
+  }
+
+  constexpr void Enable()
+  {
+    if (!isEnabled_)
+      Write(ptr_, payload_, payload_.Size());
+  }
+
+  constexpr void Disable()
+  {
+    if (isEnabled_)
+      Write(ptr_, original_, original_.Size());
   }
 
 private:
-  int address_;
-  vector<Instruction> inst_;
-  map<const string, int> symbols_;
+  Pointer ptr_;
+  Data payload_;
+  Data original_;
+  bool isEnabled_;
+  size_t maxSize_;
 };
 
 }

@@ -90,6 +90,12 @@ public:
     memcpy_s(ptr.ToVoid(), count, data.data(), data.size());
   }
 
+  friend Data& operator+=(Data& l, const Data& r)
+  {
+    l.emplace_back(r);
+    return l;
+  }
+
   const ubyte_t& operator[](const size_t index) const
   {
     return at(index);

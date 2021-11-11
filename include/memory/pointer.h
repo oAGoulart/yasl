@@ -48,6 +48,12 @@ public:
     pref_.value = value_;
   }
 
+  Pointer(const nullptr_t& nullp_)
+  {
+    pref_.pvoid = nullp_;
+  }
+
+
   template<typename T>
   static Pointer FromObject(T* obj_)
   {
