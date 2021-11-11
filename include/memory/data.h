@@ -92,7 +92,8 @@ public:
 
   friend Data& operator+=(Data& l, const Data& r)
   {
-    l.emplace_back(r);
+    for (auto b = r.begin(); b != r.end(); ++b)
+      l.emplace_back(*b);
     return l;
   }
 
