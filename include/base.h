@@ -32,6 +32,14 @@
 #include <cwchar>
 #include <sstream>
 #include <initializer_list>
+#include <vector>
+#include <map>
+#include <regex>
+#include <limits>
+
+#ifdef max
+#undef max
+#endif
 
 #if defined(_M_IX86) || defined(_X86_) || defined(_WIN32)
 #undef __X86__
@@ -59,9 +67,12 @@
 using namespace std;
 using namespace filesystem;
 
+
+using ubyte_t = BYTE;
+using ushort_t = WORD;
 using long_t = LONG;
 using ulong_t = DWORD;
-using ubyte_t = BYTE;
+using uquad_t = ULONG64;
 using pvoid_t = LPVOID;
 using pfunc_t = FARPROC;
 using pbytes_t = BYTE*;
