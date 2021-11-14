@@ -49,7 +49,6 @@ inline R CallMethod(uintptr_t address, C this_, Args&&... args)
 // submodules
 #include "memory/pointer.h"
 #include "memory/protection.h"
-#include "memory/patch.h"
+#include "memory/process.h"
 #include "memory/trampoline.h"
 #include "memory/data.h"
-#include "memory/peformat.h"

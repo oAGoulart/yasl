@@ -47,8 +47,6 @@ private:
   path               scriptsFolder_; //!< Path to scripts folder
   list<Script>       scripts_;       //!< List of scripts found
   unique_ptr<Status> status_;        //!< Pointer to status object
-  Memory::Data       sig_;
-  unique_ptr<Memory::PEFormat>        image_;
   unique_ptr<Memory::Trampoline<int>> trampoline_;
 
   const path configFile_ = L"./yasl.lua";    //!< Configure file path
@@ -65,6 +63,5 @@ static YASL* hYasl_; // need this from program start to termination
 
 static void Start();
 static void End();
-static void Fatal(const exception& e);
 extern "C" void Dummy();
 int Hook();

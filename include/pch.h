@@ -24,6 +24,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <dbgeng.h>
+#include <wchar.h>
 #include <string>
 #include <iostream>
 #include <filesystem>
@@ -32,3 +33,8 @@
 #include <cwchar>
 #include <sstream>
 #include <initializer_list>
+#include <vector>
+#include <map>
+#include <regex>
+#include <limits>
+#include <stdexcept>

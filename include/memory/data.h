@@ -30,6 +30,10 @@ namespace Memory
 
 class Data : private vector<ubyte_t> {
 public:
+  Data() : vector<ubyte_t>({})
+  {
+  }
+
   Data(initializer_list<ubyte_t> values) : vector<ubyte_t>(values)
   {
   }
@@ -77,7 +81,7 @@ public:
     return *reinterpret_cast<T*>(data() + offset);
   }
 
-  friend void Read(Pointer& ptr, Data& data, const size_t count, const bool vp = true)
+  friend void Read(const Pointer& ptr, Data& data, const size_t count, const bool vp = true)
   {
     Protection protection(ptr, (vp) ? count : 0);
     for (auto p = ptr; p < ptr + count; ++p)

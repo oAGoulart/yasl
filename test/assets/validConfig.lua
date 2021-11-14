@@ -1,4 +1,4 @@
-SomeName = Alice       -- single line comment
+SomeName = "Alice"       -- single line comment
 SomeValue = 10.5f
 [[-- 
   Multi-line comment

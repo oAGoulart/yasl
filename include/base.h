@@ -24,6 +24,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <dbgeng.h>
+#include <wchar.h>
 #include <string>
 #include <iostream>
 #include <filesystem>
@@ -36,6 +37,7 @@
 #include <map>
 #include <regex>
 #include <limits>
+#include <stdexcept>
 
 #ifdef max
 #undef max
@@ -67,7 +69,6 @@
 using namespace std;
 using namespace filesystem;
 
-
 using ubyte_t = BYTE;
 using ushort_t = WORD;
 using long_t = LONG;
@@ -83,6 +84,14 @@ using hfile_t = FILE;
 
 #define \
 _staticSize MAX_PATH * 4u
+
+#define \
+_min(l, r) \
+  (l < r) ? l : r
+
+#define \
+_max(l, r) \
+  (l > r) ? l : r
 
 #define \
 _crlf "\r\n"
@@ -146,4 +155,34 @@ _asserts(cond, msg) \
   if (!(cond)) { \
     _throws(msg); \
   } \
+}
+
+wstring string_widen(const string& narrow)
+{
+  if (narrow.empty())
+    return L"";
+
+  const auto size = static_cast<int>(narrow.size());
+  const auto minSize = MultiByteToWideChar(CP_UTF8, 0, &narrow.at(0), size, nullptr, 0);
+  if (minSize <= 0)
+    _throws("Could not convert narrow string to wide string");
+
+  wstring result(minSize, 0);
+  MultiByteToWideChar(CP_UTF8, 0, &narrow.at(0), size, &result.at(0), minSize);
+  return result;
+}
+
+string string_narrow(const wstring& wide)
+{
+  if (wide.empty())
+    return "";
+
+  const auto size = static_cast<int>(wide.size());
+  const auto minSize = WideCharToMultiByte(CP_UTF8, 0, &wide.at(0), size, nullptr, 0, nullptr, nullptr);
+  if (minSize <= 0)
+    _throws("Could not convert wide string to narrow string");
+
+  string result(minSize, 0);
+  WideCharToMultiByte(CP_UTF8, 0, &wide.at(0), size, &result.at(0), minSize, nullptr, nullptr);
+  return result;
 }

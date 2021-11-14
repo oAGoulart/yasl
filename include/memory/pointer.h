@@ -53,7 +53,6 @@ public:
     pref_.pvoid = nullp_;
   }
 
-
   template<typename T>
   static Pointer FromObject(T* obj_)
   {
@@ -90,6 +89,12 @@ public:
   constexpr T* ToObject() const noexcept
   {
     return Pointer::_ForceCast<T*>(pref_.pvoid);
+  }
+
+  template<typename T>
+  constexpr T ToAny() const noexcept
+  {
+    return Pointer::_ForceCast<T>(pref_.pvoid);
   }
 
   const Pointer& operator+=(const Pointer& ptr) noexcept

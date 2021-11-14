@@ -22,7 +22,8 @@
 #pragma once
 
 #include "base.h"
-#include "patch.h"
+#include "assembly.h"
+#include "process.h"
 #include "data.h"
 #include "pointer.h"
 
@@ -97,39 +98,55 @@ public:
   Detour replace; //!< Replace original call
   Detour after;   //!< After original call
 
-  Trampoline(const PEFormat& image, const Pointer& ptr, const size_t maxCalls = -1) :
-    before({}), replace({}), after({}),
-    _heapSize(48u), image_(image), ptr_(ptr), maxCalls_(maxCalls), callCount_(0u),
-    p_(image_, ptr_), isEnabled_(true), trampoline_(0u)
+  Trampoline(const Pointer& ptr, const size_t maxCalls = -1) :
+    before({}), replace({}), after({}), ptr_(ptr), maxCalls_(maxCalls), callCount_(0u),
+    p_(ptr_), isEnabled_(true)
   {
     if (!maxCalls_)
       _throws("Invalid arguments");
 
-    trampoline_ = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, _heapSize);
-    if (trampoline_.ToVoid() == nullptr)
-      _throws("Can't allocate heap memory");
+    Data this_;
+    this_.PushObject(Pointer::FromMethod<T>(&Trampoline::Proxy).ToValue());
+    Data func_;
+    func_.PushObject(Pointer::FromObject(this).ToValue());
+    Patch t;
 
-    Pointer _this = Pointer::FromObject(this);
-    Pointer _func = Pointer::FromMethod<T>(&Trampoline::Proxy);
-    Patch t(image_, trampoline_);
+    t.Symbols({
+      { "this", this_ },
+      { "Proxy", func_ }
+    });
 
 #ifdef __X86__
-    t.mov(t.ecx, _this.ToValue());
-    t.jmp(_func.ToValue());
+    t.Assembly(R"("
+      mov ecx, this
+      jmp Proxy
+    ")");
 #else
-    t.pop(t.rcx);
-    t.mov(t.rdx, _this.ToValue());
-    t.push(t.rdx);
-    t.push(t.rcx);
-    t.movabs(t.rcx, _func.ToValue());
-    t.jmp(t.rcx);
+    t.Assembly(R"("
+      pop rcx
+      mov rdx, this
+      push rdx
+      push rcx
+      mov rcx, Proxy
+      jmp rcx
+    ")");
 #endif
 
+    Data heap_;
+    heap_.PushObject(t.GetHeap().ToValue());
+    p_.Symbols({
+      { "Heap", heap_ }
+    });
+
 #ifdef __X86__
-    p_.jmp(trampoline_.ToValue());
+    p_.Assembly(R"("
+      jmp Heap
+    ")");
 #else
-    p_.movabs(rcx, trampoline_.ToValue());
-    p_.jmp(p_.rcx);
+    p_.Assembly(R"("
+      mov rcx, Heap
+      jmp rcx
+    ")");
 #endif
   }
 
@@ -138,20 +155,7 @@ public:
   **/
   ~Trampoline()
   {
-    if (isEnabled_)
-      Finish();
-    if (trampoline_.ToVoid() != nullptr)
-      HeapFree(GetProcessHeap(), 0, trampoline_.ToVoid());
-  }
-
-  /**
-    @brief Finish trampoline hook
-  **/
-  void Finish()
-  {
-    p_.Restore();
-    maxCalls_ = 0u;
-    isEnabled_ = false;
+    p_.Disable();
   }
 
   /**
@@ -161,7 +165,7 @@ public:
   void Enable()
   {
     if (!isEnabled_)
-      Write(ptr_, p_.GetPayload(), p_.GetCount());
+      p_.Enable();
   }
 
   /**
@@ -170,7 +174,7 @@ public:
   void Disable()
   {
     if (isEnabled_)
-      Write(ptr_, p_.GetOriginal(), p_.GetCount());
+      p_.Disable();
   }
 
   /**
@@ -192,21 +196,17 @@ public:
 
     ++callCount_;
     if (maxCalls_ != -1 && callCount_ >= maxCalls_)
-      Finish();
+      Disable();
 
     return result;
   }
 
 private:
-  const size_t _heapSize;  //!< Number of bytes to allocate on heap
-
-  PEFormat image_;
   Pointer  ptr_;
   size_t   maxCalls_;   //!< Maximum amount of calls
   size_t   callCount_;  //!< Current call count
   Patch    p_;
   bool     isEnabled_;    //!< Is trampoline enabled?
-  Pointer  trampoline_;
 };
 
 }

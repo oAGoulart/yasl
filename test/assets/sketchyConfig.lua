@@ -1,6 +1,6 @@
 name -- this is a sketchy
 =    --config file
-bob--yet it's still valid
+'bob'--yet it's still valid
 
 
 

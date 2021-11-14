@@ -64,16 +64,15 @@ static void End()
 /**
   @brief YASL object constructor
 **/
-YASL::YASL() : sig_({})
+YASL::YASL()
 {
   status_ = make_unique<Status>(logFile_, projectName_, projectVersion_);
   LoadConfig_();
   LoadScripts_();
 
-  sig_ = { 'M', 'Z' }; // TODO: load from configs
-
-  image_ = make_unique<Memory::PEFormat>(sig_);
-  trampoline_ = make_unique<Memory::Trampoline<int>>(*image_, image_->GetEntryPoint(), 1);
+  Memory::Process p;
+  Memory::Module m = p.GetBaseModule();
+  trampoline_ = make_unique<Memory::Trampoline<int>>(m.GetEntryPoint(), 1);
   // TODO: add _RunScripts() function
   trampoline_->before += &Hook; // TODO: hook does not need to run on trampoline, only scripts
 }

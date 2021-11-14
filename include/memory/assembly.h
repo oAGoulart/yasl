@@ -185,8 +185,8 @@ public:
 
   Data GetBytes(const Operand left, const Operand right) const
   {
-    auto r = (right.GetType() == 'r') ? right : left;
-    auto m = (r == right) ? left : right;
+    Operand r = (right.GetType() == 'r') ? right : left;
+    Operand m = (r == right) ? left : right;
 
     ubyte_t rm;
     if (rm_ == 'r')
@@ -398,7 +398,7 @@ public:
     smatch ms;
     regex e("([\\w]+) *([^\\,\\n]*) *\\,? *([^\\n]*) *(?=\\n)");
 
-    auto s = code;
+    string s = code;
     while (regex_search(s, ms, e)) {
       Operand l(ms[2].str());
       Operand r(ms[3].str());
@@ -407,6 +407,11 @@ public:
       s = ms.suffix().str();
     }
     Read(ptr_, original_, payload_.Size());
+  }
+
+  constexpr Pointer& GetHeap() noexcept
+  {
+    return ptr_;
   }
 
   constexpr void Enable()
