@@ -26,5 +26,8 @@
     <ClInclude Include="config_test.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="process_test.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -30,24 +30,25 @@
 namespace Memory
 {
 
-/**
-  @brief  Call and return
-  @tparam T       Return type
-  @tparam Args    Parameter pack type
-  @param  address Function address
-  @param  args    Parameter pack
-  @retval T       Function returned value
-**/
-template<typename T, typename... Args>
-inline T Call(uintptr_t address, Args&&... args)
+template<typename R, typename... Args>
+inline R Call(uintptr_t address, Args&&... args)
 {
-  return reinterpret_cast<T(*)(Args&&...)>(address)(forward<Args>(args)...);
+  return reinterpret_cast<R(*)(Args&&...)>(address)(forward<Args>(args)...);
 }
+
+#ifdef __X86__
+template<typename R, typename C, typename... Args>
+inline R CallMethod(uintptr_t address, C this_, Args&&... args)
+{
+  return reinterpret_cast<R(__thiscall*)(C, Args&&...)>(address)(this_, forward<Args>(args)...);
+}
+#endif
 
 };
 
+// submodules
+#include "memory/pointer.h"
 #include "memory/protection.h"
-#include "memory/patch.h"
+#include "memory/process.h"
 #include "memory/trampoline.h"
 #include "memory/data.h"
-#include "memory/peformat.h"

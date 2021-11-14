@@ -22,6 +22,7 @@
 #pragma once
 
 #include "base.h"
+#include "memory/pointer.h"
 
 /**
   @class Script
@@ -35,40 +36,39 @@ public:
     @param func    Pointer to script main function
     @param name    Script name string
   **/
-  Script(const hmodule_t& hmodule, pfunc_t func, const path& name) :
-    _module(hmodule), _name(name)
+  Script(const hmodule_t& hmodule, const Memory::Pointer& func, const path& name) :
+    module_(hmodule), name_(name), main_(func)
   {
-    _main = reinterpret_cast<uintptr_t>(func);
-  };
+  }
 
   /**
     @brief Script object destructor
   **/
   ~Script()
   {
-    if (_module != nullptr)
-      FreeLibrary(_module);
-  };
+    if (module_ != nullptr)
+      FreeLibrary(module_);
+  }
 
   /**
     @brief  Gets script name
     @retval path& Script name
   **/
-  path& GetName() noexcept
+  constexpr path& GetName() noexcept
   {
-    return _name;
-  };
+    return name_;
+  }
 
   /**
     @brief Call main function
   **/
   void operator()()
   {
-    reinterpret_cast<void (*)()>(_main)();
-  };
+    main_.ToFunc()();
+  }
 
 private:
-  path      _name;   //!< Script name
-  hmodule_t _module; //!< Handle to module
-  uintptr_t _main;   //!< Main function address
+  path            name_;   //!< Script name
+  hmodule_t       module_; //!< Handle to module
+  Memory::Pointer main_;
 };

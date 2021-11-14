@@ -26,8 +26,6 @@
 #include <chrono>
 #include <ctime>
 
-#pragma comment(lib, "Dbghelp.lib")
-
 using namespace chrono;
 
 /**
@@ -43,13 +41,15 @@ public:
     @param version  Project version
   **/
   Status(const path& filename, const wstring& name, const wstring& version) :
-    _filename(filename), _name(name), _version(version)
+    filename_(filename), name_(name), version_(version)
   {
-    _file.open(_filename);
+    file_.open(filename_);
 #ifdef __MARKDOWN_EXTEND__
-    _file << L"\t**" << _name << L"** " << _version << L" status output..." << L"\n\n" << flush;
+    file_ << L"\t**" << name_ << L"** " << version_ << L" status output..." << _wcrlf
+          << _wcrlf << flush;
 #else
-    _file << L'\t' << _name << L' ' << _version << L" status output..." << L"\n\n" << flush;
+    file_ << L'\t' << name_ << L' ' << version_ << L" status output..." << _wcrlf
+          << _wcrlf << flush;
 #endif
   };
 
@@ -58,7 +58,7 @@ public:
   **/
   ~Status()
   {
-    _file.close();
+    file_.close();
   };
 
   /**
@@ -69,60 +69,54 @@ public:
   {
     auto stamp = system_clock::now();
     auto time = system_clock::to_time_t(stamp);
-    auto buffer = make_unique<wchar_t[]>(_STATIC_BUFF_SIZE);
-    if (_wctime64_s(&buffer[0], _STATIC_BUFF_SIZE, &time))
+    auto buffer = make_unique<wchar_t[]>(_staticSize);
+    if (_wctime64_s(&buffer[0], _staticSize, &time))
       _throws("Could not convert time into string");
 
-    auto length = wcsnlen_s(&buffer[0], _STATIC_BUFF_SIZE);
+    auto length = wcsnlen_s(&buffer[0], _staticSize);
     buffer[length - 1] = L'\0'; // remove new line char
 
 #ifdef __MARKDOWN_EXTEND__
-    _file << L"_[" << buffer << L"]_ **" << _name << L"**: " << msg << endl << flush;
+    file_ << L"_[" << buffer << L"]_ **" << name_ << L"**: " << msg << _wcrlf << flush;
 #else
-    _file << L'[' << buffer << L"] " << _name << L": " << msg << endl << flush;
+    file_ << L'[' << buffer << L"] " << name_ << L": " << msg << _wcrlf << flush;
 #endif
   };
 
-  /**
-    @brief  Custom SEH filter callback function
-    @param  exceptionInfo Pointer to exception info
-    @retval long_t        Exception status
-  **/
-  static long_t WINAPI CustomSEHFilter(exception_t* exceptionInfo)
+  static bool GetSystemInfo(wstring& outStr)
   {
-    wchar_t name[MAX_PATH];
-    wchar_t* item;
-    if (GetModuleFileNameW(GetModuleHandle(nullptr), name, MAX_PATH)) {
-      item = wcsrchr(name, L'\\');
-      *item = L'\0';
-      ++item;
+
+    outStr += L"System metrics and configuration settings:" _wcrlf;
+    outStr += L"\tBoot mode: ";
+    auto displayCount = GetSystemMetrics(SM_CLEANBOOT);
+    outStr += (displayCount) ? L"Fail-safe boot" _wcrlf : L"Normal boot" _wcrlf;
+    outStr += L"\tDisplay count: ";
+    outStr += to_wstring(GetSystemMetrics(SM_CMONITORS)) + _wcrlf;
+    auto mouseButtons = GetSystemMetrics(SM_CMOUSEBUTTONS);
+    outStr += L"\tMouse buttons: ";
+    outStr += (mouseButtons) ? to_wstring(mouseButtons) + _wcrlf : L"Mouse not found" _wcrlf;
+    outStr += L"\tScreen width: ";
+    outStr += to_wstring(GetSystemMetrics(SM_CXSCREEN)) + _wcrlf;
+    outStr += L"\tScreen height: ";
+    outStr += to_wstring(GetSystemMetrics(SM_CYSCREEN)) + _wcrlf;
+
+    if (displayCount > 1) {
+      outStr += L"\tVirtual screen width: ";
+      outStr += to_wstring(GetSystemMetrics(SM_CXVIRTUALSCREEN)) + _wcrlf;
+      outStr += L"\tVirtual screen height: ";
+      outStr += to_wstring(GetSystemMetrics(SM_CYVIRTUALSCREEN)) + _wcrlf;
     }
-    else
-      wcscpy_s(name, L"err.unknown");
 
-    auto file = CreateFileW(L"miniDump.md", GENERIC_WRITE, FILE_SHARE_WRITE,
-                            nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-    if (file != INVALID_HANDLE_VALUE) {
-      minidump_t miniDump;
-      memset(&miniDump, 0, sizeof(miniDump));
-      miniDump.ThreadId = GetCurrentThreadId();
-      miniDump.ExceptionPointers = exceptionInfo;
-      miniDump.ClientPointers = true;
-      MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(),
-                        file, MiniDumpWithDataSegs, &miniDump, nullptr, nullptr);
-      CloseHandle(file);
-    }
+    auto hasNetwork = GetSystemMetrics(SM_NETWORK);
+    outStr += L"\tNetwork: ";
+    outStr += (hasNetwork & 1) ? L"Available" _wcrlf : L"Not available" _wcrlf;
 
-    ShowCursor(true);
-    auto wnd = FindWindowW(0, L"");
-    SetForegroundWindow(wnd);
-
-    return EXCEPTION_CONTINUE_SEARCH;
-  };
+    return true;
+  }
 
 private:
-  path      _filename;  //!< Path to log file
-  wofstream _file;      //!< File output stream
-  wstring   _name;      //!< Project name
-  wstring   _version;   //!< Project version
+  path      filename_;  //!< Path to log file
+  wofstream file_;      //!< File output stream
+  wstring   name_;      //!< Project name
+  wstring   version_;   //!< Project version
 };

@@ -33,8 +33,8 @@
     <ClInclude Include="include\base.h" />
     <ClInclude Include="include\config.h" />
     <ClInclude Include="include\memory.h" />
-    <ClInclude Include="include\memory\patch.h" />
-    <ClInclude Include="include\memory\peformat.h" />
+    <ClInclude Include="include\memory\assembly.h" />
+    <ClInclude Include="include\memory\process.h" />
     <ClInclude Include="include\memory\protection.h" />
     <ClInclude Include="include\memory\trampoline.h" />
     <ClInclude Include="include\memory\data.h" />
@@ -42,6 +42,7 @@
     <ClInclude Include="include\status.h" />
     <ClInclude Include="include\yasl.h" />
     <ClInclude Include="include\script.h" />
+    <ClInclude Include="include\memory\pointer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="yasl.def" />

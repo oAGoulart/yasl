@@ -4,7 +4,8 @@ int main()
 {
   try {
     _InitCli();
-    ConfigTest();
+    //ConfigTest();
+    ProcessTest();
   }
   catch (const exception& e) {
     cout << e.what() << endl << flush;

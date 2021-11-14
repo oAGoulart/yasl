@@ -23,7 +23,8 @@
 
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
-#include <imagehlp.h>
+#include <dbgeng.h>
+#include <wchar.h>
 #include <string>
 #include <iostream>
 #include <filesystem>
@@ -31,12 +32,20 @@
 #include <list>
 #include <cwchar>
 #include <sstream>
+#include <initializer_list>
+#include <vector>
+#include <map>
+#include <regex>
+#include <limits>
+#include <stdexcept>
 
-#pragma comment(lib, "Imagehlp.lib")
+#ifdef max
+#undef max
+#endif
 
 #if defined(_M_IX86) || defined(_X86_) || defined(_WIN32)
-#undef __X86_ARCH__
-#define __X86_ARCH__ 1
+#undef __X86__
+#define __X86__ 1
 #elif !defined(_M_AMD64) && !defined(_M_X64) && !defined(_WIN64)
 #error "Unknown processor architecture"
 #endif
@@ -57,37 +66,38 @@
 #error "Must compile this code targeting a shared library"
 #endif
 
-#ifdef __X86_ARCH__
-#define _BASE_ADDRESS 0x400000
-#else
-#define _BASE_ADDRESS 0x140000000
-#endif
-
-#define _STATIC_BUFF_SIZE MAX_PATH * 4  //!< Static buffer maximum size
-
 using namespace std;
-using namespace std::filesystem;
+using namespace filesystem;
 
+using ubyte_t = BYTE;
+using ushort_t = WORD;
 using long_t = LONG;
 using ulong_t = DWORD;
+using uquad_t = ULONG64;
 using pvoid_t = LPVOID;
 using pfunc_t = FARPROC;
+using pbytes_t = BYTE*;
+using handle_t = HANDLE;
 using hmodule_t = HMODULE;
 using lbool_t = BOOL;
 using hfile_t = FILE;
-using peimage_t = LOADED_IMAGE;
-using exception_t = EXCEPTION_POINTERS;
-using minidump_t = MINIDUMP_EXCEPTION_INFORMATION;
 
-/**
-  @def   _ubyte
-  @brief Cast value into unsigned byte
-  @param value Value to be cast
-**/
 #define \
-_ubyte(value) \
-  static_cast<uint8_t>(value)
+_staticSize MAX_PATH * 4u
 
+#define \
+_min(l, r) \
+  (l < r) ? l : r
+
+#define \
+_max(l, r) \
+  (l > r) ? l : r
+
+#define \
+_crlf "\r\n"
+
+#define \
+_wcrlf L"\r\n"
 
 #if defined(_SGR) || !defined(NSGR)
 #define \
@@ -128,8 +138,8 @@ _throws(msg) \
 { \
   string what(_format("33", "at file ")); \
   what += __FILE__; \
-  what += _format("33", " on line ") + to_string(__LINE__) + "\r\n\t"; \
-  what += _format("37;41", "FAILURE\t") _format("31", msg) "\r\n"; \
+  what += _format("33", " on line ") + to_string(__LINE__) +  _crlf "\t"; \
+  what += _format("37;41", "FAILURE\t") _format("31", msg) _crlf; \
   throw runtime_error(what); \
 }
 
@@ -145,4 +155,34 @@ _asserts(cond, msg) \
   if (!(cond)) { \
     _throws(msg); \
   } \
+}
+
+wstring string_widen(const string& narrow)
+{
+  if (narrow.empty())
+    return L"";
+
+  const auto size = static_cast<int>(narrow.size());
+  const auto minSize = MultiByteToWideChar(CP_UTF8, 0, &narrow.at(0), size, nullptr, 0);
+  if (minSize <= 0)
+    _throws("Could not convert narrow string to wide string");
+
+  wstring result(minSize, 0);
+  MultiByteToWideChar(CP_UTF8, 0, &narrow.at(0), size, &result.at(0), minSize);
+  return result;
+}
+
+string string_narrow(const wstring& wide)
+{
+  if (wide.empty())
+    return "";
+
+  const auto size = static_cast<int>(wide.size());
+  const auto minSize = WideCharToMultiByte(CP_UTF8, 0, &wide.at(0), size, nullptr, 0, nullptr, nullptr);
+  if (minSize <= 0)
+    _throws("Could not convert wide string to narrow string");
+
+  string result(minSize, 0);
+  WideCharToMultiByte(CP_UTF8, 0, &wide.at(0), size, &result.at(0), minSize, nullptr, nullptr);
+  return result;
 }

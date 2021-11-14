@@ -44,16 +44,19 @@
     <ClInclude Include="include\memory\protection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\memory\patch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\memory\trampoline.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\memory\data.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\memory\peformat.h">
+    <ClInclude Include="include\memory\pointer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\memory\assembly.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\memory\process.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -2,7 +2,7 @@
 
 #include "config.h"
 
-static void _ValidConfig()
+static void ValidConfig_()
 {
   ConfigFile cfg("./validConfig.lua");
 
@@ -22,7 +22,7 @@ static void _ValidConfig()
   _asserts(cfg.FindEntry(L"some_multiline_string") == L"This is a\n\n  multiline string\n\n", "");
 }
 
-static void _SketchyConfig()
+static void SketchyConfig_()
 {
   ConfigFile cfg("./sketchyConfig.lua"); // weirdly formatted file, but still valid
 
@@ -39,6 +39,6 @@ static void _SketchyConfig()
 
 void ConfigTest()
 {
-  _ValidConfig();
-  _SketchyConfig();
+  ValidConfig_();
+  SketchyConfig_();
 }

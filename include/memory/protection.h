@@ -24,6 +24,7 @@
 #pragma once
 
 #include "base.h"
+#include "pointer.h"
 
 namespace Memory
 {
@@ -31,22 +32,18 @@ namespace Memory
 /**
   @class Protection
   @brief Object used to change memory virtual protection
+
+  Changes page virtual protection on construction and reset to previous mode
+  when this object gets destroyed.
 **/
 class Protection {
 public:
-  /**
-    @brief Protection object constructor
-    @param address Memory address
-    @param size    Length of memory section
-    @param mode    Mode to change into
-  **/
-  Protection(const uintptr_t& address, const size_t& size,
-             const ulong_t& mode = PAGE_EXECUTE_READWRITE) :
-    _address(address), _size(size), _mode(mode)
+  Protection(const Pointer& ptr, const size_t& size, const ulong_t& mode = PAGE_EXECUTE_READWRITE) :
+    ptr_(ptr), size_(size), mode_(mode)
   {
-    if (_size)
-      _isEnabled = VirtualProtect(reinterpret_cast<pvoid_t>(_address), _size, _mode, &_oldMode);
-    _isEnabled = false;
+    if (size_)
+      isEnabled_ = VirtualProtect(ptr_.ToVoid(), size_, mode_, &oldMode_);
+    isEnabled_ = false;
   };
 
   /**
@@ -54,43 +51,43 @@ public:
   **/
   ~Protection()
   {
-    if (_isEnabled)
-      _isEnabled = !VirtualProtect(reinterpret_cast<pvoid_t>(_address), _size, _oldMode, &_oldMode);
+    if (isEnabled_)
+      isEnabled_ = !VirtualProtect(ptr_.ToVoid(), size_, oldMode_, &oldMode_);
   };
 
   /**
     @brief  Check if protection change is enabled
     @retval bool Is change enabled?
   **/
-  bool IsEnabled() const noexcept
+  constexpr bool IsEnabled() const noexcept
   {
-    return (_isEnabled);
+    return (isEnabled_);
   }
 
   /**
     @brief  Gets old mode
     @retval ulong_t Old mode
   **/
-  ulong_t GetOldMode() const noexcept
+  constexpr ulong_t& GetOldMode() noexcept
   {
-    return _oldMode;
+    return oldMode_;
   }
 
   /**
     @brief  Gets current mode
     @retval ulong_t& Current mode
   **/
-  ulong_t& GetMode() noexcept
+  constexpr ulong_t& GetMode() noexcept
   {
-    return _mode;
+    return mode_;
   }
 
 private:
-  uintptr_t _address;   //!< Memory address
-  ulong_t   _mode;      //!< Current mode
-  ulong_t   _oldMode;   //!< Old mode
-  size_t    _size;      //!< Size of memory change
-  lbool_t   _isEnabled; //!< Is change enabled?
+  Pointer ptr_;
+  ulong_t mode_;      //!< Current mode
+  ulong_t oldMode_;   //!< Old mode
+  size_t  size_;      //!< Size of memory change
+  lbool_t isEnabled_; //!< Is change enabled?
 };
 
 }

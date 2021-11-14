@@ -27,34 +27,41 @@
 #include "memory.h"
 #include "status.h"
 
+#define \
+_fatal(e) \
+{ \
+  hfile_t* tmp; \
+  freopen_s(&tmp, "./yaslFatal.md", "w", stderr); \
+  fprintf_s(tmp, "FATAL ERROR\n\t%s\n", e.what()); \
+  fclose(tmp); \
+}
+
 class YASL {
 public:
   YASL();
   ~YASL();
-  void Run();
 
 private:
-  list<wstring>      _supportedExt;  //!< List of supported file extensions
-  wstring            _mainName;      //!< Name of scripts main function
-  path               _scriptsFolder; //!< Path to scripts folder
-  list<Script>       _scripts;       //!< List of scripts found
-  unique_ptr<Status> _status;        //!< Pointer to status object
+  list<wstring>      supportedExt_;  //!< List of supported file extensions
+  wstring            mainName_;      //!< Name of scripts main function
+  path               scriptsFolder_; //!< Path to scripts folder
+  list<Script>       scripts_;       //!< List of scripts found
+  unique_ptr<Status> status_;        //!< Pointer to status object
+  unique_ptr<Memory::Trampoline<int>> trampoline_;
 
-  const path _CONFIG_FILE = L"./yasl.lua";    //!< Configure file path
-  const path _LOG_FILE = L"./yaslLog.md";     //!< Log file path
-  const wstring _PROJECT_NAME = L"YASL";      //!< Project name
-  const wstring _PROJECT_VERSION = L"v0.8.0"; //!< Project version
+  const path configFile_ = L"./yasl.lua";    //!< Configure file path
+  const path logFile_ = L"./yaslLog.md";     //!< Log file path
+  const wstring projectName_ = L"YASL";      //!< Project name
+  const wstring projectVersion_ = L"v0.8.0"; //!< Project version
 
-  bool _IsFileExtSupported(const path& filename) const;
-  void _LoadConfig();
-  void _LoadScripts();
+  bool IsFileExtSupported_(const path& filename) const;
+  void LoadConfig_();
+  void LoadScripts_();
 };
+
+static YASL* hYasl_; // need this from program start to termination
 
 static void Start();
 static void End();
-static void Fatal(const exception& e);
 extern "C" void Dummy();
 int Hook();
-
-//!< Global trampoline pointer, must only be destroyed on program termination
-Memory::Trampoline<int>* _trampoline;

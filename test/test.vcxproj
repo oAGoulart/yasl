@@ -175,6 +175,7 @@ copy $(ProjectDir)assets\sketchyConfig.lua $(OutputPath)sketchyConfig.lua</Comma
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="config_test.h" />
+    <ClInclude Include="process_test.h" />
     <ClInclude Include="test.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

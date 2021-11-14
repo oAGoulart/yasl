@@ -39,7 +39,7 @@ lbool_t WINAPI DllMain(hmodule_t, ulong_t reason, pvoid_t)
       End();
   }
   catch (const exception& e) {
-    Fatal(e);
+    _fatal(e);
     return false;
   }
   return true;
@@ -50,13 +50,7 @@ lbool_t WINAPI DllMain(hmodule_t, ulong_t reason, pvoid_t)
 **/
 static void Start()
 {
-  SetUnhandledExceptionFilter(Status::CustomSEHFilter); // TODO: nop this setter
-
-  auto pe = make_unique<Memory::PEFormat>(nullptr);
-
-  // hook entry point with single use trampoline
-  _trampoline = new Memory::Trampoline<int>(pe->GetEntry(), 1);
-  _trampoline->before += &Hook; // TODO: hook does not need to run on trampoline, only scripts
+  hYasl_ = new YASL();
 }
 
 /**
@@ -64,7 +58,7 @@ static void Start()
 **/
 static void End()
 {
-  delete _trampoline;
+  delete hYasl_;
 }
 
 /**
@@ -72,9 +66,15 @@ static void End()
 **/
 YASL::YASL()
 {
-  _status = make_unique<Status>(_LOG_FILE, _PROJECT_NAME, _PROJECT_VERSION);
-  _LoadConfig();
-  _LoadScripts();
+  status_ = make_unique<Status>(logFile_, projectName_, projectVersion_);
+  LoadConfig_();
+  LoadScripts_();
+
+  Memory::Process p;
+  Memory::Module m = p.GetBaseModule();
+  trampoline_ = make_unique<Memory::Trampoline<int>>(m.GetEntryPoint(), 1);
+  // TODO: add _RunScripts() function
+  trampoline_->before += &Hook; // TODO: hook does not need to run on trampoline, only scripts
 }
 
 /**
@@ -82,26 +82,14 @@ YASL::YASL()
 **/
 YASL::~YASL()
 {
-  _status->LogMessage(L"Returning to entry point");
+  status_->LogMessage(L"Returning to entry point");
 }
 
-/**
-  @brief Run loaded scripts
-**/
-void YASL::Run()
-{
-  _status->LogMessage(L"Running scripts");
-}
-
-/**
-  @brief  Check if file extension is supported
-  @param  filename Filename
-  @retval          Is file extension supported?
-**/
-bool YASL::_IsFileExtSupported(const path& filename) const
+// TODO: move to Script module
+bool YASL::IsFileExtSupported_(const path& filename) const
 {
   auto ext = filename.extension();
-  for (auto str = _supportedExt.begin(); str != _supportedExt.end(); ++str) {
+  for (auto str = supportedExt_.begin(); str != supportedExt_.end(); ++str) {
     if (*str == ext)
       return true;
   }
@@ -111,15 +99,15 @@ bool YASL::_IsFileExtSupported(const path& filename) const
 /**
   @brief Load configuration from file
 **/
-void YASL::_LoadConfig()
+void YASL::LoadConfig_()
 {
-  auto config = make_unique<ConfigFile>(_CONFIG_FILE);
-  _status->LogMessage(L"Loading and parsing configuration file");
+  auto config = make_unique<ConfigFile>(configFile_);
+  status_->LogMessage(L"Loading and parsing configuration file");
 
   auto cfgStr = config->FindEntry(L"MainName");
   if (cfgStr.empty())
     cfgStr = L"StartScript";
-  _mainName = cfgStr;
+  mainName_ = cfgStr;
 
   cfgStr = config->FindEntry(L"FileExtensions");
   if (cfgStr.empty())
@@ -129,7 +117,7 @@ void YASL::_LoadConfig()
   auto index = cfgStr.find_first_of(extDiv);
   size_t lastIndex = 0;
   while (index != wstring::npos) {
-    _supportedExt.push_back(cfgStr.substr(lastIndex, index));
+    supportedExt_.push_back(cfgStr.substr(lastIndex, index));
     lastIndex = index;
     index = cfgStr.find_first_of(extDiv, index + 1);
   }
@@ -137,49 +125,35 @@ void YASL::_LoadConfig()
   cfgStr = config->FindEntry(L"ScriptsFolder");
   if (cfgStr.empty())
     cfgStr = L"./";
-  _scriptsFolder = cfgStr;
+  scriptsFolder_ = cfgStr;
 }
 
-/**
-  @brief Load scripts into memory
-**/
-void YASL::_LoadScripts()
+// TODO: move to Script module
+void YASL::LoadScripts_()
 {
-  _status->LogMessage(L"Loading scripts into memory");
-  for (recursive_directory_iterator next(_scriptsFolder), end; next != end; ++next) {
+  status_->LogMessage(L"Loading scripts into memory");
+  for (recursive_directory_iterator next(scriptsFolder_), end; next != end; ++next) {
     if (!next->is_directory()) {
-      if (_IsFileExtSupported(next->path())) {
+      if (IsFileExtSupported_(next->path())) {
         auto name = next->path().native();
 
         auto script = LoadLibraryW(name.c_str());
         if (script != nullptr) {
           size_t count;
-          auto buffer = make_unique<char[]>(_STATIC_BUFF_SIZE);
-          wcstombs_s(&count, &buffer[0], _STATIC_BUFF_SIZE, _mainName.c_str(), _STATIC_BUFF_SIZE);
+          auto buffer = make_unique<char[]>(_staticSize);
+          wcstombs_s(&count, &buffer[0], _staticSize, mainName_.c_str(), _staticSize);
 
           auto func = GetProcAddress(script, &buffer[0]);
           if (func != nullptr) {
-            _scripts.emplace_back(script, func, next->path().filename());
-            _status->LogMessage(name.append(L"\t->\tScript loaded successfully"));
+            scripts_.emplace_back(script, func, next->path().filename());
+            status_->LogMessage(name.append(L"\t->\tScript loaded successfully"));
             continue;
           }
         }
-        _status->LogMessage(name.append(L"\t->\tWARNING: could not load script"));
+        status_->LogMessage(name.append(L"\t->\tWARNING: could not load script"));
       }
     }
   }
-}
-
-/**
-  @brief Generate fatal error file
-  @param e Error
-**/
-static void Fatal(const exception& e)
-{
-  hfile_t* tmp;
-  freopen_s(&tmp, "./yaslFatal.md", "w", stderr);
-  fprintf_s(tmp, "FATAL ERROR\n\t%s\n", e.what());
-  fclose(tmp);
 }
 
 /**
@@ -189,12 +163,9 @@ void Dummy()
 {
 }
 
-/**
-  @brief Procedure hook function
-**/
+// NOTE: no longer needed, will hook from YASL constructor
 int Hook()
 {
-  auto yasl = make_unique<YASL>();
-  yasl->Run();
+  MessageBox(nullptr, L"hook has been moved", L"no crashorino", 0);
   return 0;
 }
