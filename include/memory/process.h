@@ -56,19 +56,19 @@ using meminfo_t = MEMORY_BASIC_INFORMATION;
 
 class Module {
 public:
-  Module() : baseAddress_(0u), dosHeader_(0u), ntHeaders_(0u)
+  Module() : baseAddress_(nullptr), dosHeader_(nullptr), ntHeaders_(nullptr), isDll_(false)
   {
   }
 
-  Module(const wstring imageFile, const Pointer base) :
-    imageFile_(imageFile), baseAddress_(base), dosHeader_(0u), ntHeaders_(0u)
+  Module(const path imageFile, const Pointer base) :
+    imageFile_(imageFile), baseAddress_(base), dosHeader_(nullptr), ntHeaders_(nullptr)
   {
-    dosHeader_ = baseAddress_.ToVoid();
+    dosHeader_ = baseAddress_;
     ntHeaders_ = baseAddress_ + dosHeader_.ToObject<dosheader_t>()->e_lfanew;
     isDll_ = ntHeaders_.ToObject<ntheaders_t>()->FileHeader.Characteristics & IMAGE_FILE_DLL;
   }
 
-  constexpr wstring& GetImageFilename() noexcept
+  constexpr path& GetImageFilename() noexcept
   {
     return imageFile_;
   }
@@ -94,7 +94,7 @@ public:
   {
     imageFile_ = eq.imageFile_;
     baseAddress_ = eq.baseAddress_;
-    dosHeader_ = baseAddress_.ToVoid();
+    dosHeader_ = baseAddress_;
     ntHeaders_ = baseAddress_ + dosHeader_.ToObject<dosheader_t>()->e_lfanew;
     isDll_ = ntHeaders_.ToObject<ntheaders_t>()->FileHeader.Characteristics & IMAGE_FILE_DLL;
   }
@@ -108,7 +108,7 @@ private:
   const uintptr_t dllStaticBase_ = 0x10000000u;
 #endif
 
-  wstring imageFile_;
+  path    imageFile_;
   Pointer baseAddress_;
   Pointer dosHeader_;
   Pointer ntHeaders_;
@@ -133,9 +133,9 @@ public:
   void EnumerateLoadedModules()
   {
     auto mi = make_unique<meminfo_t>();
-    VirtualQuery(0u, &*mi, sizeof(*mi));
+    VirtualQuery(nullptr, &*mi, sizeof(*mi));
 
-    Pointer currAddr = 0u;
+    Pointer currAddr = nullptr;
     do {
       Protection protection(mi->AllocationBase, mi->RegionSize);
       currAddr += mi->RegionSize;
@@ -151,7 +151,7 @@ public:
         if (imageFile_ == name)
           base_ = modules_.back();
       }
-    } while (VirtualQuery(currAddr.ToVoid(), &*mi, sizeof(*mi)));
+    } while (VirtualQuery(&currAddr, &*mi, sizeof(*mi)));
 
     if (base_.GetBaseAddress().ToVoid() == nullptr)
       _throws("Could not find process base module");

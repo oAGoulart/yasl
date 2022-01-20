@@ -105,12 +105,9 @@ public:
     if (!maxCalls_)
       _throws("Invalid arguments");
 
-    Data this_;
-    this_.PushObject(Pointer::FromMethod<T>(&Trampoline::Proxy).ToValue());
-    Data func_;
-    func_.PushObject(Pointer::FromObject(this).ToValue());
+    auto this_ = to_string(Pointer::FromMethod(&Trampoline::Proxy).ToValue());
+    auto func_ = to_string(Pointer::FromObject(this).ToValue());
     Patch t;
-
     t.Symbols({
       { "this", this_ },
       { "Proxy", func_ }
@@ -132,8 +129,7 @@ public:
     ")");
 #endif
 
-    Data heap_;
-    heap_.PushObject(t.GetHeap().ToValue());
+    auto heap_ = to_string(t.GetHeap().ToValue());
     p_.Symbols({
       { "Heap", heap_ }
     });

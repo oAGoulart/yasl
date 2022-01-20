@@ -30,7 +30,8 @@ namespace Memory
 
 class Operand {
 public:
-  Operand(const string& op) : isUsed_(true)
+  Operand(const string& op) :
+    disp64_(0), dispSize_(0), type_(0), size_(0), isUsed_(true)
   {
     if (op.empty())
       isUsed_ = false;
@@ -65,7 +66,7 @@ public:
   constexpr string GetRegister() const noexcept
   {
     return reg_;
-}
+  }
 
   constexpr string GetScalarIndex() const noexcept
   {
@@ -127,10 +128,10 @@ private:
   string sib_;
   string disp_;
   union {
-    uint8_t disp8_;
-    uint16_t disp16_;
-    uint32_t disp32_;
-    uint64_t disp64_;
+    ubyte_t disp8_;
+    ushort_t disp16_;
+    ulong_t disp32_;
+    uquad_t disp64_;
   };
   ubyte_t dispSize_;
   ubyte_t type_;
@@ -147,11 +148,11 @@ private:
     }
     if (!disp_.empty()) {
       disp64_ = stoull(disp_, nullptr, 0);
-      if (disp64_ <= numeric_limits<uint8_t>::max())
+      if (disp64_ <= numeric_limits<ubyte_t>::max())
         dispSize_ = 'b';
-      else if (disp64_ <= numeric_limits<uint16_t>::max())
+      else if (disp64_ <= numeric_limits<ushort_t>::max())
         dispSize_ = 'w';
-      else if (disp64_ <= numeric_limits<uint32_t>::max())
+      else if (disp64_ <= numeric_limits<ulong_t>::max())
         dispSize_ = 'l';
       else
         dispSize_ = 'q';
@@ -238,6 +239,7 @@ public:
   }
 
 private:
+#ifdef __X86__
   inline static const vector<vector<string>> registers_ = {
     { "al", "ax", "eax", "st0", "mm0", "xmm0", "es", "cr0", "dr0" },
     { "cl", "cx", "ecx", "st1", "mm1", "xmm1", "cs", "dr1" },
@@ -248,6 +250,26 @@ private:
     { "dh", "si", "esi", "st6", "mm6", "xmm6", "dr6" },
     { "bh", "di", "edi", "st7", "mm7", "xmm7", "dr7" }
   };
+#else
+  inline static const vector<vector<string>> registers_ = {
+    { "al", "ax", "eax", "rax", "st0", "mm0", "xmm0", "es", "cr0", "dr0",
+      "r8b", "r8w", "r8d", "r8", "xmm8", "cr8" },
+    { "cl", "cx", "ecx", "rcx", "st1", "mm1", "xmm1", "cs", "dr1",
+      "r9b", "r9w", "r9d", "r9", "xmm9" },
+    { "dl", "dx", "edx", "rdx", "st2", "mm2", "xmm2", "ss", "cr2", "dr2",
+      "r10b", "r10w", "r10d", "r10", "xmm10" },
+    { "bl", "bx", "ebx", "rbx", "st3", "mm3", "xmm3", "ds", "cr3", "dr3",
+      "r11b", "r11w", "r11d", "r11", "xmm11" },
+    { "ah", "spl", "sp", "esp", "rsp", "st4", "mm4", "xmm4", "fs", "cr4", "dr4",
+      "r12b", "r12w", "r12d", "r12", "xmm12" },
+    { "ch", "bpl", "bp", "ebp", "rbp", "st5", "mm5", "xmm5", "gs", "dr5",
+      "r13b", "r13w", "r13d", "r13", "xmm13" },
+    { "dh", "sil", "si", "esi", "rsi", "st6", "mm6", "xmm6", "dr6",
+      "r14b", "r14w", "r14d", "r14", "xmm14" },
+    { "bh", "dil", "di", "edi", "rdi", "st7", "mm7", "xmm7", "dr7",
+      "r15b", "r15w", "r15d", "r15", "xmm15" }
+  };
+#endif
 
   Data bytes_;
   ubyte_t rm_;
@@ -373,9 +395,10 @@ private:
 class Patch {
 public:
   Patch(const Pointer ptr = nullptr, const size_t maxSize = 48u) :
-    ptr_(ptr), original_({}), payload_({}), isEnabled_(false), maxSize_(maxSize)
+    ptr_(ptr), original_({}), payload_({}), isEnabled_(false),
+    maxSize_(maxSize), offset_(0), symbols_({ {} })
   {
-    if (ptr_.ToVoid() == nullptr) {
+    if (&ptr_ == nullptr) {
       auto tmp = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, maxSize_);
       if (tmp == nullptr)
         _throws("Can't allocate heap memory");
@@ -388,25 +411,47 @@ public:
     HeapFree(GetProcessHeap(), 0, ptr_.ToVoid());
   }
 
-  void Symbols(initializer_list<pair<const string, const Data>> il)
+  void Symbols(initializer_list<pair<const string, const string>> il)
   {
-    // TODO: parse symbols
+    for (auto i = il.begin(); i != il.end(); ++i)
+      symbols_.emplace_back(*i);
   }
 
   void Assembly(const string& code)
   {
     smatch ms;
     regex e("([\\w]+) *([^\\,\\n]*) *\\,? *([^\\n]*) *(?=\\n)");
-
     string s = code;
+
     while (regex_search(s, ms, e)) {
-      Operand l(ms[2].str());
-      Operand r(ms[3].str());
-      Instruction inst(ms[1].str(), l, r);
+      auto left = ms[2].str();
+      auto right = ms[3].str();
+      if (!symbols_.empty()) {
+        for (auto k = symbols_.begin(); k != symbols_.end(); ++k) {
+          if (left == k->first)
+            left = k->second;
+          if (right == k->first)
+            right = k->second;
+        }
+      }
+
+      auto opcode = string_lower(ms[1].str());
+      Operand l(string_lower(left));
+      Operand r(string_lower(right));
+      Instruction inst(opcode, l, r);
       payload_ += inst.GetBytes();
       s = ms.suffix().str();
     }
-    Read(ptr_, original_, payload_.Size());
+
+    Read(ptr_ + offset_, original_, payload_.Size() - offset_);
+    offset_ = payload_.Size();
+  }
+
+  void Assembly(const Data& bytecode)
+  {
+    payload_ += bytecode;
+    Read(ptr_ + offset_, original_, payload_.Size() - offset_);
+    offset_ = payload_.Size();
   }
 
   constexpr Pointer& GetHeap() noexcept
@@ -432,6 +477,8 @@ private:
   Data original_;
   bool isEnabled_;
   size_t maxSize_;
+  size_t offset_;
+  vector<pair<const string, const string>> symbols_;
 };
 
 }

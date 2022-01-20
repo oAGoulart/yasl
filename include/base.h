@@ -186,3 +186,12 @@ string string_narrow(const wstring& wide)
   WideCharToMultiByte(CP_UTF8, 0, &wide.at(0), size, &result.at(0), minSize, nullptr, nullptr);
   return result;
 }
+
+string string_lower(const string& upper)
+{
+  string lower;
+  for (auto c = upper.begin(); c != upper.end(); ++c)
+    lower += tolower(*c);
+
+  return lower;
+}
