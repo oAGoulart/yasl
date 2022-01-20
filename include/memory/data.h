@@ -84,14 +84,14 @@ public:
   friend void Read(const Pointer& ptr, Data& data, const size_t count, const bool vp = true)
   {
     Protection protection(ptr, (vp) ? count : 0);
-    for (auto p = ptr; p < ptr + count; ++p)
-      data.push_back(*p.ToBytes());
+    for (Pointer p = ptr; p < ptr + count; ++p)
+      data.push_back(*p);
   }
 
   friend void Write(Pointer& ptr, Data& data, const size_t count, const bool vp = true)
   {
     Protection protection(ptr, (vp) ? count : 0);
-    memcpy_s(ptr.ToVoid(), count, data.data(), data.size());
+    memcpy_s(&ptr, count, data.data(), data.size());
   }
 
   friend Data& operator+=(Data& l, const Data& r)
@@ -124,7 +124,7 @@ inline T& WriteObject(Pointer& ptr, const T& value, const bool vp = true)
 inline void Fill(Pointer& ptr, const ubyte_t& value, const size_t size, const bool vp = true)
 {
   Protection protection(ptr, (vp) ? size : 0);
-  memset(ptr.ToVoid(), value, size);
+  memset(&ptr, value, size);
 };
 
 }

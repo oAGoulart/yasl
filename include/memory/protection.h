@@ -39,10 +39,10 @@ namespace Memory
 class Protection {
 public:
   Protection(const Pointer& ptr, const size_t& size, const ulong_t& mode = PAGE_EXECUTE_READWRITE) :
-    ptr_(ptr), size_(size), mode_(mode)
+    ptr_(ptr), size_(size), mode_(mode), oldMode_(0)
   {
     if (size_)
-      isEnabled_ = VirtualProtect(ptr_.ToVoid(), size_, mode_, &oldMode_);
+      isEnabled_ = VirtualProtect(&ptr_, size_, mode_, &oldMode_);
     isEnabled_ = false;
   };
 
@@ -52,7 +52,7 @@ public:
   ~Protection()
   {
     if (isEnabled_)
-      isEnabled_ = !VirtualProtect(ptr_.ToVoid(), size_, oldMode_, &oldMode_);
+      isEnabled_ = !VirtualProtect(&ptr_, size_, oldMode_, &oldMode_);
   };
 
   /**

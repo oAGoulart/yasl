@@ -56,13 +56,13 @@ public:
   template<typename T>
   static Pointer FromObject(T* obj_)
   {
-    return Pointer::_ForceCast<pvoid_t>(obj_);
+    return Pointer::ForceCast_<pvoid_t>(obj_);
   }
 
   template<typename R, typename C>
   static Pointer FromMethod(R (C::*func_)())
   {
-    return Pointer::_ForceCast<pvoid_t>(func_);
+    return Pointer::ForceCast_<pvoid_t>(func_);
   }
 
   constexpr pvoid_t ToVoid() const noexcept
@@ -88,13 +88,13 @@ public:
   template<typename T>
   constexpr T* ToObject() const noexcept
   {
-    return Pointer::_ForceCast<T*>(pref_.pvoid);
+    return Pointer::ForceCast_<T*>(pref_.pvoid);
   }
 
   template<typename T>
   constexpr T ToAny() const noexcept
   {
-    return Pointer::_ForceCast<T>(pref_.pvoid);
+    return Pointer::ForceCast_<T>(pref_.pvoid);
   }
 
   const Pointer& operator+=(const Pointer& ptr) noexcept
@@ -183,6 +183,16 @@ public:
     return pref_.value > ptr.ToValue();
   }
 
+  const pbytes_t operator&() const noexcept
+  {
+    return pref_.pbytes;
+  }
+
+  const ubyte_t operator*() const noexcept
+  {
+    return *pref_.pbytes;
+  }
+
 private:
   union _pref_t {
     pvoid_t   pvoid;
@@ -192,7 +202,7 @@ private:
   } pref_;
 
   template<typename T, typename F>
-  static T _ForceCast(F in_)
+  static T ForceCast_(F in_)
   {
     union { F in_; T out_; } u = { in_ };
     return u.out_;
