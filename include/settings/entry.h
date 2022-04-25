@@ -1,8 +1,8 @@
 /**
-  @brief     Main module
+  @brief     Settings entry submodule
   @author    Augusto Goulart
-  @date      17.10.2021
-  @copyright   Copyright (c) 2021 Augusto Goulart
+  @date      18.04.2022
+  @copyright   Copyright (c) 2022 Augusto Goulart
                Permission is hereby granted, free of charge, to any person obtaining a copy
                of this software and associated documentation files (the "Software"), to deal
                in the Software without restriction, including without limitation the rights
@@ -22,40 +22,77 @@
 #pragma once
 
 #include "base.h"
-#include "settings.h"
-#include "script.h"
-#include "memory.h"
-#include "status.h"
 
-#define \
-_fatal(e) \
-{ \
-  hfile_t* tmp; \
-  freopen_s(&tmp, "./yaslFatal.md", "w", stderr); \
-  fprintf_s(tmp, "FATAL ERROR\n\t%s\n", e.what()); \
-  fclose(tmp); \
-}
+namespace Settings
+{
 
-class YASL {
+class Entry {
 public:
-  YASL();
-  ~YASL();
+  Entry(const wstring& name, const wstring& key) :
+    name_(name), key_(key), isTable_(false)
+  {
+  }
+
+  Entry(const wstring& name) :
+    name_(name), table_({}), isTable_(true)
+  {
+  }
+
+  Entry(const Entry& entry) :
+    name_(entry.name_), isTable_(entry.isTable_)
+  {
+    if (isTable_)
+      table_.insert(table_.begin(), entry.table_.begin(), entry.table_.end());
+    else
+      key_ = entry.key_;
+  }
+
+  ~Entry()
+  {
+    name_.~basic_string();
+    if (isTable_)
+      table_.~list();
+    else
+      key_.~basic_string();
+  };
+
+  void Add(std::initializer_list<Entry> l) {
+    table_.insert(table_.end(), l.begin(), l.end());
+  }
+
+  wstring& GetName() noexcept
+  {
+    return name_;
+  }
+
+  const wstring GetRaw() noexcept
+  {
+    return (isTable_) ? L"" : key_;
+  }
+
+  Entry& GetTail() noexcept
+  {
+    return table_.back();
+  }
+
+  Entry& operator[](const wstring& name) noexcept
+  {
+    if (isTable_) {
+      for (auto entry = table_.begin(); entry != table_.end(); ++entry) {
+        if (entry->GetName() == name)
+          return *entry;
+      }
+    }
+    return *this;
+  }
 
 private:
-  list<Script>       scripts_;       // TODO: create script pool object
-  unique_ptr<Status> status_;        //!< Pointer to status object
-  unique_ptr<Settings::Config> config_;
-  unique_ptr<Memory::Trampoline<int>> trampoline_;
-
-  const path configFile_ = L"./yasl.lua";    //!< Configure file path
-  const path logFile_ = L"./yaslLog.md";     //!< Log file path
-  const wstring projectName_ = L"YASL";      //!< Project name
-  const wstring projectVersion_ = L"v0.8.0"; //!< Project version
+  wstring name_;
+  union {
+    wstring     key_;
+    list<Entry> table_;
+  };
+  bool isTable_;
 };
 
-static YASL* hYasl_; // need this from program start until termination
-
-static void Start();
-static void End();
-extern "C" void Dummy();
-int Run();
+}
