@@ -10,7 +10,6 @@
 #include <iostream>
 #include <string>
 #include <assert.h>
-#include "config_test.h"
 #include "process_test.h"
 
 static void _InitCli();

@@ -1,8 +1,8 @@
 /**
-  @brief     Config module
+  @brief     Settings module
   @author    Augusto Goulart
-  @date      17.10.2021
-  @copyright   Copyright (c) 2021 Augusto Goulart
+  @date      18.04.2022
+  @copyright   Copyright (c) 2022 Augusto Goulart
                Permission is hereby granted, free of charge, to any person obtaining a copy
                of this software and associated documentation files (the "Software"), to deal
                in the Software without restriction, including without limitation the rights
@@ -22,204 +22,75 @@
 #pragma once
 
 #include "base.h"
+#include "settings/entry.h"
 
-/**
-  @class ConfigFile
-  @brief Object used to store configure file information
-**/
-class ConfigFile {
+namespace Settings
+{
+
+class Config {
 public:
-  /**
-    @brief ConfigFile object constructor
-    @param filename Path to configure file
-  **/
-  ConfigFile(const path& filename) : _filename(filename)
+  Config(const path& filename) :
+    filename_(filename), file_(), head_(L"__g__"), buffer_()
   {
-    wifstream file;
-    file.open(_filename);
+    file_.open(filename_);
+    Read_();
+    file_.close();
+    Parse_();
+  }
 
-    wstring buffer;
-    _ReadLua(file, buffer);
-    file.close();
-    _ParseLuaEntries(buffer);
-  };
-
-  /**
-    @brief  Search for entry on configuration
-    @param  name    Entry name
-    @retval wstring Key value or empty string if not found
-  **/
-  wstring FindEntry(const wstring name) noexcept
+  Entry& operator[](const wstring& name) noexcept
   {
-    for (auto entry = _entries.begin(); entry != _entries.end(); ++entry) {
-      if (entry->GetName() == name)
-        return entry->GetKey();
-    }
-    return L"";
-  };
-
-  /**
-    @brief  Search for entry on maps configuration
-    @param  map     Map name
-    @param  name    Entry name
-    @retval wstring Key value or empty string if not found
-  **/
-  wstring FindEntry(const wstring map, const wstring name) noexcept
-  {
-    for (auto item = _maps.begin(); item != _maps.end(); ++item) {
-      if (item->GetName() == map)
-        return item->FindEntry(name);
-    }
-    return L"";
-  };
+    return head_[name];
+  }
 
 private:
-  /**
-    @class Entry
-    @brief Object to store entry data
-  **/
-  class Entry {
-  public:
-    /**
-      @brief Entry object constructor
-      @param name Entry name
-      @param key  Key value
-    **/
-    Entry(const wstring& name, const wstring& key) :
-      _name(name), _key(key)
-    {
-    };
+  path      filename_;
+  wifstream file_;
+  Entry     head_;
+  wstring   buffer_;
 
-    /**
-      @brief  Gets entry name
-      @retval wstring& Entry name
-    **/
-    wstring& GetName() noexcept
-    {
-      return _name;
-    };
-
-    /**
-      @brief  Gets key value
-      @retval wstring& Key value
-    **/
-    wstring& GetKey() noexcept
-    {
-      return _key;
-    };
-
-  private:
-    wstring _name; //!< Entry name
-    wstring _key;  //!< Key value
-  };
-
-  /**
-    @class Map
-    @brief Object used to store maps from configuration
-  **/
-  class Map {
-  public:
-    /**
-      @brief Map object constructor
-      @param name Map name
-    **/
-    Map(const wstring& name) : _name(name)
-    {
-    };
-
-    /**
-      @brief Emplace entry into map
-      @param name Entry name
-      @param key  Key value
-    **/
-    void Emplace(const wstring& name, const wstring& key)
-    {
-      _entries.emplace_back(name, key);
-    };
-
-    /**
-      @brief  Search for entry inside map
-      @param  name    Entry name
-      @retval wstring Entry key or empty string if not found
-    **/
-    wstring FindEntry(const wstring name) noexcept
-    {
-      for (auto entry = _entries.begin(); entry != _entries.end(); ++entry) {
-        if (entry->GetName() == name)
-          return entry->GetKey();
-      }
-      return L"";
-    };
-
-    /**
-      @brief  Gets map name
-      @retval wstring& Map name
-    **/
-    wstring& GetName() noexcept
-    {
-      return _name;
-    };
-
-  private:
-    wstring     _name;    //!< Map name
-    list<Entry> _entries; //!< List of entries inside map
-  };
-
-  path        _filename; //!< Path to configuration file
-  list<Entry> _entries;  //!< List of entries on configuration
-  list<Map>   _maps;     //!< List of maps on configuration
-
-  /**
-    @brief Read Lua file for config entries and maps
-    @param file   Input file stream
-    @param buffer String to store file data
-  **/
-  void _ReadLua(wifstream& file, wstring& buffer)
+  void Read_()
   {
-    wchar_t buf[4];
+    wchar_t buf[4] = {};
     size_t count = 0;
 
-    while (file.read(&buf[0], 4)) {
+    while (file_.read(&buf[0], 4)) {
       if (buf[1] == buf[0]) {
         if (buf[0] == L'-') { // "--" single line comment
           count += 4;
           if (buf[2] != L'\n' && buf[3] != L'\n') {
-            for (; file.get(buf[0]) && buf[0] != L'\n'; ++count);
-            file.seekg(count);
+            for (; file_.get(buf[0]) && buf[0] != L'\n'; ++count);
+            file_.seekg(count);
           }
           buf[1] = L'\x20';
           buf[2] = L'\x20';
           continue;
         }
         else if (buf[0] == L'[' && buf[2] == L'-' && buf[3] == buf[2]) { // "[[--" multiline comment
-          while (file.read(&buf[0], 4)) {
+          while (file_.read(&buf[0], 4)) {
             if (buf[1] == buf[0] && buf[3] == buf[2]) {
               if (buf[0] == L'[' && buf[2] == L'-') // "[[--"
                 _throws("Found nested multiline comments");
               if (buf[0] == L'-' && buf[2] == L']') { // "--]]"
                 count += 4;
-                file.seekg(count);
+                file_.seekg(count);
                 break;
               }
             }
-            file.seekg(++count);
+            file_.seekg(++count);
           }
           continue;
         }
       }
-      buffer += buf[0];
-      file.seekg(++count);
+      buffer_ += buf[0];
+      file_.seekg(++count);
     }
-    buffer += buf[0];
-    buffer += buf[1];
-    buffer += buf[2];
-  };
+    buffer_ += buf[0];
+    buffer_ += buf[1];
+    buffer_ += buf[2];
+  }
 
-  /**
-    @brief Parse Lua entries and maps found on file
-    @param buffer Wide string buffer
-  **/
-  void _ParseLuaEntries(wstring& buffer)
+  void Parse_()
   {
     struct {
       bool needsEntry = true;
@@ -233,13 +104,16 @@ private:
       bool parsingTable = false;
     } state;
     wstring entry, key;
+    list<Entry*> currentTable;
+    currentTable.push_back(&head_);
 
-    for (auto wch = buffer.begin(); wch != buffer.end(); ++wch) {
+    for (auto wch = buffer_.begin(); wch != buffer_.end(); ++wch) {
       if (!state.parsingEntry && !state.parsingKey && iswspace(*wch))
         continue;
 
       if (state.foundTable && !state.parsingTable) {
-        _maps.emplace_back(entry);
+        currentTable.back()->Add({ entry });
+        currentTable.push_back(&currentTable.back()->GetTail());
         entry.clear();
 
         state.foundTable = false;
@@ -251,6 +125,10 @@ private:
       if (state.needsEntry) {
         if (*wch == L'}') { // end of table
           state.parsingTable = false;
+          currentTable.pop_back();
+
+          if (currentTable.empty())
+            _throws("Unexpected end of table");
           continue;
         }
 
@@ -267,9 +145,9 @@ private:
       }
       else if (state.needsKey) {
         auto tmp = wch;
-        auto next = ((++tmp) != buffer.end()) ? *tmp : L'\0';
+        auto next = ((++tmp) != buffer_.end()) ? *tmp : L'\0';
 
-        if (*wch == L'{' && !state.parsingTable) { // start of table
+        if (*wch == L'{') { // start of table
           state.needsKey = false;
           state.foundTable = true;
           continue;
@@ -301,11 +179,7 @@ private:
         state.foundKey = false;
         state.needsEntry = true;
 
-        if (state.parsingTable)
-          _maps.back().Emplace(entry, key);
-        else
-          _entries.emplace_back(entry, key);
-
+        currentTable.back()->Add({ { entry, key } });
         entry.clear();
         key.clear();
         continue;
@@ -322,5 +196,7 @@ private:
       if (iswpunct(*wch) && *wch != L',')
         _throws("Unexpected character found while parsing");
     }
-  };
+  }
 };
+
+}

@@ -4,7 +4,6 @@ int main()
 {
   try {
     _InitCli();
-    //ConfigTest();
     ProcessTest();
   }
   catch (const exception& e) {

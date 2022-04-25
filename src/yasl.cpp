@@ -67,14 +67,14 @@ static void End()
 YASL::YASL()
 {
   status_ = make_unique<Status>(logFile_, projectName_, projectVersion_);
-  LoadConfig_();
-  LoadScripts_();
+  config_ = make_unique<Settings::Config>(configFile_);
+  status_->LogMessage(L"Loading and parsing configuration file");
+  //LoadScripts_();
 
   Memory::Process p;
   Memory::Module m = p.GetBaseModule();
   trampoline_ = make_unique<Memory::Trampoline<int>>(m.GetEntryPoint(), 1);
-  // TODO: add _RunScripts() function
-  trampoline_->before += &Hook; // TODO: hook does not need to run on trampoline, only scripts
+  trampoline_->before += &Run;
 }
 
 /**
@@ -85,7 +85,7 @@ YASL::~YASL()
   status_->LogMessage(L"Returning to entry point");
 }
 
-// TODO: move to Script module
+/* TODO: move to Scripts module
 bool YASL::IsFileExtSupported_(const path& filename) const
 {
   auto ext = filename.extension();
@@ -96,39 +96,7 @@ bool YASL::IsFileExtSupported_(const path& filename) const
   return false;
 }
 
-/**
-  @brief Load configuration from file
-**/
-void YASL::LoadConfig_()
-{
-  auto config = make_unique<ConfigFile>(configFile_);
-  status_->LogMessage(L"Loading and parsing configuration file");
 
-  auto cfgStr = config->FindEntry(L"MainName");
-  if (cfgStr.empty())
-    cfgStr = L"StartScript";
-  mainName_ = cfgStr;
-
-  cfgStr = config->FindEntry(L"FileExtensions");
-  if (cfgStr.empty())
-    cfgStr = L".asi;.dff;";
-
-  const wchar_t* extDiv = L";";
-  auto index = cfgStr.find_first_of(extDiv);
-  size_t lastIndex = 0;
-  while (index != wstring::npos) {
-    supportedExt_.push_back(cfgStr.substr(lastIndex, index));
-    lastIndex = index;
-    index = cfgStr.find_first_of(extDiv, index + 1);
-  }
-
-  cfgStr = config->FindEntry(L"ScriptsFolder");
-  if (cfgStr.empty())
-    cfgStr = L"./";
-  scriptsFolder_ = cfgStr;
-}
-
-// TODO: move to Script module
 void YASL::LoadScripts_()
 {
   status_->LogMessage(L"Loading scripts into memory");
@@ -154,7 +122,7 @@ void YASL::LoadScripts_()
       }
     }
   }
-}
+}*/
 
 /**
   @brief Dummy empty function
@@ -163,8 +131,7 @@ void Dummy()
 {
 }
 
-// NOTE: no longer needed, will hook from YASL constructor
-int Hook()
+int Run()
 {
   MessageBox(nullptr, L"hook has been moved", L"no crashorino", 0);
   return 0;
